@@ -1,0 +1,1724 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Understanding Unrest — Simple</title>
+<style>
+  :root {
+    --bg: #0f172a;        /* slate-900 */
+    --fg: #e2e8f0;        /* slate-200 */
+    --muted: #94a3b8;     /* slate-400 */
+    --panel: #111827;     /* slate-900-ish */
+    --border: #334155;    /* slate-700 */
+    --accent: #2563eb;    /* blue-600 */
+    --accent2: #ef4444;   /* red-500 */
+    --ok: #16a34a;        /* green-600 */
+    --warn: #d97706;      /* amber-600 */
+    --surface: #0b1220;
+    --surface-alt: #0c1426;
+    --timeline-bg: #0b1220;
+    --callout-bg: rgba(15,23,42,.55);
+    --callout-border: rgba(148,163,184,.25);
+    --panel-soft: rgba(15,23,42,.55);
+    --progress-track: #1f2937;
+    --meter-empty: rgba(15,23,42,.65);
+  }
+  @font-face{
+    font-family:'OpenDyslexic';
+    src:url('https://cdn.jsdelivr.net/gh/antijingoist/open-dyslexic/alternatives/OpenDyslexic3-Regular.woff2') format('woff2');
+    font-style:normal;
+    font-weight:400;
+    font-display:swap;
+  }
+  html{scroll-behavior:smooth}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--fg);transition:background .25s ease,color .25s ease}
+  body.font-dyslexic{font-family:'OpenDyslexic',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+  body.light{
+    --bg:#f8fafc;
+    --fg:#0f172a;
+    --muted:#475569;
+    --panel:#ffffff;
+    --border:#cbd5f5;
+    --surface:#ffffff;
+    --surface-alt:#eef2ff;
+    --timeline-bg:#ffffff;
+    --callout-bg:rgba(191,219,254,.45);
+    --callout-border:rgba(148,163,184,.35);
+    --panel-soft:rgba(226,232,240,.75);
+    --progress-track:#dbeafe;
+    --meter-empty:rgba(226,232,240,.9);
+  }
+  header{position:sticky;top:0;z-index:20;background:rgba(15,23,42,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+  .bar{height:4px;background:linear-gradient(90deg,#2563eb,#fff,#ef4444)}
+  .wrap{max-width:1100px;margin:0 auto;padding:16px}
+  .row{display:flex;gap:12px;align-items:center}
+  .step-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+  .chip{display:inline-flex;gap:6px;align-items:center;padding:4px 9px;border-radius:999px;font-size:12px;border:1px solid rgba(148,163,184,.3);color:var(--muted);background:rgba(15,23,42,.6);transition:all .2s;cursor:pointer}
+  .chip.active{background:rgba(37,99,235,.2);color:#bfdbfe;border-color:rgba(37,99,235,.45)}
+  .chip.done{background:rgba(22,163,74,.18);color:#bbf7d0;border-color:rgba(22,163,74,.4)}
+  .chip-icon{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:rgba(148,163,184,.2);font-size:10px}
+  .chip.done .chip-icon{background:rgba(22,163,74,.3)}
+  .chip.active .chip-icon{background:rgba(37,99,235,.3)}
+  .chip svg{width:12px;height:12px;fill:currentColor}
+  .right{margin-left:auto}
+  .header-actions{display:flex;gap:8px;align-items:center}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand-block{display:flex;flex-direction:column;gap:8px;flex:1;min-width:240px}
+  .brand-mark{height:42px;width:42px;border-radius:14px;background:linear-gradient(135deg,rgba(37,99,235,.4),rgba(15,23,42,.9));display:grid;place-items:center}
+  .brand-mark svg{width:26px;height:26px;fill:none;stroke:#bfdbfe;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .brand-title{display:flex;flex-direction:column}
+  .brand-title strong{font-weight:700;letter-spacing:.02em}
+  body.light header{background:rgba(255,255,255,.88);border-bottom:1px solid var(--border)}
+  body.light .brand-mark{background:linear-gradient(135deg,rgba(59,130,246,.3),rgba(255,255,255,.85))}
+  body.light .brand-mark svg{stroke:#1e3a8a}
+  select,input,textarea,button{font:inherit}
+  button{cursor:pointer}
+  .btn{background:var(--accent);color:#fff;border:none;border-radius:12px;padding:10px 14px}
+  .btn[disabled]{opacity:.5;cursor:not-allowed}
+  .btn-ghost{background:transparent;color:var(--fg);border:1px solid var(--border);border-radius:12px;padding:8px 12px}
+  .card{border:1px solid var(--border);border-radius:20px;background:var(--surface);box-shadow:0 2px 10px rgba(0,0,0,.25);overflow:hidden;color:var(--fg)}
+  body.light .card{box-shadow:0 12px 30px rgba(148,163,184,.25)}
+  .card-h{padding:14px 16px;border-bottom:1px solid var(--border);background:var(--surface)}
+  .card-b{padding:16px}
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:1fr;}
+  @media(min-width:820px){.g2{grid-template-columns:1fr 1fr}}
+  .sub{color:var(--muted)}
+  .imgbox{height:260px;background:var(--progress-track);display:grid;place-items:center}
+  .imgbox img{width:100%;height:100%;object-fit:cover}
+  .tabs{display:inline-flex;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface)}
+  .tab{padding:8px 10px;background:transparent;border:none;color:var(--fg)}
+  .tab.active{background:var(--accent);color:#fff}
+  .field{width:100%;padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--surface-alt);color:var(--fg)}
+  .progress{height:8px;border-radius:999px;background:var(--progress-track);overflow:hidden}
+  .progress > div{height:100%;background:linear-gradient(90deg,#2563eb,#ef4444)}
+  nav.timeline{border:1px solid var(--border);border-radius:16px;margin:12px 0;padding:6px 8px;background:var(--timeline-bg)}
+  nav.timeline ul{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:0;justify-content:center}
+  nav.timeline li{flex:1 1 200px;min-width:160px}
+  nav.timeline li button{width:100%;border:1px solid var(--border);background:var(--surface);color:var(--fg);padding:10px 12px;border-radius:12px;text-align:left}
+  nav.timeline li button.active{background:var(--accent);color:#fff}
+  .timeline-year{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+  .timeline-title{font-weight:600;display:block;margin-top:2px}
+  .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(37,99,235,.12);border:1px solid rgba(37,99,235,.25);color:#bfdbfe}
+  .note{font-size:12px;color:var(--muted)}
+  .toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#0b1220;color:#fff;border:1px solid var(--border);padding:8px 12px;border-radius:10px}
+  .help{font-size:13px}
+  footer{color:var(--muted);text-align:center;padding:36px 0}
+  a.link{color:#93c5fd}
+  .hidden{display:none}
+  main.wrap{padding-top:32px;padding-bottom:48px;position:relative}
+  .splash-wrapper{display:grid;gap:24px;margin-top:20px}
+  .splash-hero{display:grid;gap:24px}
+  @media(min-width:960px){.splash-hero{grid-template-columns:3fr 2fr}}
+  .splash-card{position:relative;padding:28px;background:linear-gradient(135deg,rgba(37,99,235,.15),rgba(15,23,42,.65));border-radius:24px;border:1px solid rgba(148,163,184,.35);display:grid;gap:14px}
+  .splash-card.secondary{background:linear-gradient(135deg,rgba(15,23,42,.7),rgba(239,68,68,.12))}
+  .splash-card h1,.splash-card h2,.splash-card h3{margin:0}
+  .splash-eyebrow{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+  .splash-title{font-size:clamp(32px,5vw,44px);line-height:1.1;margin-bottom:4px}
+  .splash-subhead{color:var(--muted);font-size:16px;margin:0 0 12px}
+  .callout-grid{display:grid;gap:16px}
+  @media(min-width:640px){.callout-grid{grid-template-columns:1fr 1fr}}
+  .callout{background:var(--callout-bg);border:1px solid var(--callout-border);border-radius:16px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;color:var(--fg)}
+  .callout-card{width:100%;text-align:left;transition:transform .18s ease,box-shadow .18s ease}
+  .callout-card:hover{transform:translateY(-2px);box-shadow:0 10px 20px rgba(15,23,42,.45)}
+  .callout-card:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+  .callout-badge{width:32px;height:32px;border-radius:12px;background:rgba(37,99,235,.35);color:#bfdbfe;display:grid;place-items:center;font-weight:600;font-size:13px;flex-shrink:0}
+  .callout-title{font-weight:600}
+  .callout-text{margin:4px 0 0;font-size:13px;color:var(--muted)}
+  .glossary-grid{display:grid;gap:12px;margin-top:12px}
+  @media(min-width:640px){.glossary-grid{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}}
+  .info-list{margin:0;padding-left:20px;color:var(--muted);font-size:14px;line-height:1.6}
+  .info-list li{margin-bottom:6px}
+  .steps-header{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .steps-list{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:12px;font-size:14px}
+  .steps-list li{background:rgba(15,23,42,.55);border:1px solid rgba(148,163,184,.25);border-radius:14px;padding:12px}
+  .steps-list strong{display:block;margin-bottom:4px}
+  .splash-form{padding:24px;border-radius:20px;border:1px solid var(--border);background:#0b1220;display:grid;gap:18px}
+  .form-grid{display:grid;gap:12px}
+  @media(min-width:560px){.form-grid{grid-template-columns:1fr 1fr}}
+  .splash-btn-row{display:flex;gap:12px;justify-content:flex-end;align-items:center}
+  .btn-large{padding:12px 18px;font-size:16px}
+  .splash-note{font-size:12px;color:var(--muted)}
+  .flow-section{margin:48px 0 64px;position:relative;display:grid;gap:24px;scroll-margin-top:120px}
+  .flow-section .step-card{border-radius:28px;border:1px solid var(--border);background:var(--surface);box-shadow:0 18px 45px rgba(15,23,42,.45);padding:32px;display:grid;gap:24px;position:relative;color:var(--fg)}
+  body.light .flow-section .step-card{box-shadow:0 18px 45px rgba(148,163,184,.25)}
+  .flow-section.locked .step-card{opacity:.55;pointer-events:none}
+  .flow-section.locked .step-card .lock-overlay{pointer-events:auto}
+  .lock-overlay{position:absolute;inset:0;border-radius:28px;background:rgba(15,23,42,.82);border:1px dashed rgba(148,163,184,.45);display:grid;place-items:center;font-size:14px;color:var(--muted);padding:32px;text-align:center}
+  .flow-section h2{margin:0;font-size:26px}
+  .section-lead{font-size:15px;color:var(--muted);max-width:70ch}
+  .event-card .card-h{display:flex;justify-content:space-between;align-items:center}
+  .event-card .card-h strong{font-size:22px}
+  .event-card .card-h .sub{font-size:14px}
+  .event-content{padding:22px 22px 26px;display:grid;gap:20px}
+  .event-layout{display:grid;gap:24px}
+  @media(min-width:960px){.event-layout{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);align-items:start}}
+  .event-body{display:grid;gap:18px}
+  .event-body .tabs{align-self:flex-start}
+  .level-tabs{gap:0;margin-bottom:4px}
+  .level-tabs .tab{font-size:13px;padding:8px 12px}
+  .event-text{font-size:16px;line-height:1.7;color:var(--fg)}
+  .event-text + .event-text{margin-top:4px}
+  .event-reading{display:grid;gap:12px}
+  .event-link{font-size:13px}
+  .event-link a{display:inline-flex;align-items:center;gap:6px}
+  .event-link svg{width:12px;height:12px;fill:currentColor}
+  .event-slider{display:grid;gap:12px;padding:16px;border-radius:16px;background:var(--panel-soft);border:1px solid var(--callout-border)}
+  .event-slider label{display:flex;justify-content:space-between;align-items:center;font-weight:600}
+  .event-slider label span{font-weight:400;font-size:14px;color:var(--muted)}
+  .meter{display:grid;gap:10px}
+  .meter-track{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}
+  .meter-cell{position:relative;z-index:0;display:block;width:100%;padding-top:120%;border-radius:10px;border:1px solid var(--callout-border);background:var(--meter-empty);transition:transform .15s ease,background .15s ease,border-color .15s ease;cursor:pointer}
+  .meter-cell::after{content:'';position:absolute;inset:12%;border-radius:8px;background:linear-gradient(180deg,rgba(59,130,246,.35),rgba(59,130,246,.65));opacity:0;transition:opacity .2s ease}
+  .meter-cell.filled{border-color:rgba(59,130,246,.6);background:rgba(37,99,235,.25)}
+  .meter-cell.filled::after{opacity:1}
+  .meter-cell.hot{border-color:rgba(239,68,68,.65);background:rgba(127,29,29,.3)}
+  .meter-cell.hot::after{background:linear-gradient(180deg,rgba(239,68,68,.45),rgba(249,115,22,.55))}
+  .meter-cell:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .meter-input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+  .meter-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+  .event-rationale{display:grid;gap:10px}
+  .event-controls{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .event-figure{margin:0;display:grid;gap:12px}
+  .image-frame{position:relative;display:grid;place-items:center;border-radius:20px;overflow:hidden;background:var(--panel-soft);border:1px solid var(--callout-border);aspect-ratio:4/3;min-height:260px;cursor:zoom-in;transition:transform .15s ease}
+  .image-frame:hover{transform:scale(1.01)}
+  .image-frame.image-error{cursor:default}
+  .image-frame.image-error:hover{transform:none}
+  .image-frame img{width:100%;height:100%;object-fit:cover;display:block}
+  .image-fallback{display:grid;gap:8px;justify-items:center;text-align:center;padding:24px}
+  .image-fallback .pill{background:rgba(37,99,235,.18);border-color:rgba(37,99,235,.4);color:#bfdbfe}
+  .image-fallback strong{font-size:14px}
+  .event-figure figcaption{font-size:12px;color:var(--muted);text-align:center}
+  .accessibility{position:relative}
+  .accessibility button.access-toggle{border-radius:999px;padding:8px 14px;background:var(--panel-soft);border:1px solid var(--callout-border);color:var(--fg);display:inline-flex;align-items:center;gap:8px}
+  .accessibility button.access-toggle svg{width:16px;height:16px;fill:currentColor}
+  .access-panel{position:absolute;right:0;top:calc(100% + 8px);width:260px;background:var(--surface);border:1px solid var(--callout-border);border-radius:16px;padding:16px;box-shadow:0 12px 28px rgba(15,23,42,.45);display:grid;gap:16px;z-index:30;color:var(--fg)}
+  .access-panel.hidden{display:none}
+  .panel-group{display:grid;gap:10px}
+  .panel-group h4{margin:0;font-size:14px;color:#bfdbfe;text-transform:uppercase;letter-spacing:.08em}
+  body.light .panel-group h4{color:#1d4ed8}
+  .toggle-pill{display:flex;align-items:center;gap:10px;background:var(--panel-soft);border:1px solid var(--callout-border);border-radius:12px;padding:10px}
+  .translate-select{width:100%;padding:10px;border-radius:12px;border:1px solid var(--border);background:var(--surface-alt);color:var(--fg)}
+  .panel-actions{display:flex;gap:8px;justify-content:flex-end}
+  .theme-toggle{position:relative;width:62px;height:32px;border-radius:999px;border:1px solid rgba(148,163,184,.4);background:linear-gradient(135deg,rgba(15,23,42,.7),rgba(30,41,59,.8));display:flex;align-items:center;justify-content:space-between;padding:0 8px;color:#f8fafc}
+  .theme-toggle[data-theme="dark"] .toggle-thumb{transform:translateX(0)}
+  .theme-toggle[data-theme="light"] .toggle-thumb{transform:translateX(28px)}
+  .theme-toggle .toggle-icon{width:16px;height:16px;display:flex;align-items:center;justify-content:center}
+  .theme-toggle .toggle-icon svg{width:14px;height:14px;fill:currentColor}
+  .theme-toggle .toggle-thumb{position:absolute;top:4px;bottom:4px;width:24px;border-radius:999px;background:#2563eb;transition:transform .2s ease}
+  body.light .theme-toggle{background:linear-gradient(135deg,rgba(226,232,240,.8),rgba(148,163,184,.6));color:#0f172a}
+  body.light .theme-toggle .toggle-thumb{background:#fbbf24}
+  .activity-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.35);font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:#bfdbfe;font-weight:600}
+  .step-intro{display:grid;gap:12px}
+  .summary-list{display:grid;gap:16px}
+  .summary-item{border:1px solid var(--border);border-radius:18px;background:var(--surface-alt);padding:16px 18px;display:grid;gap:14px;color:var(--fg)}
+  .summary-header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+  .summary-title{display:flex;flex-direction:column}
+  .summary-rating{display:flex;align-items:center;gap:8px;font-size:14px}
+  .summary-actions{display:flex;gap:8px;align-items:center}
+  .summary-toggle{border:1px solid var(--border);background:transparent;color:var(--fg);border-radius:999px;padding:6px 10px;display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+  .summary-toggle[aria-expanded="true"]{background:rgba(37,99,235,.15);border-color:rgba(37,99,235,.4)}
+  .summary-body{display:grid;gap:12px;padding-top:4px}
+  .summary-levels{display:inline-flex;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+  .summary-levels button{padding:6px 10px;background:transparent;border:none;color:var(--fg);cursor:pointer}
+  .summary-levels button.active{background:var(--accent);color:#fff}
+  .summary-meter{display:grid;gap:10px}
+  .summary-footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:center;margin-top:12px}
+  .summary-status{font-size:14px;color:var(--muted)}
+  .summary-status strong{color:var(--fg)}
+  .summary-chart{margin-top:18px}
+  body.light .summary-item{background:#ffffff;border-color:#e2e8f0}
+  body.light .summary-toggle{border-color:#cbd5f5}
+  body.light .summary-toggle[aria-expanded="true"]{background:rgba(59,130,246,.18);border-color:rgba(59,130,246,.45)}
+  .starter-grid{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 6px}
+  .starter-pill{border:1px solid rgba(148,163,184,.4);background:rgba(15,23,42,.35);color:var(--fg);border-radius:999px;padding:6px 10px;font-size:12px;cursor:pointer;transition:transform .15s ease,background .15s ease}
+  .starter-pill:hover{transform:translateY(-1px);background:rgba(37,99,235,.25);border-color:rgba(37,99,235,.4)}
+  body.light .starter-pill{background:rgba(191,219,254,.35);color:#1e3a8a;border-color:rgba(59,130,246,.35)}
+  body.light .starter-pill:hover{background:rgba(96,165,250,.4);border-color:rgba(59,130,246,.5)}
+  body.light .activity-badge{background:rgba(59,130,246,.12);border-color:rgba(59,130,246,.3);color:#1d4ed8}
+  body.light .tabs{border-color:#cbd5f5}
+  body.light .tab{color:#0f172a}
+  body.light .tabs .tab:not(.active):hover{background:rgba(37,99,235,.08)}
+  body.light .card-h{border-bottom:1px solid #e2e8f0}
+  body.light nav.timeline{border-color:#e2e8f0;background:#ffffff}
+  body.light nav.timeline li button{border-color:#e2e8f0}
+  body.light .callout{background:rgba(191,219,254,.4)}
+  body.light .lock-overlay{background:rgba(241,245,249,.92);border-color:#cbd5f5;color:#475569}
+  body.light .splash-card{background:linear-gradient(135deg,rgba(59,130,246,.12),rgba(255,255,255,.85));color:#0f172a}
+  body.light .splash-card.secondary{background:linear-gradient(135deg,rgba(248,250,252,.88),rgba(251,191,36,.16))}
+  body.light .event-slider{background:#ffffff}
+  body.light .meter-cell{border-color:#e2e8f0}
+  body.light .meter-cell.filled{border-color:rgba(59,130,246,.6);background:rgba(96,165,250,.35)}
+  body.light .accessibility button.access-toggle{background:rgba(226,232,240,.65)}
+  body.light .access-panel{box-shadow:0 12px 25px rgba(148,163,184,.25)}
+  body.light footer{color:#64748b}
+  .modal{position:fixed;inset:0;background:rgba(15,23,42,.72);display:grid;place-items:center;padding:20px;z-index:60}
+  .modal.hidden{display:none}
+  .modal-card{max-width:520px;width:100%;background:var(--surface);border-radius:18px;border:1px solid var(--border);box-shadow:0 18px 45px rgba(15,23,42,.45);padding:24px;display:grid;gap:18px}
+  .modal-header{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .modal-body{display:grid;gap:12px}
+  .intro-overlay{position:fixed;inset:0;background:var(--bg);z-index:50;display:grid;place-items:center;padding:20px;transition:opacity .4s ease}
+  .intro-slide{max-width:900px;width:100%;background:var(--surface);border-radius:28px;border:1px solid var(--border);box-shadow:0 20px 55px rgba(15,23,42,.45);overflow:hidden;display:grid;grid-template-columns:1fr;}
+  .intro-media{position:relative;height:420px;background:#000}
+  .intro-media img{width:100%;height:100%;object-fit:cover}
+  .intro-media::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,42,.15),rgba(15,23,42,.55));}
+  .intro-content{padding:28px 32px;display:grid;gap:18px;color:var(--fg)}
+  .intro-badge{display:inline-flex;align-items:center;gap:10px;padding:6px 14px;border-radius:999px;background:rgba(59,130,246,.2);border:1px solid rgba(59,130,246,.4);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#bfdbfe;font-weight:600}
+  .intro-question{font-size:clamp(26px,4vw,32px);line-height:1.2;margin:0}
+  .intro-actions{display:flex;gap:12px;flex-wrap:wrap}
+  .intro-actions button{flex:1 1 140px;font-size:18px;padding:14px;border-radius:999px}
+  .intro-progress{display:flex;justify-content:center;gap:8px}
+  .intro-progress span{width:10px;height:10px;border-radius:50%;background:rgba(148,163,184,.5);display:inline-block}
+  .intro-progress span.active{background:var(--accent)}
+  .intro-hero{position:fixed;inset:0;background:radial-gradient(circle at 20% 20%,rgba(59,130,246,.35),transparent 55%),radial-gradient(circle at 80% 0%,rgba(14,165,233,.25),transparent 45%),linear-gradient(135deg,#0f172a 0%,#1d2746 45%,#111827 100%);display:grid;place-items:center;z-index:55;padding:24px;color:#fff}
+  .intro-hero-card{max-width:820px;width:100%;padding:48px;border-radius:36px;background:rgba(15,23,42,.82);border:1px solid rgba(148,163,184,.35);box-shadow:0 40px 90px rgba(15,23,42,.6);display:grid;gap:28px;text-align:center}
+  .intro-hero-title{font-size:clamp(48px,8vw,72px);margin:0;font-weight:800;letter-spacing:.04em}
+  .intro-hero-subtitle{font-size:clamp(20px,3vw,26px);margin:0;color:#cbd5f5}
+  .intro-hero-gradient{text-transform:uppercase;letter-spacing:.3em;font-size:13px;color:#bae6fd}
+  .intro-hero-actions{display:flex;flex-wrap:wrap;gap:14px;justify-content:center}
+  .intro-hero-actions button{min-width:180px;padding:16px 28px;font-size:18px;border-radius:999px}
+  .intro-hero-dots{display:flex;gap:10px;justify-content:center}
+  .intro-hero-dots span{width:12px;height:12px;border-radius:12px;background:rgba(148,163,184,.45)}
+  .intro-hero-dots span.active{background:#38bdf8}
+@media(max-width:720px){
+  .flow-section .step-card{padding:22px}
+  .event-layout{grid-template-columns:1fr}
+  .access-panel{right:auto;left:0;width:220px}
+  .image-frame{min-height:220px}
+}
+.image-frame.loading {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--panel-soft),
+    var(--panel-soft) 10px,
+    var(--surface) 10px,
+    var(--surface) 20px
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { opacity: 0.7; }
+  50% { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+
+.skip-link {
+  position:absolute;
+  top:-40px;
+  left:0;
+  background:var(--accent);
+  color:#fff;
+  padding:8px;
+  text-decoration:none;
+  z-index:100;
+  border-radius:4px;
+}
+
+.skip-link:focus {
+  top:0;
+}
+
+@media(max-width:720px){
+  .splash-hero{grid-template-columns:1fr;}
+  .form-grid{grid-template-columns:1fr;}
+  .intro-hero-title{font-size:36px !important;}
+  .intro-hero-card{padding:32px 24px;}
+}
+</style>
+</head>
+<body>
+<a href="#app" class="skip-link">Skip to main content</a>
+  <header>
+    <div class="bar"></div>
+    <div class="wrap row">
+    <div class="brand-block">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32">
+            <path d="M8 5v9c0 2 1.6 3.6 3.6 3.6h.4V5" />
+            <path d="M24 5v9c0 2-1.6 3.6-3.6 3.6h-.4V5" />
+            <path d="M13.5 17v9l2.5 3 2.5-3v-9" />
+            <path d="M8 7h4M20 7h4" />
+          </svg>
+        </div>
+        <div class="brand-title">
+          <strong>Understanding Unrest</strong>
+          <span class="sub">Road to Revolution</span>
+        </div>
+      </div>
+      <div class="step-chips" id="stepChips"></div>
+    </div>
+      <div class="right header-actions">
+        <button id="overviewBtn" class="btn-ghost hidden" type="button">Overview</button>
+        <button id="resetBtn" class="btn-ghost" type="button">Reset</button>
+        <button id="themeToggle" class="theme-toggle" type="button" aria-label="Toggle color theme" data-theme="dark">
+          <span class="toggle-thumb"></span>
+          <span class="toggle-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 4.5a1 1 0 0 1 1 1V7a1 1 0 1 1-2 0V5.5a1 1 0 0 1 1-1Zm0 11a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Zm7-2.5h-1.5a1 1 0 1 1 0-2H19a1 1 0 1 1 0 2Zm-12 0H5a1 1 0 1 1 0-2h1.5a1 1 0 1 1 0 2Zm9.95-6.45a1 1 0 0 1 0-1.41l1.06-1.06a1 1 0 1 1 1.42 1.41l-1.07 1.06a1 1 0 0 1-1.41 0ZM5.57 17.36a1 1 0 1 1 1.42-1.41l1.06 1.06a1 1 0 0 1-1.41 1.42l-1.07-1.07Zm12.78 1.41a1 1 0 0 1-1.42 0l-1.06-1.06a1 1 0 1 1 1.41-1.42l1.07 1.07a1 1 0 0 1 0 1.41ZM8.05 6.55a1 1 0 0 1-1.41 0L5.57 5.5A1 1 0 1 1 7 4.09l1.06 1.06a1 1 0 0 1 0 1.41ZM12 20a1 1 0 0 1-1-1v-1.5a1 1 0 1 1 2 0V19a1 1 0 0 1-1 1Z"/></svg>
+          </span>
+          <span class="toggle-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M17.75 15.5a7.25 7.25 0 0 1-9.25-9.25 1 1 0 0 0-1.32-1.24 9.25 9.25 0 1 0 11.81 11.81 1 1 0 0 0-1.24-1.32Z"/></svg>
+          </span>
+        </button>
+        <div class="accessibility">
+          <button class="access-toggle" id="accessToggle" type="button" aria-haspopup="true" aria-controls="accessPanel">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c.9 0 1.7.3 2.4.9.3.2.4.7.2 1-.2.4-.7.5-1 .2-.4-.3-.9-.4-1.4-.4-.5 0-1 .1-1.4.4-.4.3-.5.8-.2 1.2.2.3.5.4.8.4h6.5c.6 0 1 .4 1 1s-.4 1-1 1h-3.6l1.4 13.1c.1.5-.3 1-.8 1.1h-.1c-.5 0-.9-.4-1-.9L12 14.8l-2.4 6.2c-.2.5-.7.8-1.2.7-.5-.1-.9-.6-.8-1.1L9 8h-3c-.6 0-1-.4-1-1s.4-1 1-1h2.5c.3 0 .6-.2.8-.4.3-.4.2-1-.2-1.2C8.4 4 7.9 3.9 7.4 3.9c-.5 0-1 .1-1.4.4-.3.3-.8.2-1-.2-.2-.3-.1-.8.2-1C6 2.3 6.9 2 7.8 2H12z"/></svg>
+            Accessibility
+          </button>
+          <div class="access-panel hidden" id="accessPanel">
+            <div class="panel-group">
+              <h4>Reading</h4>
+              <label class="toggle-pill" for="fontToggle">
+                <input type="checkbox" id="fontToggle" />
+                <span>Use dyslexic-friendly font</span>
+              </label>
+            </div>
+            <div class="panel-group">
+              <h4>Translate</h4>
+              <select id="translateSel" class="translate-select">
+                <option value="">Select language…</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="pt">Portuguese</option>
+                <option value="zh-CN">Chinese (Simplified)</option>
+                <option value="ar">Arabic</option>
+              </select>
+              <div class="panel-actions">
+                <button class="btn-ghost" id="translateGo" type="button" disabled>Open in Google Translate</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap" id="app"></main>
+  <div id="toast" class="toast hidden"></div>
+
+  <footer>United States History • Colonial Period • Unrest in the Colonies</footer>
+
+<script>
+// ----- Config -----
+const STORAGE_KEY = 'unrest-simple-v1';
+const FORM_BASE = 'https://docs.google.com/forms/d/e/1FAIpQLSciHhkpZr_FdBbpUB5U71vpPu8H4K4Dugt9zjc3p2Xb7oWAZg/viewform';
+const ENTRY = {
+  name: 'entry.70224343',
+  period: 'entry.578966706',
+  q3: 'entry.1068421844',
+  q4: 'entry.1093978586',
+  q5: 'entry.1000939606'
+};
+
+const EVENTS = [
+  {id:'A', title:'Proclamation of 1763', year:1763, img:'https://upload.wikimedia.org/wikipedia/commons/3/3a/Map_of_territorial_growth_1775.svg',
+   wiki:'https://en.wikipedia.org/wiki/Royal_Proclamation_of_1763',
+   simple:`The king blocked colonists from crossing the Appalachian Mountains. Settlers who had dreamed of new farms felt ignored and irritated, but most anger stayed at the level of grumbling.`,
+   core:`After the French and Indian War, Britain drew a boundary to reduce frontier conflict. Land investors and farmers exploded with frustration: "We fought for that land!" Many slipped across the line anyway, showing London that colonists would ignore orders when they clashed with local hopes.`,
+   adv:`The Crown wanted to avoid costly wars with Native nations, yet colonists read the proclamation as proof that British officials cared more about control than colonial sacrifices. Pamphlets dripped with resentment, governors quietly reported settlers defying the rule, and unrest simmered—still mostly quiet, but the sense of betrayal primed people for future clashes.`},
+  {id:'B', title:'Quartering Act', year:1765, img:'https://upload.wikimedia.org/wikipedia/commons/0/04/Soldats-britanniques-cantonnes-dans-une-maison-coloniale-americaine-annees-1770.png', wiki:'https://en.wikipedia.org/wiki/Quartering_Acts',
+   simple:`Colonists had to house British soldiers. Families resented feeding troops they never asked for, and suspicion toward the army pushed unrest upward.`,
+   core:`Parliament demanded quarters, candles, and food for soldiers. Town meetings complained that a standing army felt like a threat. People muttered "Why are they watching us?" and their irritation edged toward anger each time soldiers knocked on the door.`,
+   adv:`Officials argued the troops prevented frontier wars, but colonists saw uniforms as symbols of mistrust. Assemblies stalled funding bills; citizens dodged requests by claiming no space was available. The everyday annoyance hardened into a belief that Britain would use force to keep colonists in line, nudging unrest from muttered complaints toward open hostility.`},
+  {id:'C', title:'Stamp Act', year:1765, img:'https://upload.wikimedia.org/wikipedia/commons/d/df/Repeal_of_the_Stamp_Act.jpg', wiki:'https://en.wikipedia.org/wiki/Stamp_Act_1765',
+   simple:`Britain taxed paper goods. Colonists exploded with anger at paying for imperial stamps and rallied together to resist.`,
+   core:`Because the tax touched newspapers, legal forms, and even playing cards, the outrage was immediate. Sons of Liberty chapters formed, crowds bullied stamp distributors into resigning, and the cry "No taxation without representation!" echoed through docks and markets.`,
+   adv:`The direct, internal tax made colonists feel powerless and insulted. Merchants organized boycotts, printers published fiery essays, and mobs hanged officials in effigy. When the Stamp Act Congress petitioned the king, it was coordinated fury—not polite frustration. Colonial anger now throbbed in unison.`},
+  {id:'D', title:'Townshend Acts', year:1767, img:'https://upload.wikimedia.org/wikipedia/commons/0/0f/Townshend-Acts-broadside-1767.png', wiki:'https://en.wikipedia.org/wiki/Townshend_Acts',
+   simple:`Britain hid new taxes in imported goods. Colonists spotted the trick, revived boycotts, and unrest climbed.`,
+   core:`Customs officials gained power to search ships, merchants lost profits, and households paid more for basics. Non-importation agreements returned; women brewed "liberty tea," and shopkeepers who broke the boycott were shamed. Anger spread beyond city mobs into homes and marketplaces.`,
+   adv:`Townshend hoped quiet taxes would calm the colonies; instead people answered with hardened defiance. When officials seized John Hancock's ship Liberty, brawls erupted on Boston's docks. Newspapers insisted Britain aimed to bleed the colonies dry, and colonists began policing one another. Resentment shifted from policy debate to personal enforcement—friends confronting friends, a society sliding toward confrontation.`},
+  {id:'E', title:'Boston Massacre', year:1770, img:'https://upload.wikimedia.org/wikipedia/commons/b/bd/%22The_Boston_Massacre%22%2C_03-05-1770_-_NARA_-_513326.jpg', wiki:'https://en.wikipedia.org/wiki/Boston_Massacre',
+   simple:`A clash in Boston ended with soldiers firing into a crowd. Colonists were furious and called it a massacre.`,
+   core:`Years of tension snapped outside the customs house—insults, ice, and clubs surrounded the soldiers, who panicked and fired. Funerals drew thousands, and Paul Revere's engraving raced through the colonies, turning local grief into wide outrage.`,
+   adv:`John Adams defended the soldiers, but Samuel Adams seized the moment to paint Britain as cruel. Committees retold the story with emotional punch, insisting the empire would spill colonial blood to keep control. Moderates who had hoped for calm now felt anger in their gut: if soldiers could shoot unarmed neighbors, how safe was anyone? Unrest spiked dangerously.`},
+  {id:'F', title:'Boston Tea Party', year:1773, img:'https://upload.wikimedia.org/wikipedia/commons/5/52/Boston_Tea_Party_Currier_colored.jpg', wiki:'https://en.wikipedia.org/wiki/Boston_Tea_Party',
+   simple:`Colonists dumped an entire shipment of tea rather than pay the tax. The daring protest thrilled patriots and shocked loyalists.`,
+   core:`The Tea Act let the East India Company undersell colonial merchants while keeping the tax. When the governor refused to send the ships back, patriots calmly tossed 342 chests into Boston Harbor. Supporters cheered the bold strike; loyalists gasped that a mob now ruled the city.`,
+   adv:`The tea protest showed anger was now disciplined. Volunteers swept the decks afterward to prove they targeted tea, not private property. Britain saw a rebellious city; colonists felt pride—if Parliament wouldn't listen, action would speak. The emotional surge convinced many fence-sitters that British power could—and should—be challenged directly.`},
+  {id:'G', title:'Intolerable (Coercive) Acts', year:1774, img:'https://upload.wikimedia.org/wikipedia/commons/5/5f/Boston_Harbor_1774_closing.png', wiki:'https://en.wikipedia.org/wiki/Intolerable_Acts',
+   simple:`Britain punished Boston by closing the harbor and rewriting colonial rules. Colonists across America feared the same could happen to them.`,
+   core:`Parliament shut Boston Harbor, altered the Massachusetts charter, moved trials to Britain, and revived quartering. The message was clear: obey—or be crushed. Other colonies sent aid, furious that an entire town was being starved as an example.`,
+   adv:`The crackdown turned local anger into continent-wide solidarity. Newspapers described padlocked warehouses and hungry families. Colonies formed relief committees and warned that if Parliament could strangle Boston, none were safe. Sympathy hardened into determination—colonists promised to stand together, even if that meant defying Britain outright.`},
+  {id:'H', title:'First Continental Congress', year:1774, img:'https://upload.wikimedia.org/wikipedia/commons/8/85/1st-continental-congress-1.jpg', wiki:'https://en.wikipedia.org/wiki/First_Continental_Congress',
+   simple:`Delegates from twelve colonies met and spoke with one voice. Sharing their anger gave them confidence to push back harder.`,
+   core:`In Philadelphia they debated calmly but carried the sting of the Intolerable Acts. They agreed on non-importation, prepared local committees to enforce it, and promised to meet again if Britain refused. Their unity reassured colonists that they were not alone in their frustration.`,
+   adv:`The Congress converted emotion into strategy. Delegates argued, compromised, and left determined to pressure Britain economically. News of their plan energized towns—people formed militias, stockpiled powder, and enforced boycotts. The anger that once flared in isolated protests now had a coordinated plan; colonial patience was nearly gone.`},
+  {id:'I', title:'Lexington & Concord', year:1775, img:'https://upload.wikimedia.org/wikipedia/commons/1/10/Concord_1775_Battle_of_Concord.png', wiki:'https://en.wikipedia.org/wiki/Battles_of_Lexington_and_Concord',
+   simple:`British troops marched to seize colonial weapons. Angry militia met them, shots rang out, and the road to war began.`,
+   core:`When redcoats left Boston, riders warned the countryside. At Lexington, militia refused to step aside; gunfire followed. Colonists chased the soldiers back to Boston from Concord's bridge, shouting victory. The emotional jolt was huge—anger turned into armed defense overnight.`,
+   adv:`The "shot heard 'round the world" made clear that colonial anger had reached its limit. Towns emptied to defend the stores they had drilled to protect. British casualties proved the empire no longer controlled the countryside. Unrest was now open rebellion; colonists believed their rights—and their lives—were at stake, so they answered with muskets.`}
+];
+
+const STEPS = [
+  {id:'splash', label:'Overview', anchor:'section-overview'},
+  {id:'cards', label:'Placards', anchor:'section-placards'},
+  {id:'summary', label:'Finalize Budget', anchor:'section-summary'},
+  {id:'questions', label:'Reflection', anchor:'section-questions'}
+];
+
+// ----- State helpers -----
+const emptyRow = () => ({ rating: 1, rationale: '', level: 'core' });
+function defaultState(){
+  const rows = {}; EVENTS.forEach(e => rows[e.id] = emptyRow());
+  return {
+    phase: 'intro', // intro -> splash -> cards -> summary -> questions
+    current: 0,
+    rows,
+    firstPicks: null,
+    answers: { name:'', period:'', q3:'', q4:'', q5:'' },
+    theme: 'dark',
+    font: 'default',
+    summaryOpen: {},
+    introStep: -1,
+    introFeedback: null,
+    introAnswered: false
+  };
+}
+function load(){
+  try{ const raw = localStorage.getItem(STORAGE_KEY); if(!raw) return defaultState();
+    const st = JSON.parse(raw); // basic shape guard
+    const def = defaultState();
+    st.rows ||= {}; for(const e of EVENTS){ st.rows[e.id] = Object.assign(emptyRow(), st.rows[e.id]||{}); }
+    st.phase = ['intro','splash','cards','summary','questions'].includes(st.phase)?st.phase:'intro';
+    st.current = Number.isInteger(st.current)?st.current:0;
+    st.answers = Object.assign(def.answers, st.answers||{});
+    st.theme = (st.theme==='light')?'light':'dark';
+    st.font = (st.font==='dyslexic')?'dyslexic':'default';
+    st.summaryOpen = st.summaryOpen && typeof st.summaryOpen==='object' ? st.summaryOpen : {};
+    EVENTS.forEach(ev=>{ st.summaryOpen[ev.id] = Boolean(st.summaryOpen[ev.id]); });
+    st.introStep = Number.isInteger(st.introStep)?st.introStep:-1;
+    st.introFeedback = typeof st.introFeedback==='string'?st.introFeedback:null;
+    st.introAnswered = Boolean(st.introAnswered);
+    return st;
+  }catch{ return defaultState(); }
+}
+function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+// Add debouncing for save operations
+let saveTimeout;
+function debouncedSave() {
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(() => save(), 300);
+}
+
+let state = load();
+let pendingSummaryFocus = null;
+let modalState = { open:false, view:null };
+const INTRO_SLIDES = [
+  {
+    tag:'Calm',
+    subtitle:'Normal life feels predictable and safe.',
+    question:'Do people enjoy everyday life when things feel fair?',
+    caption:'This is a calm period—people go about their routines because rules feel fair.',
+    answers:[
+      {label:'Yes', feedback:'Exactly. When expectations feel fair, most people settle into calm routines.', variant:'primary'},
+      {label:'No', feedback:'Even if you said no, most people value calm when life feels predictable and fair.', variant:'ghost'}
+    ]
+  },
+  {
+    tag:'Unrest',
+    subtitle:'Crowds gather when rules feel unfair.',
+    question:'When people believe something is unfair, what are they more likely to do?',
+    caption:'This is unrest—voices rise, crowds gather, and calm breaks as people push for change.',
+    answers:[
+      {label:'Speak up and organize', feedback:'Exactly. Unfair policies push people to organize, speak up, and sometimes disrupt.', variant:'primary'},
+      {label:'Stay quiet and accept it', feedback:'Unrest builds precisely when people reach a point where they refuse to stay quiet.', variant:'ghost'}
+    ]
+  },
+  {
+    tag:'Today',
+    subtitle:'Nine events, one outrage budget.',
+    question:'Today you will track what caused unrest in Colonial America.',
+    caption:'Read nine events, rate the pressure they create, and balance a 36-point outrage budget before you reflect.',
+    answers:[]
+  }
+];
+
+const RATIONALE_STARTERS = [
+  'I chose this rating because ...',
+  'This event pushed unrest higher when ...',
+  'Compared to other events, this felt ...',
+  'Colonists would have reacted by ... because ...'
+];
+
+const REFLECTION_STARTERS = {
+  q3: [
+    'At first I rated events this way, but after learning about the 36-point budget I ...',
+    'One event lost points because ...',
+    'I moved points toward ... since ...'
+  ],
+  q4: [
+    'The single most significant event was ... because ...',
+    'This event pushed anger highest when ...',
+    'Colonists reacted strongly because ...'
+  ],
+  q5: [
+    'If the events stretched over 24 years, I think ... because ...',
+    'A slower pace would change unrest by ...',
+    'Even with more time, colonists would still ... because ...'
+  ]
+};
+
+const EVENT_ART = {
+  A: makeEventArt('Proclamation of 1763','Drawing a boundary line','#1e3a8a','#2563eb','⛰️'),
+  B: makeEventArt('Quartering Act','Soldiers move in','#7c2d12','#f97316','🏠'),
+  C: makeEventArt('Stamp Act','Taxing everyday paper','#0f766e','#2dd4bf','📜'),
+  D: makeEventArt('Townshend Acts','Hidden taxes on goods','#7c3aed','#6366f1','🛒'),
+  E: makeEventArt('Boston Massacre','Shots fired in the street','#b91c1c','#ef4444','⚠️'),
+  F: makeEventArt('Boston Tea Party','Tea dumped in protest','#0f172a','#2563eb','☕'),
+  G: makeEventArt('Intolerable Acts','Punishing Boston','#78350f','#f59e0b','🚫'),
+  H: makeEventArt('1st Continental Congress','Colonies unite','#134e4a','#14b8a6','🤝'),
+  I: makeEventArt('Lexington & Concord','First shots fired','#7c3aed','#f97316','🎖️')
+};
+
+// ----- Utilities -----
+const $ = sel => document.querySelector(sel);
+function toast(msg, ms=1600){ const t=$('#toast'); t.textContent=msg; t.classList.remove('hidden'); setTimeout(()=>t.classList.add('hidden'), ms); }
+function setPhase(p){
+  if(!STEPS.some(step => step.id===p)) return;
+  const currentIdx = STEPS.findIndex(step => step.id===state.phase);
+  const targetIdx = STEPS.findIndex(step => step.id===p);
+  if(targetIdx < currentIdx) return;
+  state.phase = p;
+  save();
+  render();
+}
+function clamp1to8(n){ n=+n; if(!Number.isFinite(n)) return 1; return Math.min(8, Math.max(1, Math.round(n))); }
+function validateRow(r){ const okNum = r && Number.isFinite(+r.rating) && r.rating>=1 && r.rating<=8; const txt = (r.rationale||'').trim(); const words = txt.split(/\s+/).filter(Boolean); const sent = /[.!?]$/.test(txt) && words.length>=6; return okNum && sent; }
+function buildFormURL(){
+  const u = new URL(FORM_BASE);
+  u.searchParams.set('usp','pp_url');
+  u.searchParams.set(ENTRY.name, state.answers.name||'');
+  u.searchParams.set(ENTRY.period, state.answers.period||'');
+  u.searchParams.set(ENTRY.q3, state.answers.q3||'');
+  u.searchParams.set(ENTRY.q4, state.answers.q4||'');
+  u.searchParams.set(ENTRY.q5, state.answers.q5||'');
+  return u.toString();
+}
+function sumRatings(){ return EVENTS.reduce((s,e)=> s + (+state.rows[e.id].rating||0), 0); }
+
+// ----- Renderers -----
+function render(){
+  if(state.phase!=='intro' && state.phase!=='splash'){
+    const nameFilled = (state.answers.name||'').trim().length>0;
+    const periodFilled = (state.answers.period||'').trim().length>0;
+    if(!nameFilled || !periodFilled){
+      state.phase = 'splash';
+      save();
+    }
+  }
+  document.documentElement.style.background = state.theme==='light' ? '#f8fafc' : '#0f172a';
+  document.body.style.color = state.theme==='light' ? '#0f172a' : '#e2e8f0';
+  document.body.classList.toggle('light', state.theme==='light');
+  document.body.classList.toggle('font-dyslexic', state.font==='dyslexic');
+  const fontToggle = $('#fontToggle');
+  if(fontToggle) fontToggle.checked = state.font==='dyslexic';
+  const translateSel = $('#translateSel');
+  const translateGo = $('#translateGo');
+  if(translateSel && translateGo){
+    if(translateSel.value){ translateGo.removeAttribute('disabled'); }
+    else translateGo.setAttribute('disabled','');
+  }
+  const themeToggle = $('#themeToggle');
+  if(themeToggle){
+    themeToggle.dataset.theme = state.theme;
+    themeToggle.setAttribute('aria-pressed', state.theme==='light' ? 'true' : 'false');
+  }
+
+  const overviewBtn = $('#overviewBtn');
+  if(overviewBtn){
+    if(state.phase==='splash'){ overviewBtn.classList.add('hidden'); }
+    else { overviewBtn.classList.remove('hidden'); }
+  }
+
+  const root = $('#app');
+  root.innerHTML = '';
+  if(state.phase==='intro'){
+    if(state.introStep < 0){
+      root.appendChild(renderIntroHero());
+    }else{
+      root.appendChild(renderIntroSlides());
+    }
+    updateStepChips();
+    renderIntroModal();
+    return;
+  }
+  const sections = [
+    renderSplashSection(),
+    renderPlacardsSection(),
+    renderSummarySection(),
+    renderQuestionsSection()
+  ];
+  sections.filter(Boolean).forEach(sec => root.appendChild(sec));
+  updateStepChips();
+  if(pendingSummaryFocus){
+    const focusId = pendingSummaryFocus;
+    pendingSummaryFocus = null;
+    requestAnimationFrame(()=>{
+      const target = document.getElementById(`summary-${focusId}`);
+      if(target) target.scrollIntoView({behavior:'smooth', block:'center'});
+    });
+  }
+  renderIntroModal();
+}
+
+function renderSplashSection(){
+  const section = h('section',{class:'flow-section',id:'section-overview'});
+  const card = h('div',{class:'step-card'});
+  const intro = h('div',{class:'step-intro'},
+    span('Activity 0 • Get Ready','activity-badge'),
+    h('h2',{},'Preview the Mission'),
+    p('Before you start rating events, get familiar with the vocabulary and how the activity unfolds.', 'section-lead'),
+    h('ul',{class:'info-list'},
+      h('li',{}, strong('Unrest'), ' = rising frustration that can push people toward resistance. Think of it like building pressure in a bottle.'),
+      h('li',{}, strong('Outrage points'), ' = your limited budget of 36 points that you will distribute later based on how explosive each event feels.'),
+      h('li',{}, strong('Placards'), ' = concise overviews of the key events. Each gives you multiple reading levels so you can tune the explanation to your needs.')
+    ),
+    p('As you progress, jot a complete-sentence rationale for every rating. Only after the ninth placard will the budget reveal unlock, letting you re-balance all of your scores in one place.', 'section-lead')
+  );
+  card.append(intro);
+  const container = h('div',{class:'splash-wrapper'});
+  let beginBtn;
+  let scrollBtn;
+
+  const toggleBegin = ()=>{
+    const name = (state.answers.name||'').trim();
+    const period = (state.answers.period||'').trim();
+    const ready = Boolean(name && period);
+    if(beginBtn){
+      if(ready){ beginBtn.removeAttribute('disabled'); }
+      else { beginBtn.setAttribute('disabled',''); }
+    }
+    if(scrollBtn){
+      if(state.phase==='splash' && !ready){ scrollBtn.setAttribute('disabled',''); }
+      else scrollBtn.removeAttribute('disabled');
+    }
+    return ready;
+  };
+
+  const nameInput = inp('name', state.answers.name, v=>{ state.answers.name=v; save(); toggleBegin(); });
+  nameInput.setAttribute('placeholder','Your full name');
+  nameInput.setAttribute('autocomplete','name');
+
+  const periodInput = inp('period', state.answers.period, v=>{ state.answers.period=v; save(); toggleBegin(); });
+  periodInput.setAttribute('placeholder','e.g. Period 4');
+  periodInput.setAttribute('autocomplete','section');
+
+  beginBtn = btn('Begin →', ()=>{
+    if(!toggleBegin()){
+      toast('Add your name and period to begin.');
+      return;
+    }
+    setPhase('cards');
+    scrollToSection('section-placards');
+  });
+  beginBtn.classList.add('btn-large');
+  toggleBegin();
+
+  const hero = h('div',{class:'splash-hero'},
+    h('div',{class:'card splash-card'},
+      h('div',{class:'splash-eyebrow'},'Interactive mini-unit'),
+      h('h1',{class:'splash-title'},'Understanding Unrest'),
+      p('Track how pressure rose in the colonies and what finally burst into revolution.', 'splash-subhead'),
+      h('div',{class:'callout-grid'},
+        h('button',{class:'callout callout-card',type:'button',onclick:()=>showIntroModal('overview')},
+          span('01','callout-badge'),
+          h('div',{},
+            h('div',{class:'callout-title'},'What is unrest?'),
+            p('Tap to review the key ideas in 60 seconds.', 'callout-text')
+          )
+        ),
+        h('button',{class:'callout callout-card',type:'button',onclick:()=>showIntroModal('flow')},
+          span('02','callout-badge'),
+          h('div',{},
+            h('div',{class:'callout-title'},'How this works'),
+            p('See the three big moves before you start.', 'callout-text')
+          )
+        ),
+        h('button',{class:'callout callout-card',type:'button',onclick:()=>showIntroModal('tips')},
+          span('03','callout-badge'),
+          h('div',{},
+            h('div',{class:'callout-title'},'Quick tips'),
+            p('Get advice on choosing levels and writing rationales.', 'callout-text')
+          )
+        )
+      )
+    ),
+    h('aside',{class:'card splash-card secondary'},
+      h('div',{class:'steps-header'},'Ready to begin?'),
+      h('p',{},'After this screen you will dive straight into the timeline. Keep your ratings honest and your sentences complete—your adjustments come later.'),
+      h('p',{},'When you feel prepared, use the button below to enter your first placard.'),
+      h('div',{class:'row',style:'justify-content:center'}, btnGhost('Jump to placards', ()=>{ setPhase('cards'); scrollToSection('section-placards'); }, false))
+    )
+  );
+
+  const formCard = h('div',{class:'card splash-form'},
+    h('div',{}, h('h3',{},'Before you begin')),
+    h('div',{class:'form-grid'},
+      h('label',{},'Your name', nameInput),
+      h('label',{},'Period', periodInput)
+    ),
+    h('div',{class:'splash-btn-row'},
+      span('Both fields are required to unlock the lesson.', 'splash-note'),
+      beginBtn
+    )
+  );
+
+  container.append(hero, formCard);
+  scrollBtn = btnGhost('Scroll to placards ↓', ()=>scrollToSection('section-placards'), state.phase==='splash');
+  toggleBegin();
+  card.append(
+    container,
+    h('div',{class:'row',style:'justify-content:flex-end'}, scrollBtn)
+  );
+  section.append(card);
+  return section;
+}
+
+function elTimeline(){
+  const nav = h('nav',{class:'timeline',ariaLabel:'Placard timeline'}, h('ul',{}));
+  EVENTS.forEach((e,i)=>{
+    const button = h('button',{class: (i===state.current)?'active':'', onclick:()=>{
+      state.current=i;
+      save();
+      render();
+      scrollToSection('section-placards');
+    }});
+    button.append(span(String(e.year),'timeline-year'), span(e.title,'timeline-title'));
+    nav.querySelector('ul').appendChild(h('li',{}, button));
+  });
+  return nav;
+}
+
+function renderPlacardsSection(){
+  const locked = state.phase==='splash';
+  const section = h('section',{class:'flow-section'+(locked?' locked':''),id:'section-placards'});
+  const card = h('div',{class:'step-card'});
+  const intro = h('div',{class:'step-intro'},
+    span('Activity 1 • Explore Placards','activity-badge'),
+    h('h2',{},'Rate the Pressure'),
+    p('Open each placard, pick the reading tier that makes sense for you, and decide how much unrest that moment added on a 1–8 scale.', 'section-lead'),
+    p('Use the timeline buttons to jump around. When the Unrest meter and rationale are complete, save and move forward.', 'section-lead')
+  );
+  card.append(intro);
+  if(locked){
+    card.append(h('div',{class:'lock-overlay',role:'status','aria-live':'polite'},'Finish the overview step to unlock the placards.'));
+    section.append(card);
+    return section;
+  }
+
+  const e = EVENTS[state.current];
+  const row = state.rows[e.id];
+
+  // progress
+  const prog = h('div',{},
+    h('div',{class:'progress',style:'margin:8px 0 14px'}, h('div',{style:`width:${Math.round(((state.current+1)/EVENTS.length)*100)}%`})),
+    h('div',{class:'sub',style:'font-size:13px'}, `Placard ${state.current+1} of ${EVENTS.length}`));
+
+  // placard content
+  const eventCard = h('article',{class:'card event-card'});
+  eventCard.append(
+    h('div',{class:'card-h'},
+      h('div',{},
+        h('strong',{}, e.title),
+        span(String(e.year), 'sub')
+      )
+    ),
+    h('div',{class:'event-content'},
+      h('div',{class:'event-layout'},
+        h('div',{class:'event-body'},
+          (()=>{
+            const tabs = h('div',{class:'tabs level-tabs'});
+            [['Explain','simple'],['Default','core'],['Tell me more','adv']].forEach(([label,key])=>{
+              const b = h('button',{class:'tab '+(row.level===key?'active':''), onclick:()=>{row.level=key; save(); render();}}, label);
+              tabs.appendChild(b);
+            });
+            return tabs;
+          })(),
+          (()=>{
+            const reading = h('div',{class:'event-reading'});
+            const parts = textFor(e,row.level).split(/\n\s*\n/).filter(Boolean);
+            if(parts.length===0) parts.push(textFor(e,row.level));
+            parts.forEach(par => reading.appendChild(p(par, 'event-text')));
+            return reading;
+          })(),
+          h('div',{class:'event-link'}, a(e.wiki,'Read more on Wikipedia →','link')),
+          (()=>{
+            const valueLabel = span(`${row.rating} / 8`, 'pill');
+            const meter = unrestMeter(row.rating, (val)=>{
+              const clamped = clamp1to8(val);
+              if(row.rating === clamped) return;
+              row.rating = clamped;
+              valueLabel.textContent = `${clamped} / 8`;
+              save();
+              if(state.phase!=='cards'){
+                render();
+              }
+            });
+            return h('div',{class:'event-slider'},
+              h('label',{}, 'Unrest‑o‑meter', valueLabel),
+              meter,
+              h('div',{class:'meter-labels'}, span('Calm','sub'), span('Rising','sub'), span('Boiling','sub'), span('Explosive','sub'))
+            );
+          })(),
+          h('div',{class:'event-rationale'},
+            h('label',{}, 'Why did you choose that rating?'),
+            (()=>{
+              const input = textarea(row.rationale, v=>{ row.rationale=v; });
+              const starters = createStarterChips(text=>{
+                input.value = text;
+                row.rationale = text;
+                input.focus();
+              });
+              return [starters, input, span('Use a starter above or write your own complete sentence ending with punctuation.','note')];
+            })()
+          ),
+          h('div',{class:'event-controls'},
+            btnGhost('Previous placard', ()=>{ state.current=Math.max(0,state.current-1); save(); render(); }, state.current===0),
+            btn(state.current < EVENTS.length-1 ? 'Save & Continue →' : 'Reveal the Budget →', ()=>{
+              if(!validateRow(row)) { toast('Add a 1–8 rating and one complete sentence.'); return; }
+              if(state.current < EVENTS.length-1){
+                state.current++;
+                save();
+                render();
+                toast('Saved! Next placard unlocked.');
+              } else {
+                const snap = {}; EVENTS.forEach(ev => snap[ev.id] = clamp1to8(state.rows[ev.id].rating||1));
+                state.firstPicks = snap;
+                setPhase('summary');
+                scrollToSection('section-summary');
+                toast('Great work! Time to finalize your outrage budget.');
+              }
+            })
+          )
+        ),
+        elEventFigure(e)
+      )
+    )
+  );
+  card.append(
+    elTimeline(),
+    prog,
+    eventCard
+  );
+  section.append(card);
+  return section;
+}
+
+function renderSummarySection(){
+  const currentIdx = STEPS.findIndex(step => step.id===state.phase);
+  const summaryIdx = STEPS.findIndex(step => step.id==='summary');
+  const locked = currentIdx < summaryIdx;
+  const section = h('section',{class:'flow-section'+(locked?' locked':''),id:'section-summary'});
+  const card = h('div',{class:'step-card'});
+  const intro = h('div',{class:'step-intro'},
+    span('Activity 2 • Finalize the Budget','activity-badge'),
+    h('h2',{},'Balance Your 36 Points'),
+    p('Surprise! You only get 36 outrage points. Adjust the ratings below until the total fits the challenge.', 'section-lead'),
+    p('Click any event to revisit the description, switch reading levels, or double-check your rationale before moving on.', 'section-lead')
+  );
+  card.append(intro);
+  if(locked){
+    card.append(h('div',{class:'lock-overlay',role:'status','aria-live':'polite'},'Rate every placard before you finalize the outrage budget.'));
+    section.append(card);
+    return section;
+  }
+
+  const total = sumRatings();
+  const remaining = 36 - total;
+  const summaryList = h('div',{class:'summary-list'});
+
+  EVENTS.forEach((event, idx)=>{
+    const row = state.rows[event.id];
+    const open = Boolean(state.summaryOpen[event.id]);
+    const initial = state.firstPicks?.[event.id];
+    const bodyId = `summary-body-${event.id}`;
+    const item = h('article',{class:'summary-item', id:`summary-${event.id}`} );
+
+    const ratingPill = span(`${row.rating} / 8`,'pill');
+    const toggleBtn = h('button',{
+      class:'summary-toggle',
+      onclick:()=>{
+        state.summaryOpen[event.id] = !open;
+        save();
+        render();
+      }
+    }, open?'Hide details':'Show details');
+    toggleBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    toggleBtn.setAttribute('aria-controls', bodyId);
+
+    const header = h('div',{class:'summary-header'},
+      h('div',{class:'summary-title'},
+        h('strong',{}, `${idx+1}. ${event.title}`),
+        span(`Year: ${event.year}`,'sub')
+      ),
+      h('div',{class:'summary-actions'},
+        h('div',{class:'summary-rating'}, span('Rating','sub'), ratingPill),
+        toggleBtn
+      )
+    );
+
+  const meter = unrestMeter(row.rating, val=>{
+      const clamped = clamp1to8(val);
+      if(row.rating === clamped) return;
+      row.rating = clamped;
+      save();
+      pendingSummaryFocus = event.id;
+      render();
+    });
+
+    const levelButtons = h('div',{class:'summary-levels'});
+    [['Explain','simple'],['Default','core'],['Tell me more','adv']].forEach(([label,key])=>{
+      const btnLevel = h('button',{class:row.level===key?'active':''}, label);
+      btnLevel.addEventListener('click', ()=>{
+        if(row.level===key) return;
+        row.level=key;
+        save();
+        render();
+      });
+      levelButtons.appendChild(btnLevel);
+    });
+
+    const body = open ? (()=>{
+      const container = h('div',{class:'summary-body'});
+      container.id = bodyId;
+      const paragraphs = textFor(event,row.level).split(/\n\s*\n/).filter(Boolean).map(par=>p(par,'event-text'));
+      const rationaleInput = textarea(row.rationale, val=>{ row.rationale = val; });
+      const starterChips = createStarterChips(text=>{
+        rationaleInput.value = text;
+        row.rationale = text;
+        rationaleInput.focus();
+      });
+      container.append(
+        h('div',{}, span('Reading level','sub'), levelButtons),
+        ...paragraphs,
+        h('div',{class:'event-link'}, a(event.wiki,'Read on Wikipedia →','link')),
+        h('div',{},
+          h('label',{},'Why did you choose that rating?'),
+          starterChips,
+          rationaleInput
+        ),
+        span('Use a starter above or revise your own sentence so it ends with punctuation.', 'note')
+      );
+      return container;
+    })() : null;
+
+    const meta = h('div',{class:'summary-meter'},
+      h('label',{}, 'Adjust rating', span('Target total 36','sub')),
+      meter
+    );
+
+    item.append(header, meta);
+    if(typeof initial === 'number' && initial !== row.rating){
+      item.append(p(`First pick was ${initial}. You have adjusted this event by ${row.rating-initial >=0 ? '+' : ''}${row.rating-initial}.`,'note'));
+    }
+    if(body) item.append(body);
+    summaryList.appendChild(item);
+  });
+
+  const totalStatus = remaining===0 ? 'Balanced! You hit exactly 36 points.' : remaining>0 ? `${remaining} points remaining to assign.` : `${Math.abs(remaining)} points over the limit.`;
+
+  card.append(
+    summaryList,
+    h('div',{class:'summary-footer'},
+      h('div',{class:'summary-status'}, span('Current total: ','sub'), strong(String(total)), span(' / 36','sub'), span(` • ${totalStatus}`,'sub')),
+      h('div',{class:'summary-actions'},
+        btn('Continue to reflections →', ()=>{ setPhase('questions'); scrollToSection('section-questions'); }, remaining!==0)
+      )
+    ),
+    h('section',{class:'card summary-chart'},
+      h('div',{class:'card-h'}, h('h3',{},'Your outrage points so far')),
+      h('div',{class:'card-b'}, elChart(state.rows))
+    )
+  );
+
+  section.append(card);
+  return section;
+}
+
+function renderQuestionsSection(){
+  const currentIdx = STEPS.findIndex(step => step.id===state.phase);
+  const questionsIdx = STEPS.findIndex(step => step.id==='questions');
+  const locked = currentIdx < questionsIdx;
+  const section = h('section',{class:'flow-section'+(locked?' locked':''),id:'section-questions'});
+  const card = h('div',{class:'step-card'});
+  const intro = h('div',{class:'step-intro'},
+    span('Activity 3 • Reflect & Share','activity-badge'),
+    h('h2',{},'Write Your Takeaways'),
+    p('Capture how your thinking shifted, identify the flashpoint event, and consider the pace of change before you submit the form.', 'section-lead')
+  );
+  card.append(intro);
+  if(locked){
+    card.append(h('div',{class:'lock-overlay',role:'status','aria-live':'polite'},'Finish balancing your 36 points to unlock the reflection.'));
+    section.append(card);
+    return section;
+  }
+
+  const filled = state.answers.name && state.answers.period && state.answers.q3 && state.answers.q4 && state.answers.q5;
+  const reflectionCard = h('section',{class:'card'});
+  reflectionCard.append(
+    h('div',{class:'card-h'}, h('h3',{},'Reflection & Submit')), 
+    h('div',{class:'card-b grid'},
+      h('div',{class:'grid',style:'grid-template-columns:1fr 1fr;gap:12px'},
+        h('div',{}, h('label',{},'1) Name'), inp('answers.name', state.answers.name, v=>{ state.answers.name=v; save(); })),
+        h('div',{}, h('label',{},'2) Period'), inp('answers.period', state.answers.period, v=>{ state.answers.period=v; save(); }))
+      ),
+      (()=>{
+        const input = textarea(state.answers.q3, v=>{ state.answers.q3=v; });
+        const starters = createStarterChips(text=>{
+          input.value = text;
+          state.answers.q3 = text;
+          input.focus();
+        }, REFLECTION_STARTERS.q3);
+        return h('div',{},
+          h('label',{},'3) How did you adjust after learning you only had 36 total points? Which lost or gained points?'),
+          starters,
+          input
+        );
+      })(),
+      (()=>{
+        const input = textarea(state.answers.q4, v=>{ state.answers.q4=v; });
+        const starters = createStarterChips(text=>{
+          input.value = text;
+          state.answers.q4 = text;
+          input.focus();
+        }, REFLECTION_STARTERS.q4);
+        return h('div',{},
+          h('label',{},'4) Which single event was most significant, and why?'),
+          starters,
+          input
+        );
+      })(),
+      (()=>{
+        const input = textarea(state.answers.q5, v=>{ state.answers.q5=v; });
+        const starters = createStarterChips(text=>{
+          input.value = text;
+          state.answers.q5 = text;
+          input.focus();
+        }, REFLECTION_STARTERS.q5);
+        return h('div',{},
+          h('label',{},'5) Would these events be as impactful if they happened over 24 years instead of 12? Why/why not?'),
+          starters,
+          input
+        );
+      })(),
+      h('div',{},
+        a(buildFormURL(), filled?'Open Pre‑filled Google Form →':'Complete all fields above first', 'btn'),
+        !filled ? p('Fill all fields to enable the Form link.', 'note') : p('Your answers will be pre‑filled. Review and submit in the Form tab.', 'note')
+      )
+    )
+  );
+  card.append(reflectionCard);
+  section.append(card);
+  return section;
+}
+
+function scrollToSection(id){
+  const el = document.getElementById(id);
+  if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function updateStepChips(){
+  const wrap = $('#stepChips');
+  if(!wrap) return;
+  wrap.innerHTML = '';
+  const phase = state.phase==='intro' ? 'splash' : state.phase;
+  const currentIdx = STEPS.findIndex(step => step.id===phase);
+  STEPS.forEach((step, idx)=>{
+    const chip = h('button',{class:'chip',type:'button'});
+    if(idx < currentIdx) chip.classList.add('done');
+    else if(idx === currentIdx) chip.classList.add('active');
+    chip.setAttribute('aria-label', `Go to ${step.label}${idx===currentIdx ? ' (current step)' : ''}`);
+    if(idx===currentIdx) chip.setAttribute('aria-current','step');
+    const iconText = idx < currentIdx ? '✓' : String(idx+1);
+    chip.append(span(iconText,'chip-icon'), span(step.label));
+    chip.addEventListener('click', ()=>scrollToSection(step.anchor));
+    wrap.appendChild(chip);
+  });
+}
+
+// ----- Tiny DOM helpers -----
+function h(tag, attrs={}, ...kids){ const el = document.createElement(tag); for(const k in attrs){ if(k==='class') el.className=attrs[k]; else if(k==='style') el.setAttribute('style', attrs[k]); else if(k==='onclick') el.addEventListener('click', attrs[k]); else if(k==='ariaLabel') el.setAttribute('aria-label', attrs[k]); else el[k]=attrs[k]; } kids.flat().filter(Boolean).forEach(k=> el.append(typeof k==='string'?document.createTextNode(k):k)); return el; }
+const p = (t, cls='help') => h('p', {class:cls}, t);
+const span = (t, cls='') => h('span', {class:cls}, t);
+const strong = t => h('strong',{},t);
+const a = (href, t, cls='link') => { const el=h('a',{href,target:'_blank',rel:'noreferrer',class:cls},t); return el; };
+const btn = (t, fn, disabled=false) => { const b=h('button',{class:'btn',onclick:fn},t); if(disabled) b.setAttribute('disabled',''); return b; };
+const btnGhost = (t, fn, disabled=false) => { const b=h('button',{class:'btn-ghost',onclick:fn},t); if(disabled) b.setAttribute('disabled',''); return b; };
+const inp = (name, val, on) => { const i = h('input',{class:'field',value:val}); i.addEventListener('input', e=>on(e.target.value)); return i; };
+const textarea = (val, on)=>{ 
+  const ta = h('textarea',{class:'field',rows:4}); 
+  ta.value = val||''; 
+  ta.addEventListener('input', e => {
+    on(e.target.value);
+    debouncedSave();
+  });
+  return ta; 
+};
+function showIntroModal(view){ modalState = { open:true, view }; renderIntroModal(); }
+function hideIntroModal(){ modalState = { open:false, view:null }; renderIntroModal(); }
+function renderIntroModal(){
+  let modal = document.getElementById('introModal');
+  if(!modal){
+    modal = document.createElement('div');
+    modal.id = 'introModal';
+    modal.className = 'modal hidden';
+    document.body.appendChild(modal);
+  }
+  modal.classList.toggle('hidden', !modalState.open);
+  if(!modalState.open){
+    modal.innerHTML = '';
+    return;
+  }
+  const closeBtn = h('button',{class:'btn-ghost',onclick:hideIntroModal},'Close');
+  const wrap = h('div',{class:'modal-card'},
+    h('div',{class:'modal-header'},
+      h('h3',{}, modalState.view==='overview'?'Key Vocabulary': modalState.view==='flow' ? 'How this activity flows' : 'Tips for great answers'),
+      closeBtn
+    ),
+    h('div',{class:'modal-body'}, ...modalContentFor(modalState.view))
+  );
+  modal.innerHTML = '';
+  modal.appendChild(wrap);
+}
+function textFor(e, level){ return level==='simple'?e.simple: level==='adv'?e.adv : e.core; }
+
+function modalContentFor(view){
+  if(view==='overview'){
+    return [
+      h('p',{},'Keep these terms in mind as you read:'),
+      h('ul',{class:'info-list'},
+        h('li',{}, strong('Unrest'), ' = rising pressure from unfair actions.'),
+        h('li',{}, strong('Outrage points'), ' = the 36 points you will budget later based on your ratings.'),
+        h('li',{}, strong('Placards'), ' = the timeline cards; choose the reading level that helps you understand each event.')
+      )
+    ];
+  }
+  if(view==='flow'){
+    return [
+      h('ol',{class:'info-list'},
+        h('li',{}, 'Read a placard, select a level, and set the Unrest meter.'),
+        h('li',{}, 'Write a complete-sentence rationale that ends with punctuation.'),
+        h('li',{}, 'After all nine, you will rebalance everything on one summary screen (no spoilers until then!).')
+      )
+    ];
+  }
+  return [
+    h('ul',{class:'info-list'},
+      h('li',{}, 'Aim for 6+ words and end with a period, ?, or !'),
+      h('li',{}, 'Use cause-and-effect language (because, therefore, so).'),
+      h('li',{}, 'If you change a rating later, update the rationale to match.')
+    )
+  ];
+}
+
+function createStarterChips(onSelect, list=RATIONALE_STARTERS){
+  return h('div',{class:'starter-grid'}, list.map(text=>{
+    const chip = h('button',{class:'starter-pill',type:'button'}, text);
+    chip.addEventListener('click',()=>{
+      onSelect(text);
+      debouncedSave();
+    });
+    return chip;
+  }));
+}
+
+function resetExperience(){
+  if(!confirm('Reset all progress and start over?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  state = defaultState();
+  save();
+  render();
+}
+
+function placeholderImage(event){
+  const palettes = [
+    ['#1e3a8a','#1d4ed8'],
+    ['#0f172a','#334155'],
+    ['#7c2d12','#f97316'],
+    ['#0f766e','#2dd4bf'],
+    ['#831843','#db2777'],
+    ['#78350f','#f59e0b']
+  ];
+  const colors = palettes[EVENTS.indexOf(event)%palettes.length];
+  const safe = (s)=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const words = safe(event.title).split(' ');
+  const lines=[];
+  let current='';
+  words.forEach(word=>{
+    if((current + word).length > 16){
+      if(current.trim()) lines.push(current.trim());
+      current = word + ' ';
+    }else{
+      current += word + ' ';
+    }
+  });
+  if(current.trim()) lines.push(current.trim());
+  if(lines.length===0) lines.push(safe(event.title));
+  const svgLines = lines.slice(0,3).map((txt,i)=>`<text x="32" y="${150 + i*48}" fill="#f1f5f9" font-size="40" font-weight="600">${txt.trim()}</text>`).join('');
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'>
+    <defs><linearGradient id='grad' x1='0' y1='0' x2='1' y2='1'><stop offset='0%' stop-color='${colors[0]}'/><stop offset='100%' stop-color='${colors[1]}'/></linearGradient></defs>
+    <rect width='600' height='400' fill='url(#grad)'/>
+    <text x='32' y='80' fill='#bae6fd' font-size='36' font-weight='500'>${event.year}</text>
+    ${svgLines}
+  </svg>`;
+  return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+}
+
+function introImage(title, subtitle, index){
+  const palettes = [
+    ['#1d4ed8','#0ea5e9'],
+    ['#0f766e','#14b8a6'],
+    ['#7c3aed','#6366f1'],
+    ['#f59e0b','#f97316']
+  ];
+  const colors = palettes[index % palettes.length];
+  const safe = s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800'>
+    <defs>
+      <linearGradient id='introGrad' x1='0' y1='0' x2='1' y2='1'>
+        <stop offset='0%' stop-color='${colors[0]}' />
+        <stop offset='100%' stop-color='${colors[1]}' />
+      </linearGradient>
+    </defs>
+    <rect width='1200' height='800' fill='url(#introGrad)' />
+    <text x='70' y='220' fill='#f8fafc' font-size='120' font-weight='700'>${safe(title)}</text>
+    <text x='70' y='420' fill='#e0f2fe' font-size='64' font-weight='500'>${safe(subtitle)}</text>
+  </svg>`;
+  return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+}
+
+function makeEventArt(title, subtitle, color1, color2, glyph){
+  const safe = s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 420'>
+    <defs>
+      <linearGradient id='artGrad' x1='0' y1='0' x2='1' y2='1'>
+        <stop offset='0%' stop-color='${color1}' />
+        <stop offset='100%' stop-color='${color2}' />
+      </linearGradient>
+    </defs>
+    <rect width='600' height='420' rx='26' fill='url(#artGrad)'/>
+    <text x='40' y='120' fill='#f8fafc' font-size='90' font-weight='700'>${safe(glyph)}</text>
+    <text x='40' y='210' fill='#e0f2fe' font-size='34' font-weight='600'>${safe(title)}</text>
+    <text x='40' y='260' fill='#bfdbfe' font-size='22' font-weight='400'>${safe(subtitle)}</text>
+  </svg>`;
+  return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+}
+
+function renderIntroHero(){
+  const hero = h('div',{class:'intro-hero'});
+  const card = h('div',{class:'intro-hero-card'});
+  card.append(
+    span('Interactive Journey','intro-hero-gradient'),
+    h('h1',{class:'intro-hero-title'},'Understanding Unrest'),
+    h('p',{class:'intro-hero-subtitle'},'Step through the sparks that transformed calm colonies into a revolution.'),
+    h('div',{class:'intro-hero-actions'},
+      btn('Begin warm-up →', ()=>{
+        state.introStep = 0;
+        state.introFeedback = null;
+        state.introAnswered = false;
+        save();
+        render();
+      }),
+      btnGhost('Skip warm-up', ()=>{
+        state.phase = 'splash';
+        state.introStep = -1;
+        state.introFeedback = null;
+        state.introAnswered = false;
+        save();
+        render();
+        requestAnimationFrame(()=>scrollToSection('section-overview'));
+      })
+    ),
+    h('div',{class:'intro-hero-dots'}, span('','active'), span(''), span(''))
+  );
+  hero.appendChild(card);
+  return hero;
+}
+
+function renderIntroSlides(){
+  const overlay = h('div',{class:'intro-overlay'});
+  const slide = INTRO_SLIDES[state.introStep] || INTRO_SLIDES[0];
+  const imageSrc = introImage(slide.tag, slide.subtitle||'', state.introStep);
+  const next = ()=>{
+    if(state.introStep < INTRO_SLIDES.length-1){
+      state.introStep += 1;
+      state.introFeedback = null;
+      state.introAnswered = false;
+      save();
+      render();
+    }else{
+      state.phase = 'splash';
+      state.introStep = 0;
+      state.introFeedback = null;
+      state.introAnswered = false;
+      save();
+      render();
+      scrollToSection('section-overview');
+    }
+  };
+  const maybeBack = ()=>{
+    if(state.introStep>0){
+      state.introStep -=1;
+      state.introFeedback = null;
+      state.introAnswered = false;
+      save();
+      render();
+    }
+  };
+  const handleAnswer = (answer)=>{
+    if(answer.action==='start'){
+      state.phase='splash';
+      state.introStep=0;
+      state.introFeedback=null;
+      state.introAnswered=false;
+      save();
+      render();
+      scrollToSection('section-overview');
+      return;
+    }
+    state.introFeedback = answer.feedback || null;
+    state.introAnswered = true;
+    save();
+    render();
+  };
+  overlay.appendChild(
+    h('div',{class:'intro-slide'},
+      h('div',{class:'intro-media'}, h('img',{src:imageSrc,alt:slide.tag})),
+      h('div',{class:'intro-content'},
+        span(slide.tag,'intro-badge'),
+        h('h2',{class:'intro-question'}, slide.question),
+        p(slide.caption,'help'),
+        (slide.answers && slide.answers.length ?
+          h('div',{class:'intro-actions'},
+            ...slide.answers.map(ans=> (ans.variant==='ghost'
+              ? btnGhost(ans.label, ()=>handleAnswer(ans))
+              : btn(ans.label, ()=>handleAnswer(ans))
+            ))
+          ) : null
+        ),
+        (state.introAnswered && state.introFeedback ? h('div',{class:'help'}, state.introFeedback) : null),
+        (slide.answers && slide.answers.length ?
+          h('div',{class:'intro-actions'},
+            ...(state.introStep>0 ? [btnGhost('Back', maybeBack, false)] : []),
+            ...(state.introAnswered ? [btn('Continue →', next)] : [])
+          ) :
+          h('div',{class:'intro-actions'},
+            btnGhost('Back', maybeBack, state.introStep===0),
+            btn("Let's begin →", ()=>handleAnswer({action:'start'}))
+          )
+        ),
+        h('div',{class:'intro-progress'}, INTRO_SLIDES.map((_,i)=>{
+          const dot = span('',`dot ${i===state.introStep?'active':''}`);
+          dot.setAttribute('role','presentation');
+          dot.setAttribute('aria-hidden','true');
+          return dot;
+        }))
+      )
+    )
+  );
+  return overlay;
+}
+
+function unrestMeter(value, onChange){
+  let current = clamp1to8(value||1);
+  const wrapper = h('div',{class:'meter'});
+  const input = h('input',{type:'range',min:1,max:8,value:current,class:'meter-input'});
+  input.setAttribute('aria-label','Unrest level');
+  wrapper.appendChild(input);
+  const track = h('div',{class:'meter-track',role:'radiogroup','aria-label':'Unrest level'});
+  wrapper.appendChild(track);
+
+  const cells = [];
+  const apply = (val, opts={})=>{
+    const clamped = clamp1to8(val);
+    if(current === clamped && !opts.force) return;
+    current = clamped;
+    input.value = clamped;
+    cells.forEach((cell, idx)=>{
+      const order = idx+1;
+      const filled = order <= clamped;
+      cell.classList.toggle('filled', filled);
+      cell.classList.toggle('hot', filled && clamped >= 7);
+      cell.setAttribute('aria-checked', order===clamped ? 'true' : 'false');
+      cell.tabIndex = order===clamped ? 0 : -1;
+    });
+    if(onChange) onChange(clamped, opts);
+  };
+
+  for(let i=1;i<=8;i++){
+    const cell = h('button',{class:'meter-cell',type:'button'});
+    cell.dataset.value = String(i);
+    cell.setAttribute('role','radio');
+    cell.setAttribute('aria-label',`Set unrest level to ${i} out of 8`);
+    cell.addEventListener('click', ()=>{ apply(i,{source:'click'}); cell.focus(); });
+    cell.addEventListener('keydown', ev=>{
+      if(ev.key==='ArrowRight' || ev.key==='ArrowUp'){
+        ev.preventDefault();
+        const next = Math.min(8, current+1);
+        apply(next,{source:'key',force:true});
+        cells[next-1]?.focus();
+      }else if(ev.key==='ArrowLeft' || ev.key==='ArrowDown'){
+        ev.preventDefault();
+        const prev = Math.max(1, current-1);
+        apply(prev,{source:'key',force:true});
+        cells[prev-1]?.focus();
+      }else if(ev.key==='Home'){
+        ev.preventDefault();
+        apply(1,{source:'key',force:true});
+        cells[0]?.focus();
+      }else if(ev.key==='End'){
+        ev.preventDefault();
+        apply(8,{source:'key',force:true});
+        cells[7]?.focus();
+      }
+    });
+    track.appendChild(cell);
+    cells.push(cell);
+  }
+
+  input.addEventListener('input', e=>apply(+e.target.value,{source:'range',force:true}));
+  input.addEventListener('change', e=>apply(+e.target.value,{source:'range',force:true}));
+
+  apply(current,{force:true});
+  return wrapper;
+}
+
+function elEventFigure(event){
+  const fallbackSrc = EVENT_ART[event.id] || placeholderImage(event);
+  const primarySrc = event.localImg || (event.img && !event.img.startsWith('http') ? event.img : null);
+  let currentSrc = fallbackSrc;
+
+  const frame = h('div',{class:'image-frame'});
+  frame.classList.add('loading');
+  const baseImage = new Image();
+  baseImage.alt = event.title;
+  baseImage.src = fallbackSrc;
+  frame.appendChild(baseImage);
+
+  const loadingIndicator = span('Loading image...', 'sub');
+  loadingIndicator.style.display = 'none';
+
+  const caption = h('figcaption',{}, primarySrc ? 'Loading...' : 'Stylized illustration of this event.');
+  const fig = h('figure',{class:'event-figure'}, loadingIndicator, frame, caption);
+
+  const openFull = ()=> window.open(currentSrc, '_blank', 'noopener');
+  frame.addEventListener('click', openFull);
+  frame.addEventListener('keydown', ev=>{
+    if(ev.key==='Enter' || ev.key===' '){
+      ev.preventDefault();
+      openFull();
+    }
+  });
+  frame.setAttribute('role','button');
+  frame.setAttribute('tabindex','0');
+  frame.setAttribute('aria-label',`Open an image of ${event.title}`);
+
+  if(primarySrc){
+    loadingIndicator.style.display = 'block';
+    const img = new Image();
+    img.alt = event.title;
+    img.loading = 'lazy';
+    img.decoding = 'async';
+
+    const timeout = setTimeout(() => {
+      console.warn(`Image timeout for ${event.title}, using fallback`);
+      currentSrc = fallbackSrc;
+      frame.classList.add('image-error');
+      frame.classList.remove('loading');
+      loadingIndicator.style.display = 'none';
+      caption.textContent = 'Using stylized illustration (external image unavailable).';
+    }, 5000);
+
+    img.addEventListener('load', ()=>{
+      clearTimeout(timeout);
+      currentSrc = primarySrc;
+      frame.classList.remove('image-error');
+      frame.classList.remove('loading');
+      frame.innerHTML='';
+      frame.appendChild(img);
+      loadingIndicator.style.display = 'none';
+      caption.textContent = 'Click to open a larger view in a new tab.';
+    });
+
+    img.addEventListener('error', ()=>{
+      clearTimeout(timeout);
+      currentSrc = fallbackSrc;
+      frame.classList.add('image-error');
+      frame.classList.remove('loading');
+      loadingIndicator.style.display = 'none';
+      caption.textContent = 'Using stylized illustration (external image unavailable).';
+    });
+
+    img.src = primarySrc;
+  }
+
+  if(!primarySrc){
+    frame.classList.remove('loading');
+    caption.textContent = 'Stylized illustration of this event.';
+  }
+
+  return fig;
+}
+
+function elChart(source){
+  const lookup = source || {};
+  const pts = EVENTS.map((e,i)=>({x:i, y: Number(lookup[e.id])||Number(lookup[e.id]?.rating)||0}));
+  const cum=[]; let acc=0; pts.forEach(p=>{acc+=p.y; cum.push({x:p.x,y:acc});});
+  const target = Math.max(36, acc);
+  const W=800,H=220,P=36;
+  const SX = x=> P + (x/(EVENTS.length-1||1))*(W-2*P);
+  const SY = y=> H-P - (y/(target||1))*(H-2*P);
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(SVG_NS,'svg');
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  svg.setAttribute('role','img');
+  svg.setAttribute('aria-label','Line chart showing cumulative outrage points');
+  svg.style.width = '100%';
+  svg.style.minWidth = '640px';
+
+  const gridY=[0, target/3, 2*target/3, target];
+  gridY.forEach(g=>{
+    const line = document.createElementNS(SVG_NS,'line');
+    line.setAttribute('x1',P);
+    line.setAttribute('x2',W-P);
+    line.setAttribute('y1',SY(g));
+    line.setAttribute('y2',SY(g));
+    line.setAttribute('stroke','#475569');
+    line.setAttribute('stroke-dasharray','4 4');
+    svg.appendChild(line);
+
+    const label = document.createElementNS(SVG_NS,'text');
+    label.setAttribute('x',P-8);
+    label.setAttribute('y',SY(g)+4);
+    label.setAttribute('fill','#cbd5e1');
+    label.setAttribute('font-size','11');
+    label.setAttribute('text-anchor','end');
+    label.textContent = String(Math.round(g));
+    svg.appendChild(label);
+  });
+
+  const pathPoints = cum.map((p,i)=> `${i?'L':'M'} ${SX(p.x)} ${SY(p.y)}`).join(' ');
+  const areaD = `${pathPoints} L ${SX(EVENTS.length-1)} ${SY(0)} L ${SX(0)} ${SY(0)} Z`;
+  const area = document.createElementNS(SVG_NS,'path');
+  area.setAttribute('d', areaD);
+  area.setAttribute('fill','rgba(37,99,235,.28)');
+  svg.appendChild(area);
+
+  const linePath = document.createElementNS(SVG_NS,'path');
+  linePath.setAttribute('d', pathPoints);
+  linePath.setAttribute('fill','none');
+  linePath.setAttribute('stroke','#60a5fa');
+  linePath.setAttribute('stroke-width','2.5');
+  svg.appendChild(linePath);
+
+  EVENTS.forEach((e,i)=>{
+    const tick = document.createElementNS(SVG_NS,'text');
+    tick.setAttribute('x', SX(i));
+    tick.setAttribute('y', H-12);
+    tick.setAttribute('fill','#cbd5e1');
+    tick.setAttribute('font-size','11');
+    tick.setAttribute('text-anchor','middle');
+    tick.textContent = String(e.year);
+    svg.appendChild(tick);
+  });
+
+  const wrap = h('div',{style:'overflow:auto'});
+  wrap.appendChild(svg);
+  return wrap;
+}
+
+// Theme & header controls - attach once only
+let headerEventListenersAttached = false;
+
+function attachHeaderListeners() {
+  if (headerEventListenersAttached) return;
+  
+  const themeToggleBtn = $('#themeToggle');
+  if(themeToggleBtn){
+    themeToggleBtn.addEventListener('click', ()=>{
+      state.theme = state.theme==='dark' ? 'light' : 'dark';
+      save();
+      render();
+    });
+  }
+  
+  const resetBtn = $('#resetBtn');
+  if(resetBtn){ 
+    resetBtn.addEventListener('click', resetExperience); 
+  }
+  
+  const overviewBtn = $('#overviewBtn');
+  if(overviewBtn){
+    overviewBtn.addEventListener('click', ()=> scrollToSection('section-overview'));
+  }
+  
+  headerEventListenersAttached = true;
+}
+
+// Accessibility panel listeners
+const accessToggle = $('#accessToggle');
+const accessPanel = $('#accessPanel');
+const fontToggle = $('#fontToggle');
+const translateSelEl = $('#translateSel');
+const translateGoEl = $('#translateGo');
+
+const closeAccessPanel = ()=>{ 
+  if(accessPanel){ 
+    accessPanel.classList.add('hidden'); 
+    if(accessToggle) accessToggle.setAttribute('aria-expanded','false'); 
+  } 
+};
+
+if(fontToggle){
+  fontToggle.checked = state.font==='dyslexic';
+  fontToggle.addEventListener('change', (e)=>{ 
+    state.font = e.target.checked?'dyslexic':'default'; 
+    save(); 
+    render(); 
+  });
+}
+
+if(accessToggle && accessPanel){
+  accessToggle.setAttribute('aria-expanded','false');
+  accessToggle.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    const hidden = accessPanel.classList.toggle('hidden');
+    accessToggle.setAttribute('aria-expanded', hidden ? 'false' : 'true');
+    if(!hidden){ accessPanel.querySelector('input,select,button')?.focus(); }
+  });
+  document.addEventListener('click', (evt)=>{
+    if(accessPanel.classList.contains('hidden')) return;
+    if(accessPanel.contains(evt.target) || accessToggle.contains(evt.target)) return;
+    closeAccessPanel();
+  });
+  document.addEventListener('keydown', (evt)=>{
+    if(evt.key==='Escape' && !accessPanel.classList.contains('hidden')){
+      closeAccessPanel();
+    }
+  });
+}
+
+if(translateSelEl && translateGoEl){
+  translateSelEl.addEventListener('change', ()=>{
+    if(translateSelEl.value){ translateGoEl.removeAttribute('disabled'); }
+    else translateGoEl.setAttribute('disabled','');
+  });
+  translateGoEl.addEventListener('click', ()=>{
+    if(!translateSelEl.value) return;
+    const lang = translateSelEl.value;
+    const target = `https://translate.google.com/translate?sl=en&tl=${encodeURIComponent(lang)}&u=${encodeURIComponent(location.href)}`;
+    window.open(target,'_blank','noopener');
+    closeAccessPanel();
+  });
+}
+
+attachHeaderListeners();
+render();
+</script>
+</body>
+</html>
