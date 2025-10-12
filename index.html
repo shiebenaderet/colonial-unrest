@@ -186,7 +186,8 @@
   .image-frame:hover{transform:scale(1.01)}
   .image-frame.image-error{cursor:default}
   .image-frame.image-error:hover{transform:none}
-  .image-frame img{width:100%;height:100%;object-fit:cover;display:block}
+  .image-frame img,
+  .image-frame svg{width:100%;height:100%;object-fit:cover;display:block}
   .image-fallback{display:grid;gap:8px;justify-items:center;text-align:center;padding:24px}
   .image-fallback .pill{background:rgba(37,99,235,.18);border-color:rgba(37,99,235,.4);color:#bfdbfe}
   .image-fallback strong{font-size:14px}
@@ -262,7 +263,8 @@
   .intro-overlay{position:fixed;inset:0;background:var(--bg);z-index:50;display:grid;place-items:center;padding:20px;transition:opacity .4s ease}
   .intro-slide{max-width:900px;width:100%;background:var(--surface);border-radius:28px;border:1px solid var(--border);box-shadow:0 20px 55px rgba(15,23,42,.45);overflow:hidden;display:grid;grid-template-columns:1fr;}
   .intro-media{position:relative;height:420px;background:#000}
-  .intro-media img{width:100%;height:100%;object-fit:cover}
+  .intro-media img,
+  .intro-media svg{width:100%;height:100%;object-fit:cover}
   .intro-media::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,42,.15),rgba(15,23,42,.55));}
   .intro-content{padding:28px 32px;display:grid;gap:18px;color:var(--fg)}
   .intro-badge{display:inline-flex;align-items:center;gap:10px;padding:6px 14px;border-radius:999px;background:rgba(59,130,246,.2);border:1px solid rgba(59,130,246,.4);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#bfdbfe;font-weight:600}
@@ -298,6 +300,8 @@
   );
   animation: shimmer 1.5s infinite;
 }
+.image-frame.no-open{cursor:default}
+.image-frame.no-open:hover{transform:none}
 
 @keyframes shimmer {
   0% { opacity: 0.7; }
@@ -564,15 +568,15 @@ const REFLECTION_STARTERS = {
 };
 
 const EVENT_ART = {
-  A: makeEventArt('Proclamation of 1763','Drawing a boundary line','#1e3a8a','#2563eb','⛰️'),
-  B: makeEventArt('Quartering Act','Soldiers move in','#7c2d12','#f97316','🏠'),
-  C: makeEventArt('Stamp Act','Taxing everyday paper','#0f766e','#2dd4bf','📜'),
-  D: makeEventArt('Townshend Acts','Hidden taxes on goods','#7c3aed','#6366f1','🛒'),
-  E: makeEventArt('Boston Massacre','Shots fired in the street','#b91c1c','#ef4444','⚠️'),
-  F: makeEventArt('Boston Tea Party','Tea dumped in protest','#0f172a','#2563eb','☕'),
-  G: makeEventArt('Intolerable Acts','Punishing Boston','#78350f','#f59e0b','🚫'),
-  H: makeEventArt('1st Continental Congress','Colonies unite','#134e4a','#14b8a6','🤝'),
-  I: makeEventArt('Lexington & Concord','First shots fired','#7c3aed','#f97316','🎖️')
+  A: {title:'Proclamation of 1763', subtitle:'Drawing a boundary line', colors:['#1e3a8a','#2563eb'], glyph:'⛰️'},
+  B: {title:'Quartering Act', subtitle:'Soldiers move in', colors:['#7c2d12','#f97316'], glyph:'🏠'},
+  C: {title:'Stamp Act', subtitle:'Taxing everyday paper', colors:['#0f766e','#2dd4bf'], glyph:'📜'},
+  D: {title:'Townshend Acts', subtitle:'Hidden taxes on goods', colors:['#7c3aed','#6366f1'], glyph:'🛒'},
+  E: {title:'Boston Massacre', subtitle:'Shots fired in the street', colors:['#b91c1c','#ef4444'], glyph:'⚠️'},
+  F: {title:'Boston Tea Party', subtitle:'Tea dumped in protest', colors:['#0f172a','#2563eb'], glyph:'☕'},
+  G: {title:'Intolerable Acts', subtitle:'Punishing Boston', colors:['#78350f','#f59e0b'], glyph:'🚫'},
+  H: {title:'1st Continental Congress', subtitle:'Colonies unite', colors:['#134e4a','#14b8a6'], glyph:'🤝'},
+  I: {title:'Lexington & Concord', subtitle:'First shots fired', colors:['#7c3aed','#f97316'], glyph:'🎖️'}
 };
 
 // ----- Utilities -----
@@ -1235,7 +1239,254 @@ function resetExperience(){
   render();
 }
 
-function placeholderImage(event){
+const SVG_NS = 'http://www.w3.org/2000/svg';
+let svgIdCounter = 0;
+function uniqueSvgId(prefix){
+  svgIdCounter += 1;
+  return `${prefix}-${svgIdCounter}`;
+}
+
+function createLinearGradient(svg, colors, prefix){
+  const gradId = uniqueSvgId(prefix);
+  const defs = document.createElementNS(SVG_NS,'defs');
+  const gradient = document.createElementNS(SVG_NS,'linearGradient');
+  gradient.setAttribute('id', gradId);
+  gradient.setAttribute('x1','0');
+  gradient.setAttribute('y1','0');
+  gradient.setAttribute('x2','1');
+  gradient.setAttribute('y2','1');
+  colors.forEach((color, idx)=>{
+    const stop = document.createElementNS(SVG_NS,'stop');
+    stop.setAttribute('offset', idx===0 ? '0%' : '100%');
+    stop.setAttribute('stop-color', color);
+    gradient.appendChild(stop);
+  });
+  defs.appendChild(gradient);
+  svg.appendChild(defs);
+  return gradId;
+}
+
+function splitLines(text, maxLength=24){
+  const words = (text||'').split(/\s+/).filter(Boolean);
+  if(words.length===0) return [text||''];
+  const lines=[];
+  let current='';
+  words.forEach(word=>{
+    const candidate = current ? `${current} ${word}` : word;
+    if(candidate.length > maxLength && current){
+      lines.push(current);
+      current = word;
+    }else{
+      current = candidate;
+    }
+  });
+  if(current) lines.push(current);
+  return lines;
+}
+
+function createIntroIllustration(tag, subtitle, index){
+  const svg = document.createElementNS(SVG_NS,'svg');
+  svg.setAttribute('viewBox','0 0 1200 800');
+  svg.setAttribute('preserveAspectRatio','xMidYMid slice');
+  svg.setAttribute('focusable','false');
+  svg.setAttribute('aria-hidden','true');
+  const palettes = [
+    ['#1d4ed8','#0ea5e9'],
+    ['#0f766e','#14b8a6'],
+    ['#7c3aed','#6366f1'],
+    ['#f59e0b','#f97316']
+  ];
+  const colors = palettes[index % palettes.length];
+  const gradId = createLinearGradient(svg, colors, 'intro-grad');
+  const background = document.createElementNS(SVG_NS,'rect');
+  background.setAttribute('width','1200');
+  background.setAttribute('height','800');
+  background.setAttribute('fill', `url(#${gradId})`);
+  svg.appendChild(background);
+
+  if(tag==='Calm'){
+    const hill = document.createElementNS(SVG_NS,'path');
+    hill.setAttribute('d','M0 520 C240 460 520 540 800 500 C980 470 1140 530 1200 500 L1200 800 L0 800 Z');
+    hill.setAttribute('fill','rgba(15,23,42,0.25)');
+    svg.appendChild(hill);
+    const addHouse = (x, scale)=>{
+      const house = document.createElementNS(SVG_NS,'g');
+      house.setAttribute('transform',`translate(${x} 430) scale(${scale})`);
+      const base = document.createElementNS(SVG_NS,'rect');
+      base.setAttribute('x','0');
+      base.setAttribute('y','40');
+      base.setAttribute('width','160');
+      base.setAttribute('height','140');
+      base.setAttribute('rx','16');
+      base.setAttribute('fill','rgba(241,245,249,0.9)');
+      house.appendChild(base);
+      const roof = document.createElementNS(SVG_NS,'polygon');
+      roof.setAttribute('points','80,0 -12,60 172,60');
+      roof.setAttribute('fill','rgba(30,64,175,0.9)');
+      house.appendChild(roof);
+      const door = document.createElementNS(SVG_NS,'rect');
+      door.setAttribute('x','68');
+      door.setAttribute('y','120');
+      door.setAttribute('width','36');
+      door.setAttribute('height','60');
+      door.setAttribute('rx','8');
+      door.setAttribute('fill','rgba(30,41,59,0.85)');
+      house.appendChild(door);
+      const window = document.createElementNS(SVG_NS,'rect');
+      window.setAttribute('x','26');
+      window.setAttribute('y','86');
+      window.setAttribute('width','42');
+      window.setAttribute('height','42');
+      window.setAttribute('rx','6');
+      window.setAttribute('fill','rgba(191,219,254,0.9)');
+      house.appendChild(window);
+      const window2 = window.cloneNode();
+      window2.setAttribute('x','96');
+      house.appendChild(window2);
+      svg.appendChild(house);
+    };
+    addHouse(180,1);
+    addHouse(540,0.85);
+  }else if(tag==='Unrest'){
+    const glow = document.createElementNS(SVG_NS,'circle');
+    glow.setAttribute('cx','880');
+    glow.setAttribute('cy','260');
+    glow.setAttribute('r','220');
+    glow.setAttribute('fill','rgba(239,68,68,0.45)');
+    svg.appendChild(glow);
+    const banner = document.createElementNS(SVG_NS,'rect');
+    banner.setAttribute('x','180');
+    banner.setAttribute('y','460');
+    banner.setAttribute('width','840');
+    banner.setAttribute('height','220');
+    banner.setAttribute('rx','28');
+    banner.setAttribute('fill','rgba(15,23,42,0.65)');
+    svg.appendChild(banner);
+    const poles = document.createElementNS(SVG_NS,'g');
+    poles.setAttribute('stroke','rgba(248,250,252,0.35)');
+    poles.setAttribute('stroke-width','6');
+    const polePositions = [240, 360, 480, 600, 720, 840, 960];
+    polePositions.forEach(x=>{
+      const pole = document.createElementNS(SVG_NS,'line');
+      pole.setAttribute('x1', x);
+      pole.setAttribute('x2', x);
+      pole.setAttribute('y1', 430);
+      pole.setAttribute('y2', 580);
+      poles.appendChild(pole);
+    });
+    svg.appendChild(poles);
+    const crowd = document.createElementNS(SVG_NS,'g');
+    crowd.setAttribute('fill','rgba(15,23,42,0.85)');
+    const heads = [
+      [260,610,38],[320,620,34],[380,608,36],[440,626,40],[500,618,34],
+      [560,612,36],[620,620,38],[680,615,34],[740,628,37],[800,618,33],
+      [860,610,36],[920,622,35]
+    ];
+    heads.forEach(([cx,cy,r])=>{
+      const c = document.createElementNS(SVG_NS,'circle');
+      c.setAttribute('cx', cx);
+      c.setAttribute('cy', cy);
+      c.setAttribute('r', r);
+      crowd.appendChild(c);
+    });
+    svg.appendChild(crowd);
+  }else{
+    const track = document.createElementNS(SVG_NS,'rect');
+    track.setAttribute('x','160');
+    track.setAttribute('y','520');
+    track.setAttribute('width','880');
+    track.setAttribute('height','18');
+    track.setAttribute('rx','9');
+    track.setAttribute('fill','rgba(15,23,42,0.45)');
+    svg.appendChild(track);
+    for(let i=0;i<5;i+=1){
+      const node = document.createElementNS(SVG_NS,'circle');
+      node.setAttribute('cx', 200 + i*210);
+      node.setAttribute('cy', 529);
+      node.setAttribute('r', 26);
+      node.setAttribute('fill','rgba(191,219,254,0.85)');
+      svg.appendChild(node);
+    }
+    const spark = document.createElementNS(SVG_NS,'polygon');
+    spark.setAttribute('points','980,210 1020,290 980,370 1060,350 1100,430 1120,320 1200,280 1120,240 1100,140 1060,220');
+    spark.setAttribute('fill','rgba(250,250,250,0.25)');
+    svg.appendChild(spark);
+  }
+
+  const title = document.createElementNS(SVG_NS,'text');
+  title.setAttribute('x','80');
+  title.setAttribute('y','200');
+  title.setAttribute('fill','#f8fafc');
+  title.setAttribute('font-size','120');
+  title.setAttribute('font-weight','700');
+  title.textContent = tag;
+  svg.appendChild(title);
+
+  const lines = splitLines(subtitle, 28);
+  lines.forEach((line, idx)=>{
+    const textLine = document.createElementNS(SVG_NS,'text');
+    textLine.setAttribute('x','80');
+    textLine.setAttribute('y', 320 + idx*56);
+    textLine.setAttribute('fill','#e0f2fe');
+    textLine.setAttribute('font-size','52');
+    textLine.setAttribute('font-weight','500');
+    textLine.textContent = line;
+    svg.appendChild(textLine);
+  });
+
+  return svg;
+}
+
+function buildEventArtSvg(template){
+  const svg = document.createElementNS(SVG_NS,'svg');
+  svg.setAttribute('viewBox','0 0 600 420');
+  svg.setAttribute('preserveAspectRatio','xMidYMid slice');
+  svg.setAttribute('focusable','false');
+  svg.setAttribute('aria-hidden','true');
+  const gradId = createLinearGradient(svg, template.colors, 'event-grad');
+  const rect = document.createElementNS(SVG_NS,'rect');
+  rect.setAttribute('width','600');
+  rect.setAttribute('height','420');
+  rect.setAttribute('rx','26');
+  rect.setAttribute('fill', `url(#${gradId})`);
+  svg.appendChild(rect);
+
+  const glyph = document.createElementNS(SVG_NS,'text');
+  glyph.setAttribute('x','48');
+  glyph.setAttribute('y','128');
+  glyph.setAttribute('font-size','88');
+  glyph.setAttribute('font-weight','700');
+  glyph.setAttribute('fill','#f8fafc');
+  glyph.textContent = template.glyph;
+  svg.appendChild(glyph);
+
+  const title = document.createElementNS(SVG_NS,'text');
+  title.setAttribute('x','48');
+  title.setAttribute('y','194');
+  title.setAttribute('fill','#e0f2fe');
+  title.setAttribute('font-size','38');
+  title.setAttribute('font-weight','600');
+  title.textContent = template.title;
+  svg.appendChild(title);
+
+  const subtitle = document.createElementNS(SVG_NS,'text');
+  subtitle.setAttribute('x','48');
+  subtitle.setAttribute('y','238');
+  subtitle.setAttribute('fill','#bfdbfe');
+  subtitle.setAttribute('font-size','24');
+  subtitle.setAttribute('font-weight','400');
+  subtitle.textContent = template.subtitle;
+  svg.appendChild(subtitle);
+
+  return svg;
+}
+
+function createPlaceholderArt(event){
+  const svg = document.createElementNS(SVG_NS,'svg');
+  svg.setAttribute('viewBox','0 0 600 400');
+  svg.setAttribute('preserveAspectRatio','xMidYMid slice');
+  svg.setAttribute('focusable','false');
+  svg.setAttribute('aria-hidden','true');
   const palettes = [
     ['#1e3a8a','#1d4ed8'],
     ['#0f172a','#334155'],
@@ -1245,68 +1496,40 @@ function placeholderImage(event){
     ['#78350f','#f59e0b']
   ];
   const colors = palettes[EVENTS.indexOf(event)%palettes.length];
-  const safe = (s)=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const words = safe(event.title).split(' ');
-  const lines=[];
-  let current='';
-  words.forEach(word=>{
-    if((current + word).length > 16){
-      if(current.trim()) lines.push(current.trim());
-      current = word + ' ';
-    }else{
-      current += word + ' ';
-    }
+  const gradId = createLinearGradient(svg, colors, 'event-placeholder');
+  const rect = document.createElementNS(SVG_NS,'rect');
+  rect.setAttribute('width','600');
+  rect.setAttribute('height','400');
+  rect.setAttribute('fill', `url(#${gradId})`);
+  svg.appendChild(rect);
+
+  const year = document.createElementNS(SVG_NS,'text');
+  year.setAttribute('x','32');
+  year.setAttribute('y','86');
+  year.setAttribute('fill','#bae6fd');
+  year.setAttribute('font-size','34');
+  year.setAttribute('font-weight','500');
+  year.textContent = event.year;
+  svg.appendChild(year);
+
+  const lines = splitLines(event.title, 16);
+  lines.forEach((line, idx)=>{
+    const textLine = document.createElementNS(SVG_NS,'text');
+    textLine.setAttribute('x','32');
+    textLine.setAttribute('y', 140 + idx*46);
+    textLine.setAttribute('fill','#f1f5f9');
+    textLine.setAttribute('font-size','36');
+    textLine.setAttribute('font-weight','600');
+    textLine.textContent = line;
+    svg.appendChild(textLine);
   });
-  if(current.trim()) lines.push(current.trim());
-  if(lines.length===0) lines.push(safe(event.title));
-  const svgLines = lines.slice(0,3).map((txt,i)=>`<text x="32" y="${150 + i*48}" fill="#f1f5f9" font-size="40" font-weight="600">${txt.trim()}</text>`).join('');
-  const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'>
-    <defs><linearGradient id='grad' x1='0' y1='0' x2='1' y2='1'><stop offset='0%' stop-color='${colors[0]}'/><stop offset='100%' stop-color='${colors[1]}'/></linearGradient></defs>
-    <rect width='600' height='400' fill='url(#grad)'/>
-    <text x='32' y='80' fill='#bae6fd' font-size='36' font-weight='500'>${event.year}</text>
-    ${svgLines}
-  </svg>`;
-  return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+
+  return svg;
 }
 
-function introImage(title, subtitle, index){
-  const palettes = [
-    ['#1d4ed8','#0ea5e9'],
-    ['#0f766e','#14b8a6'],
-    ['#7c3aed','#6366f1'],
-    ['#f59e0b','#f97316']
-  ];
-  const colors = palettes[index % palettes.length];
-  const safe = s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800'>
-    <defs>
-      <linearGradient id='introGrad' x1='0' y1='0' x2='1' y2='1'>
-        <stop offset='0%' stop-color='${colors[0]}' />
-        <stop offset='100%' stop-color='${colors[1]}' />
-      </linearGradient>
-    </defs>
-    <rect width='1200' height='800' fill='url(#introGrad)' />
-    <text x='70' y='220' fill='#f8fafc' font-size='120' font-weight='700'>${safe(title)}</text>
-    <text x='70' y='420' fill='#e0f2fe' font-size='64' font-weight='500'>${safe(subtitle)}</text>
-  </svg>`;
-  return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
-}
-
-function makeEventArt(title, subtitle, color1, color2, glyph){
-  const safe = s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 420'>
-    <defs>
-      <linearGradient id='artGrad' x1='0' y1='0' x2='1' y2='1'>
-        <stop offset='0%' stop-color='${color1}' />
-        <stop offset='100%' stop-color='${color2}' />
-      </linearGradient>
-    </defs>
-    <rect width='600' height='420' rx='26' fill='url(#artGrad)'/>
-    <text x='40' y='120' fill='#f8fafc' font-size='90' font-weight='700'>${safe(glyph)}</text>
-    <text x='40' y='210' fill='#e0f2fe' font-size='34' font-weight='600'>${safe(title)}</text>
-    <text x='40' y='260' fill='#bfdbfe' font-size='22' font-weight='400'>${safe(subtitle)}</text>
-  </svg>`;
-  return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+function createEventArtNode(event){
+  const template = EVENT_ART[event.id];
+  return template ? buildEventArtSvg(template) : createPlaceholderArt(event);
 }
 
 function renderIntroHero(){
@@ -1343,7 +1566,7 @@ function renderIntroHero(){
 function renderIntroSlides(){
   const overlay = h('div',{class:'intro-overlay'});
   const slide = INTRO_SLIDES[state.introStep] || INTRO_SLIDES[0];
-  const imageSrc = introImage(slide.tag, slide.subtitle||'', state.introStep);
+  const illustration = createIntroIllustration(slide.tag, slide.subtitle||'', state.introStep);
   const next = ()=>{
     if(state.introStep < INTRO_SLIDES.length-1){
       state.introStep += 1;
@@ -1388,7 +1611,7 @@ function renderIntroSlides(){
   };
   overlay.appendChild(
     h('div',{class:'intro-slide'},
-      h('div',{class:'intro-media'}, h('img',{src:imageSrc,alt:slide.tag})),
+      h('div',{class:'intro-media'}, illustration),
       h('div',{class:'intro-content'},
         span(slide.tag,'intro-badge'),
         h('h2',{class:'intro-question'}, slide.question),
@@ -1489,16 +1712,13 @@ function unrestMeter(value, onChange){
 }
 
 function elEventFigure(event){
-  const fallbackSrc = EVENT_ART[event.id] || placeholderImage(event);
   const primarySrc = event.localImg || event.img || null;
-  let currentSrc = fallbackSrc;
+  let currentSrc = null;
 
   const frame = h('div',{class:'image-frame'});
   frame.classList.add('loading');
-  const baseImage = new Image();
-  baseImage.alt = event.title;
-  baseImage.src = fallbackSrc;
-  frame.appendChild(baseImage);
+  const fallbackNode = createEventArtNode(event);
+  frame.appendChild(fallbackNode);
 
   const loadingIndicator = span('Loading image...', 'sub');
   loadingIndicator.style.display = 'none';
@@ -1506,17 +1726,47 @@ function elEventFigure(event){
   const caption = h('figcaption',{}, primarySrc ? 'Loading...' : 'Stylized illustration of this event.');
   const fig = h('figure',{class:'event-figure'}, loadingIndicator, frame, caption);
 
-  const openFull = ()=> window.open(currentSrc, '_blank', 'noopener');
+  const setInteractive = (enabled)=>{
+    if(enabled){
+      frame.classList.remove('no-open');
+      frame.setAttribute('role','button');
+      frame.setAttribute('tabindex','0');
+      frame.removeAttribute('aria-disabled');
+      frame.setAttribute('aria-label',`Open an image of ${event.title}`);
+    }else{
+      frame.classList.add('no-open');
+      frame.setAttribute('role','img');
+      frame.removeAttribute('tabindex');
+      frame.setAttribute('aria-disabled','true');
+      frame.setAttribute('aria-label',`Illustration of ${event.title}`);
+    }
+  };
+  setInteractive(false);
+
+  const openFull = ()=>{
+    if(currentSrc){
+      window.open(currentSrc, '_blank', 'noopener');
+    }
+  };
   frame.addEventListener('click', openFull);
   frame.addEventListener('keydown', ev=>{
+    if(!currentSrc) return;
     if(ev.key==='Enter' || ev.key===' '){
       ev.preventDefault();
       openFull();
     }
   });
-  frame.setAttribute('role','button');
-  frame.setAttribute('tabindex','0');
-  frame.setAttribute('aria-label',`Open an image of ${event.title}`);
+
+  const ensureFallback = ()=>{
+    if(!frame.contains(fallbackNode)){
+      frame.replaceChildren(fallbackNode);
+    }
+  };
+
+  const stopLoading = ()=>{
+    frame.classList.remove('loading');
+    loadingIndicator.style.display = 'none';
+  };
 
   if(primarySrc){
     loadingIndicator.style.display = 'block';
@@ -1524,41 +1774,42 @@ function elEventFigure(event){
     img.alt = event.title;
     img.loading = 'lazy';
     img.decoding = 'async';
+    img.referrerPolicy = 'no-referrer';
 
     const timeout = setTimeout(() => {
       console.warn(`Image timeout for ${event.title}, using fallback`);
-      currentSrc = fallbackSrc;
+      stopLoading();
+      ensureFallback();
       frame.classList.add('image-error');
-      frame.classList.remove('loading');
-      loadingIndicator.style.display = 'none';
       caption.textContent = 'Using stylized illustration (external image unavailable).';
-    }, 5000);
+      currentSrc = null;
+      setInteractive(false);
+    }, 7000);
 
     img.addEventListener('load', ()=>{
       clearTimeout(timeout);
       currentSrc = primarySrc;
       frame.classList.remove('image-error');
-      frame.classList.remove('loading');
-      frame.innerHTML='';
-      frame.appendChild(img);
-      loadingIndicator.style.display = 'none';
+      stopLoading();
+      frame.replaceChildren(img);
       caption.textContent = 'Click to open a larger view in a new tab.';
+      setInteractive(true);
     });
 
     img.addEventListener('error', ()=>{
       clearTimeout(timeout);
-      currentSrc = fallbackSrc;
+      stopLoading();
+      ensureFallback();
       frame.classList.add('image-error');
-      frame.classList.remove('loading');
-      loadingIndicator.style.display = 'none';
       caption.textContent = 'Using stylized illustration (external image unavailable).';
+      currentSrc = null;
+      setInteractive(false);
     });
 
     img.src = primarySrc;
-  }
-
-  if(!primarySrc){
-    frame.classList.remove('loading');
+  }else{
+    stopLoading();
+    ensureFallback();
     caption.textContent = 'Stylized illustration of this event.';
   }
 
