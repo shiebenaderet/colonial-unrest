@@ -1490,7 +1490,7 @@ function unrestMeter(value, onChange){
 
 function elEventFigure(event){
   const fallbackSrc = EVENT_ART[event.id] || placeholderImage(event);
-  const primarySrc = event.localImg || (event.img && !event.img.startsWith('http') ? event.img : null);
+  const primarySrc = event.localImg || event.img || null;
   let currentSrc = fallbackSrc;
 
   const frame = h('div',{class:'image-frame'});
