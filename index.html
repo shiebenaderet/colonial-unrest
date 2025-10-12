@@ -1774,7 +1774,7 @@ function elEventFigure(event){
     img.alt = event.title;
     img.loading = 'lazy';
     img.decoding = 'async';
-    img.referrerPolicy = 'no-referrer';
+    img.referrerPolicy = 'no-referrer-when-downgrade';
 
     const timeout = setTimeout(() => {
       console.warn(`Image timeout for ${event.title}, using fallback`);
