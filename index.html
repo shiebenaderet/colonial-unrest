@@ -76,6 +76,18 @@
   body.light .card{box-shadow:0 12px 30px rgba(148,163,184,.25)}
   .card-h{padding:14px 16px;border-bottom:1px solid var(--border);background:var(--surface)}
   .card-b{padding:16px}
+  .rating-comparison-card{margin-top:24px}
+  .rating-comparison-table{display:grid;gap:1px;background:var(--border);border-radius:8px;overflow:hidden}
+  .comparison-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;background:var(--surface);padding:12px 16px;align-items:center}
+  .comparison-header{background:var(--panel-soft);font-weight:600;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .comparison-event{font-weight:500}
+  .comparison-before,.comparison-after,.comparison-change{text-align:center;font-weight:600;font-variant-numeric:tabular-nums}
+  .comparison-before{color:var(--muted)}
+  .comparison-after{color:var(--accent)}
+  .comparison-change.positive{color:#10b981}
+  .comparison-change.negative{color:#ef4444}
+  .comparison-change.neutral{color:var(--muted)}
+  @media(max-width:640px){.comparison-row{grid-template-columns:1.5fr 1fr 1fr 1fr;font-size:14px;padding:10px 12px}.comparison-event{font-size:13px}}
   .grid{display:grid;gap:16px}
   .g2{grid-template-columns:1fr;}
   @media(min-width:820px){.g2{grid-template-columns:1fr 1fr}}
@@ -153,9 +165,14 @@
   .event-body .tabs{align-self:flex-start}
   .level-tabs{gap:0;margin-bottom:4px}
   .level-tabs .tab{font-size:13px;padding:8px 12px}
-  .event-text{font-size:16px;line-height:1.7;color:var(--fg)}
-  .event-text + .event-text{margin-top:4px}
-  .event-reading{display:grid;gap:12px}
+  .event-text{font-size:17px;line-height:1.85;color:var(--fg);margin-bottom:16px;font-weight:400}
+  .event-text a{color:#60a5fa;text-decoration:underline;transition:color .2s}
+  .event-text a:hover{color:#93c5fd}
+  body.light .event-text a{color:#2563eb}
+  body.light .event-text a:hover{color:#1d4ed8}
+  .event-text blockquote{margin:16px 0;padding:12px 16px;border-left:4px solid var(--accent);background:var(--callout-bg);font-style:italic}
+  .event-text + .event-text{margin-top:8px}
+  .event-reading{display:grid;gap:16px}
   .event-link{font-size:13px}
   .event-link a{display:inline-flex;align-items:center;gap:6px}
   .event-link svg{width:12px;height:12px;fill:currentColor}
@@ -421,47 +438,157 @@ const ENTRY = {
   period: 'entry.578966706',
   q3: 'entry.1068421844',
   q4: 'entry.1093978586',
-  q5: 'entry.1000939606'
+  q5: 'entry.1000939606',
+  // Individual ratings fields extracted from your Google Form
+  ratings: {
+    A: { initial: 'entry.1337223317', final: 'entry.648796874', change: 'entry.1219208158' }, // Proclamation of 1763
+    B: { initial: 'entry.1684408202', final: 'entry.931434818', change: 'entry.2018326302' }, // Quartering Act
+    C: { initial: 'entry.479587404', final: 'entry.91444500', change: 'entry.1961643911' }, // Stamp Act
+    D: { initial: 'entry.1140900703', final: 'entry.1792609842', change: 'entry.957176765' }, // Townshend Acts
+    E: { initial: 'entry.881467983', final: 'entry.348332677', change: 'entry.1186567480' }, // Boston Massacre
+    F: { initial: 'entry.780890034', final: 'entry.746372765', change: 'entry.1040803028' }, // Boston Tea Party
+    G: { initial: 'entry.2131795004', final: 'entry.435188937', change: 'entry.944113980' }, // Intolerable Acts
+    H: { initial: 'entry.325848132', final: 'entry.1559088857', change: 'entry.1743203411' }, // First Continental Congress
+    I: { initial: 'entry.2123341685', final: 'entry.1878782964', change: 'entry.1455041330' }  // Lexington & Concord
+  }
 };
 
 const EVENTS = [
   {id:'A', title:'Proclamation of 1763', year:1763, img:'https://upload.wikimedia.org/wikipedia/commons/8/86/Map_of_territorial_growth_1775.jpg',
    wiki:'https://en.wikipedia.org/wiki/Royal_Proclamation_of_1763',
-   simple:`The king blocked colonists from crossing the Appalachian Mountains. Settlers who had dreamed of new farms felt ignored and irritated, but most anger stayed at the level of grumbling.`,
-   core:`After the French and Indian War, Britain drew a boundary to reduce frontier conflict. Land investors and farmers exploded with frustration: "We fought for that land!" Many slipped across the line anyway, showing London that colonists would ignore orders when they clashed with local hopes.`,
-   adv:`The Crown wanted to avoid costly wars with Native nations, yet colonists read the proclamation as proof that British officials cared more about control than colonial sacrifices. Pamphlets dripped with resentment, governors quietly reported settlers defying the rule, and unrest simmered—still mostly quiet, but the sense of betrayal primed people for future clashes.`},
+   simple:`A proclamation is an official announcement. In 1763, the British government made one called the Proclamation of 1763. It said that the land west of the Appalachian Mountains—land Britain had just won after the French and Indian War—would belong to Native Americans. Colonists were not allowed to move or settle there.
+
+The British made this rule to help avoid more fighting with Native Americans. They also thought it would be easier to protect the colonists if everyone stayed east of the mountains.
+
+Many colonists were upset by this law. They had hoped to move west to find cheap, rich farmland, but now they couldn't. The Proclamation also showed that Britain wanted to control the colonies even more than before.`,
+   core:`A "proclamation" is a formal announcement. In the Proclamation of 1763, the British announced that the land won during the French and Indian War—the land west of the Appalachian Mountains—would be reserved for Native Americans. It was against the colonists to settle in that area.
+
+The British wanted to prevent any more wars with Native Americans. They hoped it would be easier to protect the colonists if they lived only in the lands east of the Appalachians.
+
+The colonists were frustrated by the Proclamation of 1763. Not only were they now unable to move westward, to cheap fertile land as they had hoped, but the Proclamation also made it clear that the British intended to maintain even tighter control over the colonies than ever before.`,
+   adv:`The Proclamation of 1763 was more than a boundary line; it revealed a clash of worldviews. To British officials, limiting westward settlement would prevent costly frontier wars and protect trade with Native nations. To many colonists, it felt like a betrayal — they had fought in the French and Indian War expecting land as a reward.
+
+Letters from veterans and land speculators show deep frustration. George Washington called the measure "a temporary inconvenience," but one that "must eventually fall to pieces." (<a href="https://www.mountvernon.org/library/digitalhistory/digital-encyclopedia/article/proclamation-line-of-1763" target="_blank" rel="noopener noreferrer">Mount Vernon Historical Library</a>) Native nations, meanwhile, viewed it as a rare acknowledgment of sovereignty — an imperial promise often ignored in practice.
+
+The Proclamation exposed a growing divide in motive: Britain sought control and balance, while settlers sought autonomy and opportunity. What looked to London like peacekeeping looked to the colonies like an early act of oppression — a boundary line that marked where loyalty began to crumble.`},
   {id:'B', title:'Quartering Act', year:1765, img:'https://upload.wikimedia.org/wikipedia/commons/0/04/Soldats-britanniques-cantonnes-dans-une-maison-coloniale-americaine-annees-1770.png', wiki:'https://en.wikipedia.org/wiki/Quartering_Acts',
-   simple:`Colonists had to house British soldiers. Families resented feeding troops they never asked for, and suspicion toward the army pushed unrest upward.`,
-   core:`Parliament demanded quarters, candles, and food for soldiers. Town meetings complained that a standing army felt like a threat. People muttered "Why are they watching us?" and their irritation edged toward anger each time soldiers knocked on the door.`,
-   adv:`Officials argued the troops prevented frontier wars, but colonists saw uniforms as symbols of mistrust. Assemblies stalled funding bills; citizens dodged requests by claiming no space was available. The everyday annoyance hardened into a belief that Britain would use force to keep colonists in line, nudging unrest from muttered complaints toward open hostility.`},
+   simple:`To quarter means to give someone a place to stay. The Quartering Act said that colonists had to let British soldiers live in their homes. They also had to give them things like food, candles, fuel, and even transportation.
+
+This law made many colonists angry. They didn't trust the soldiers and thought they were sent to watch over and control the colonists, not to protect them. The colonists also believed the British government should have asked for their permission before making a law that affected their homes and their money.`,
+   core:`"To quarter" means to give soldiers a place to stay. The Quartering Act required colonists to put British soldiers up in their home. In addition, colonists had to provide fuel, candles, beer and transportation for the troops.
+
+The Quartering Act angered the colonists. They were suspicious of troops. They believed that they had been sent to America not to protect colonists but to control them. The colonists also felt that the British should have asked for their approval before passing an act that affected their personal lives and their pocketbooks.`,
+   adv:`The Quartering Act forced colonists to house and supply British soldiers — a demand that cut to the heart of privacy and local control. British officers claimed the law ensured safety and order; colonists saw armed strangers sleeping in their towns as a symbol of mistrust.
+
+Newspapers accused Parliament of "keeping up standing armies in time of peace." In some cities, like New York, assemblies refused to pay for soldiers' supplies until Parliament suspended their legislative powers. (<a href="https://www.britannica.com/event/Quartering-Act" target="_blank" rel="noopener noreferrer">Britannica</a>) To British eyes, that was rebellion. To colonists, it was defense of principle.
+
+The act's real power was psychological. It turned distant government into daily intrusion — a soldier on your street, a cost on your table. Many colonists began to wonder: if Britain could force soldiers into our homes, what liberty could it not touch?`},
   {id:'C', title:'Stamp Act', year:1765, img:'https://upload.wikimedia.org/wikipedia/commons/d/df/Repeal_of_the_Stamp_Act.jpg', wiki:'https://en.wikipedia.org/wiki/Stamp_Act_1765',
-   simple:`Britain taxed paper goods. Colonists exploded with anger at paying for imperial stamps and rallied together to resist.`,
-   core:`Because the tax touched newspapers, legal forms, and even playing cards, the outrage was immediate. Sons of Liberty chapters formed, crowds bullied stamp distributors into resigning, and the cry "No taxation without representation!" echoed through docks and markets.`,
-   adv:`The direct, internal tax made colonists feel powerless and insulted. Merchants organized boycotts, printers published fiery essays, and mobs hanged officials in effigy. When the Stamp Act Congress petitioned the king, it was coordinated fury—not polite frustration. Colonial anger now throbbed in unison.`},
+   simple:`After the French and Indian War, Britain owed a lot of money. The British government thought the colonists should help pay for the cost of protecting them during the war. In 1765, Parliament passed a new law called the Stamp Act.
+
+The Stamp Act said that colonists had to pay a tax on printed items like newspapers, pamphlets, marriage licenses, and playing cards. People had to buy a stamp and put it on each paper to show they had paid the tax.
+
+The colonists were very angry about this law. It wasn't just about the money—they believed it was unfair to be taxed without having a say. They said it was "taxation without representation."
+
+Colonists fought back in many ways: Groups like the Sons of Liberty and Daughters of Liberty stopped stamped papers from being brought off ships. Merchants refused to buy or sell British goods. Leaders from 9 colonies met at the Stamp Act Congress. They said the tax was unfair and asked Parliament to repeal (cancel) the law.
+
+In the end, Parliament did repeal the Stamp Act, but the anger between Britain and the colonies continued to grow.`,
+   core:`The British were in debt after the French and Indian War. They felt that the colonists should help pay for some of the expenses involved in defending the colonies from the French. The Stamp Act, passed in 1765, required the colonists to pay a tax on most printed materials, such as newspapers, pamphlets, marriage licenses, and playing cards. A colonist had to purchase a stamp and place it on any printed document to prove they had paid the tax.
+
+The colonists were very angered by the Stamp Act. They weren't upset about just having to pay the tax. They felt that their freedom had been threatened because they had no say in the making of the law. The colonists resented being taxed without their consent.
+
+Throughout the colonies, people responded in a number of ways: Groups such as the Sons of Liberty and the Daughters of Liberty stopped stamped papers from being unloaded at docks. Merchants organized a boycott of British goods. They agreed not to buy anything British. Representatives from 9 colonies formed the Stamp Act Congress and declared that the stamp taxes could not be collected without the consent of the colonists. They demanded that Parliament repeal, or do away with, the act. Eventually, Parliament repealed the Stamp Act.`,
+   adv:`The Stamp Act touched everyone — merchants, lawyers, sailors, even tavern keepers. It taxed paper goods and stamped each with the mark of royal authority. Parliament argued it was fair: the colonies should help pay for their own defense. But for many colonists, it was the first undeniable sign that London saw them as subjects, not partners.
+
+Pamphlets cried, "No taxation without representation!" — a slogan that echoed from Virginia to Massachusetts. James Otis, an early protest leader, argued that "taxation without representation is tyranny." (<a href="https://www.masshist.org/revolution/stamp.php" target="_blank" rel="noopener noreferrer">Massachusetts Historical Society</a>) Boycotts spread, uniting merchants, printers, and farmers in a common cause. Even Benjamin Franklin, once loyal to Britain, warned Parliament that the act would "light the fires of discontent." (<a href="https://www.parliament.uk/about/living-heritage/evolutionofparliament/legislativescrutiny/parliament-and-empire/parliament-and-the-american-colonies-before-1765/the-stamp-act-and-the-american-colonies-1763-67/" target="_blank" rel="noopener noreferrer">UK Parliament Archives</a>)
+
+By repealing the law in 1766, Britain admitted defeat — but too late. The Stamp Act taught colonists that shared resistance could work, and that liberty was not just an idea but a practice. Every meeting, boycott, and petition was rehearsal for revolution.`},
   {id:'D', title:'Townshend Acts', year:1767, img:'https://upload.wikimedia.org/wikipedia/commons/9/9a/CharlesTownshend.jpg', wiki:'https://en.wikipedia.org/wiki/Townshend_Acts',
-   simple:`Britain hid new taxes in imported goods. Colonists spotted the trick, revived boycotts, and unrest climbed.`,
-   core:`Customs officials gained power to search ships, merchants lost profits, and households paid more for basics. Non-importation agreements returned; women brewed "liberty tea," and shopkeepers who broke the boycott were shamed. Anger spread beyond city mobs into homes and marketplaces.`,
-   adv:`Townshend hoped quiet taxes would calm the colonies; instead people answered with hardened defiance. When officials seized John Hancock's ship Liberty, brawls erupted on Boston's docks. Newspapers insisted Britain aimed to bleed the colonies dry, and colonists began policing one another. Resentment shifted from policy debate to personal enforcement—friends confronting friends, a society sliding toward confrontation.`},
+   simple:`Charles Townshend, a British leader, created new taxes on lead, glass, paper, paint, and tea. These taxes were indirect, which means they were collected before the goods ever reached the stores. The tax was added at the sea ports, so the cost was already built into the price. Townshend hoped the colonists wouldn't notice they were paying extra money to Britain.
+
+But the colonists did notice. They believed these taxes were unfair, because they still had no representatives in Parliament to speak or vote for them. Once again, they said this was "taxation without representation."
+
+To show their anger, the colonists boycotted British goods—they refused to buy anything made in Britain.`,
+   core:`Charles Townshend, the new British Prime Minister, imposed a small indirect tax on lead, glass, paper, paint and tea. The tax was "indirect" because it was collected at the sea ports (such as the one on the picture) before the items reached colonial stores. Since the tax would then be included in the price the colonists paid at the stores—and not added onto the price like with the Stamp Act—Townshend hoped the colonists would not even notice they were paying a tax.
+
+The colonists, however, recognized the indirect tax. They saw it as an unjust form of TAXATION WITHOUT REPRESENTATION, since they had no representatives in Parliament from the colonies to vote on these taxes. As under the Stamp Act, they organized a boycott of British goods.`,
+   adv:`On your slide, the broadside announcing the Townshend Acts lists new import duties on glass, paint, paper, and tea — ordinary items that suddenly became symbols of control. Charles Townshend, the British Chancellor of the Exchequer, claimed the taxes were "modest" and necessary for order. But colonists saw manipulation: the revenue paid royal officials, cutting assemblies out of power.
+
+Letters from merchants reveal both economic pain and moral outrage. James Otis Jr., a lawyer and politician from Massachusetts wrote, "…the very act of taxing, exercised over those who are not represented, appears to me to be depriving them of one of their most essential rights, as freemen; and if continued, seems to be in effect an entire disfranchisement of every civil right" (<a href="https://www.americanrevolution.org/no-taxation-without-representation/?utm_source=chatgpt.com#:~:text=%E2%80%A6the%20very%20act%20of%20taxing%2C%20exercised%20over%20those%20who%20are%20not%20represented%2C%20appears%20to%20me%20to%20be%20depriving%20them%20of%20one%20of%20their%20most%20essential%20rights%2C%20as%20freemen%3B%20and%20if%20continued%2C%20seems%20to%20be%20in%20effect%20an%20entire%20disfranchisement%20of%20every%20civil%20right" target="_blank" rel="noopener noreferrer">AmericanRevolution.org</a>) Women joined in too; spinning bees became acts of protest, replacing imported fabric with homespun cloth. These "Daughters of Liberty" gave rebellion a domestic voice.
+
+As the slide image suggests, the acts blurred everyday life and empire. To the British, taxation was administration; to colonists, it was alienation. Every boycott, every homespun dress, turned politics into practice — and deepened the habit of resistance.`},
   {id:'E', title:'Boston Massacre', year:1770, img:'https://upload.wikimedia.org/wikipedia/commons/b/bd/%22The_Boston_Massacre%22%2C_03-05-1770_-_NARA_-_513326.jpg', wiki:'https://en.wikipedia.org/wiki/Boston_Massacre',
-   simple:`A clash in Boston ended with soldiers firing into a crowd. Colonists were furious and called it a massacre.`,
-   core:`Years of tension snapped outside the customs house—insults, ice, and clubs surrounded the soldiers, who panicked and fired. Funerals drew thousands, and Paul Revere's engraving raced through the colonies, turning local grief into wide outrage.`,
-   adv:`John Adams defended the soldiers, but Samuel Adams seized the moment to paint Britain as cruel. Committees retold the story with emotional punch, insisting the empire would spill colonial blood to keep control. Moderates who had hoped for calm now felt anger in their gut: if soldiers could shoot unarmed neighbors, how safe was anyone? Unrest spiked dangerously.`},
+   simple:`On March 5, 1770, a group of colonists in Boston began to shout at and tease British soldiers. Some colonists even threw snowballs at them. Things quickly got out of control, and the British soldiers fired their guns into the crowd. Five colonists were killed.
+
+Many colonists thought the British soldiers were to blame. Angry citizens held a town meeting and demanded that the soldiers be removed from Boston and be put on trial for murder. The British government agreed to these demands.`,
+   core:`On March 5, 1770, a mob of colonists in Boston began to harass British troops, taunting them and throwing snowballs. The situation soon got out of hand, and finally the troops opened fire. Five colonists died.
+
+Most colonists believed that the British soldiers were completely at fault. The enraged citizens of Boston called a town meeting to demand the removal of the British troops and to argue for the trial of the British soldiers for murder. The British agreed to the colonists' demands.`,
+   adv:`The engraving on your slide — Paul Revere's dramatic Boston Massacre — turned confusion into clarity. In his version, disciplined redcoats fire into a helpless crowd. The truth was messier: chaos, fear, and snowballs on a freezing March night. For soldiers, surrounded and taunted, it was self-defense. For colonists, it was proof that Britain ruled through violence.
+
+Within days, Revere's image spread across the colonies, stoking outrage. Yet another voice emerged — John Adams — who risked his reputation to defend the soldiers, reminding Bostonians that "facts are stubborn things." (<a href="https://founders.archives.gov/documents/Adams/05-03-02-0001-0004-0016#:~:text=I%20will%20enlarge%20no%20more%20on%20the%20evidence%2C%20but%20submit%20it%20to%20you.%E2%80%94Facts%20are%20stubborn%20things%3B%20and%20whatever%20may%20be%20our%20wishes%2C%20our%20inclinations%2C%20or%20the%20dictates%20of%20our%20passions%2C%20they%20cannot%20alter%20the%20state%20of%20facts%20and%20evidence" target="_blank" rel="noopener noreferrer">Founders.gov</a>)
+
+The event showed how images could shape truth. The slide's engraving reminds students that propaganda (information meant to influence opinion) became a revolutionary tool. The massacre's legacy wasn't just five deaths — it was the realization that perception could unite a movement faster than armies could suppress it.`},
   {id:'F', title:'Boston Tea Party', year:1773, img:'https://upload.wikimedia.org/wikipedia/commons/5/52/Boston_Tea_Party_Currier_colored.jpg', wiki:'https://en.wikipedia.org/wiki/Boston_Tea_Party',
-   simple:`Colonists dumped an entire shipment of tea rather than pay the tax. The daring protest thrilled patriots and shocked loyalists.`,
-   core:`The Tea Act let the East India Company undersell colonial merchants while keeping the tax. When the governor refused to send the ships back, patriots calmly tossed 342 chests into Boston Harbor. Supporters cheered the bold strike; loyalists gasped that a mob now ruled the city.`,
-   adv:`The tea protest showed anger was now disciplined. Volunteers swept the decks afterward to prove they targeted tea, not private property. Britain saw a rebellious city; colonists felt pride—if Parliament wouldn't listen, action would speak. The emotional surge convinced many fence-sitters that British power could—and should—be challenged directly.`},
+   simple:`In 1773, the British government passed the Tea Act. This law gave one company—the British East India Company—a monopoly, which means they were the only company allowed to sell tea to the American colonies.
+
+Even though the Tea Act actually made tea cheaper, the colonists were angry. They believed it was unfair for Britain to make decisions for them without asking their opinion.
+
+To protest the Tea Act, a group called the Sons of Liberty planned the Boston Tea Party. One night, some colonists dressed as Native Americans, snuck onto three British ships, and dumped 342 chests of tea into the Boston Harbor. Many colonists cheered and celebrated their act of protest.`,
+   core:`In 1773 Parliament passed the Tea Act, which gave the British East Indies company a complete monopoly of the American tea business—meaning colonists could ONLY buy tea from this company. No other company could compete with it.
+
+Despite the fact that this act actually lowered the price of tea, the colonists still opposed it. They viewed the Tea Act as merely another example of England making a decision that concerned the colonists without consulting them.
+
+To protest the Tea Act, the Sons of Liberty organized the Boston Tea Party. Dressed as Native Americans, colonists raided three British ships in the Boston harbor. They smashed open 342 chests of tea and dumped them into the harbor, while a crowd of people watched in approval.`,
+   adv:`Your slide shows men disguised as Mohawk warriors tossing chests of tea into Boston Harbor — a theatrical act with enormous consequences. The Boston Tea Party began as an argument over principle: even a cheap tax was still tyranny.
+
+British lawmakers thought colonists would accept the bargain — cheaper tea through monopoly. Instead, they underestimated pride. Samuel Adams argued that to buy the taxed tea was to "admit the right of taxation." (<a href="https://www.masshist.org/revolution/teaparty.php" target="_blank" rel="noopener noreferrer">Massachusetts Historical Society</a>) The protestors' disguises symbolized freedom and identity — colonists rejecting Britishness and adopting American defiance.
+
+To the British, this was criminal destruction of property; to the colonists, it was moral purification. The image on your slide freezes that moment — unity, disguise, rebellion. The splash of tea was heard around the world. Within months, Britain would strike back with punishment so severe it erased any illusion of reconciliation.`},
   {id:'G', title:'Intolerable (Coercive) Acts', year:1774, img:'https://upload.wikimedia.org/wikipedia/commons/5/57/The_able_doctor%2C_or_America_swallowing_the_bitter_draught_%28NYPL_Hades-248165-425086%29.jpg', wiki:'https://en.wikipedia.org/wiki/Intolerable_Acts',
-   simple:`Britain punished Boston by closing the harbor and rewriting colonial rules. Colonists across America feared the same could happen to them.`,
-   core:`Parliament shut Boston Harbor, altered the Massachusetts charter, moved trials to Britain, and revived quartering. The message was clear: obey—or be crushed. Other colonies sent aid, furious that an entire town was being starved as an example.`,
-   adv:`The crackdown turned local anger into continent-wide solidarity. Newspapers described padlocked warehouses and hungry families. Colonies formed relief committees and warned that if Parliament could strangle Boston, none were safe. Sympathy hardened into determination—colonists promised to stand together, even if that meant defying Britain outright.`},
+   simple:`To coerce means to force someone to do something. After the Boston Tea Party, the British government wanted to punish the colonists and make them obey. They passed a set of laws called the Coercive Acts. These laws closed the port of Boston, put Massachusetts under military rule, and ended town meetings and the colonial legislature. The British hoped this would force the colonists to pay for the lost tea and to follow British rules.
+
+The colonists were shocked and angry. They called these laws the "Intolerable Acts" because they believed they were too harsh to accept. The laws were meant only for Massachusetts, but other colonies joined in protest, afraid they might lose their freedoms too.
+
+Samuel Adams, shown in the picture on your slide, helped organize resistance and spread the word. When the acts began, flags were flown at half-mast to show sadness and protest. In the towns around Boston, "minutemen"—colonists trained to fight quickly—began storing weapons and preparing for battle in case war began.`,
+   core:`"To coerce" means to force someone to do something. The British passed the Coercive Acts in reaction to the Boston Tea Party. They hoped to force colonists to pay for the tea lost and to obey British rule. The Coercive Acts closed the port of Boston and imposed military rule on all of Massachusetts. The Massachusetts legislature and town meetings were suspended.
+
+Sam Adams, whose painting is on the Google slide, helped to stir up colonial response to these acts. The colonists call the acts the "Intolerable Acts" because they did not feel that they could tolerate them. The taxes they had been battling were nothing in comparison to this harsh British crackdown on colonial rights.
+
+Although the acts applied only to Massachusetts, the other colonies rallied to protest them. The colonists feared that if such British actions were to continue, the rest of the colonies were in danger of losing their liberties as well. On the day the acts went into effect, flags throughout the colonies were flown at half-mast. Meanwhile, in the towns surrounding Boston, "minutemen" began to store arms and to train for possible battle "at a minute's notice".`,
+   adv:`On the slide, a map of closed Boston Harbor represents punishment in policy form. The Intolerable Acts (called the Coercive Acts in Britain) shut down the port, replaced local leaders, and stationed troops inside the city. To Parliament, this was discipline; to colonists, it was collective suffering. Merchants went bankrupt, workers starved, and neighbors from as far away as Virginia sent food to the blockaded city. In a 1774 letter from George Washington to George William Fairfax:<blockquote style="margin: 16px 0; padding: 12px 16px; border-left: 4px solid var(--accent); background: var(--callout-bg); font-style: italic;">"In short the Ministry may rely on it … that Americans will never be tax'd without their own consent; that the cause of Boston, the despotick measures in respect to it, I mean now is and ever will be consider'd as the cause of America…" (<a href="https://www.mountvernon.org/library/digitalhistory/past-projects/quotes/article/in-short-the-ministry-may-rely-on-it-that-americans-will-never-be-taxd-without-their-own-consent-that-the-cause-of-boston-the-despotick-measures-in-respect-to-it-i-mean-now-is-and-ever-will-be-considerd-as-the-cause-of-america-not-that-we-approve-their-co" target="_blank" rel="noopener noreferrer">MountVernon.org</a>)</blockquote>What London intended as isolation instead created unity. The slide's imagery of a chained harbor perfectly captures the feeling: freedom held hostage. Across the colonies, people who had once felt distant now shared a common outrage. The Intolerable Acts didn't just close Boston — they opened the road to revolution.`},
   {id:'H', title:'First Continental Congress', year:1774, img:'https://upload.wikimedia.org/wikipedia/commons/8/85/1st-continental-congress-1.jpg', wiki:'https://en.wikipedia.org/wiki/First_Continental_Congress',
-   simple:`Delegates from twelve colonies met and spoke with one voice. Sharing their anger gave them confidence to push back harder.`,
-   core:`In Philadelphia they debated calmly but carried the sting of the Intolerable Acts. They agreed on non-importation, prepared local committees to enforce it, and promised to meet again if Britain refused. Their unity reassured colonists that they were not alone in their frustration.`,
-   adv:`The Congress converted emotion into strategy. Delegates argued, compromised, and left determined to pressure Britain economically. News of their plan energized towns—people formed militias, stockpiled powder, and enforced boycotts. The anger that once flared in isolated protests now had a coordinated plan; colonial patience was nearly gone.`},
+   simple:`After the Coercive Acts, the colonies decided to work together for the first time. They realized that if they stayed divided, they could lose their rights and freedoms. The colonies wanted to stand as one group and send their complaints to Britain together.
+
+In 1774, representatives from 12 of the 13 colonies met in Philadelphia at a meeting called the First Continental Congress. Some of the famous leaders there were Samuel Adams, John Adams, George Washington, and Patrick Henry.
+
+After meeting for seven weeks, the delegates wrote a Declaration of Rights and letters to the King and to the British people, asking them to respect the colonies' freedoms. The Congress also decided to boycott British trade—they would not buy or sell anything from or to England. Anyone who broke this rule could be tarred and feathered as punishment.`,
+   core:`As a result of the Coercive Acts, the colonies put aside their individual differences and, for the first time, agreed to work together to protect their collective rights. They felt they needed to present their complaints to the British as a unified group.
+
+Representatives from 12 of the 13 colonies met and formed the First Continental Congress. They met in the building in Philadelphia that is featured on the Google Slide. Men such as Samuel Adams, John Adams, George Washington and Patrick Henry attended.
+
+After seven weeks, the Congress drew up the Declaration of Rights, as well as appeals to the King and to the British people. In addition, Congress called for a complete boycott of all trade with England. Both exports to and imports from England would cease. Violators were regularly tarred and feathered.`,
+   adv:`Your slide's painting of the First Continental Congress captures a remarkable scene — ordinary men performing extraordinary politics. Representatives from twelve colonies met in Philadelphia to debate how to respond to British power.
+
+Inside Carpenter's Hall, voices clashed. Some delegates, like John Dickinson, urged patience and petition; others, like Patrick Henry, thundered, "I am not a Virginian, but an American!" (<a href="https://www.colonialwilliamsburg.org/discover/18th-century-people/nation-builders/patrick-henry/#:~:text=Distinctions%20between%20Virginians%2C%20Pennsylvanians%2C%20New%20Yorkers%2C%20and%20New%20Englanders%2C%20are%20no%20more.%20I%20am%20not%20a%20Virginian%2C%20but%20an%20American." target="_blank" rel="noopener noreferrer">Colonial Williamsburg</a>) The Congress agreed on boycotts and began organizing local committees to enforce them.
+
+The slide reminds us how the colonies transformed from scattered provinces into a united movement. This was the first rehearsal for self-government — with argument, compromise, and vision. Though still loyal to the king, the delegates had crossed a threshold: they were now speaking as Americans.`},
   {id:'I', title:'Lexington & Concord', year:1775, img:'https://upload.wikimedia.org/wikipedia/commons/3/3b/The_Battle_of_Lexington.jpg', wiki:'https://en.wikipedia.org/wiki/Battles_of_Lexington_and_Concord',
-   simple:`British troops marched to seize colonial weapons. Angry militia met them, shots rang out, and the road to war began.`,
-   core:`When redcoats left Boston, riders warned the countryside. At Lexington, militia refused to step aside; gunfire followed. Colonists chased the soldiers back to Boston from Concord's bridge, shouting victory. The emotional jolt was huge—anger turned into armed defense overnight.`,
-   adv:`The "shot heard 'round the world" made clear that colonial anger had reached its limit. Towns emptied to defend the stores they had drilled to protect. British casualties proved the empire no longer controlled the countryside. Unrest was now open rebellion; colonists believed their rights—and their lives—were at stake, so they answered with muskets.`}
+   simple:`When the First Continental Congress asked Britain to change its unfair laws, Parliament refused. In April 1775, British soldiers left Boston and marched toward the nearby towns of Lexington and Concord. Their plan was to take away the colonists' weapons and gunpowder and to capture the leaders, Samuel Adams and John Hancock.
+
+At Lexington, a group of minutemen (colonists ready to fight at a minute's notice) met the British soldiers. No one knows who fired the first shot, but soon eight colonists were killed and ten were wounded. The British continued on to Concord, where more minutemen fought back. As the British retreated to Boston, the colonists fired at them from behind trees and fences. By the end of the day, the British lost 273 soldiers, while the colonists lost fewer than 100.
+
+After these battles, thousands of minutemen gathered around Boston, ready for the next fight. The Second Continental Congress met again and chose George Washington to lead the new colonial army. The Revolutionary War had begun.`,
+   core:`Parliament rejected all petitions for change that came from the First Continental Congress. In April, 1775, British troops left Boston and marched to nearby Lexington and Concord. They planned to seize stores of colonial gunpowder and arms and to capture the "rebel" leaders, Samuel Adams and John Hancock.
+
+At Lexington, colonial minutemen—colonists who had joined the militia—met the British soldiers. No one knows who fired first, but when the smoke cleared, eight colonists were dead and ten were wounded. The "Redcoats" pushed on to Concord, where they were met by more minutemen. Then, while the British retreated back to Boston, minutemen fired on them from behind trees and fences. At day's end, the British suffered 273 casualties, while the colonists suffered less than one hundred.
+
+After the battles of Lexington and Concord, thousands of minutemen from the area gathered around Boston in anticipation of the next battle. The Second Continental Congress met and drafted a new appeal to the King. They also selected George Washington to head the army of minutemen surrounding Boston. The Revolutionary War had begun.`,
+   adv:`The image on your slide — the battle on the village green — marks the moment when debate became war. On April 19, 1775, British soldiers marched to seize weapons at Concord and arrest rebel leaders Samuel Adams and John Hancock. But through the night, riders like Paul Revere and William Dawes warned local militias that "the regulars are coming."
+
+At dawn in Lexington, nervous farmers faced the king's army. Captain John Parker reportedly ordered, "Stand your ground; don't fire unless fired upon; but if they mean to have a war, let it begin here." (<a href="https://www.battlefields.org/learn/biographies/john-parker?utm_source=chatgpt.com#:~:text=Parker%20is%20said%20to%20have%20told%20his%20men%2C%20%E2%80%9CStand%20your%20ground.%20Don%E2%80%99t%20fire%20unless%20fired%20upon%2C%20but%20if%20they%20mean%20to%20have%20a%20war%2C%20let%20it%20begin%20here.%E2%80%9D" target="_blank" rel="noopener noreferrer">American Battlefield Trust</a>) Historians note that this quote comes from later accounts and family tradition, not Parker's own recorded words — a reminder that memory and myth often intertwine in revolutionary history.
+
+To British commanders, these colonists were criminals. To the militia, they were defenders of natural rights. The slide captures not just battle but identity — ordinary people standing as citizens. Lexington and Concord transformed protest into revolution and revolution into a nation's beginning.`}
 ];
 
 const STEPS = [
@@ -608,6 +735,23 @@ function buildFormURL(){
   u.searchParams.set(ENTRY.q3, state.answers.q3||'');
   u.searchParams.set(ENTRY.q4, state.answers.q4||'');
   u.searchParams.set(ENTRY.q5, state.answers.q5||'');
+
+  // Add individual ratings data if firstPicks exists
+  if(state.firstPicks && ENTRY.ratings){
+    EVENTS.forEach(event => {
+      const initial = state.firstPicks[event.id] || 1;
+      const final = state.rows[event.id].rating || 1;
+      const change = final - initial;
+
+      const eventEntry = ENTRY.ratings[event.id];
+      if(eventEntry){
+        u.searchParams.set(eventEntry.initial, String(initial));
+        u.searchParams.set(eventEntry.final, String(final));
+        u.searchParams.set(eventEntry.change, String(change));
+      }
+    });
+  }
+
   return u.toString();
 }
 function sumRatings(){ return EVENTS.reduce((s,e)=> s + (+state.rows[e.id].rating||0), 0); }
@@ -854,7 +998,12 @@ function renderPlacardsSection(){
             const reading = h('div',{class:'event-reading'});
             const parts = textFor(e,row.level).split(/\n\s*\n/).filter(Boolean);
             if(parts.length===0) parts.push(textFor(e,row.level));
-            parts.forEach(par => reading.appendChild(p(par, 'event-text')));
+            parts.forEach(par => {
+              const paragraph = document.createElement('p');
+              paragraph.className = 'event-text';
+              paragraph.innerHTML = par;
+              reading.appendChild(paragraph);
+            });
             return reading;
           })(),
           h('div',{class:'event-link'}, a(e.wiki,'Read more on Wikipedia →','link')),
@@ -997,7 +1146,12 @@ function renderSummarySection(){
     const body = open ? (()=>{
       const container = h('div',{class:'summary-body'});
       container.id = bodyId;
-      const paragraphs = textFor(event,row.level).split(/\n\s*\n/).filter(Boolean).map(par=>p(par,'event-text'));
+      const paragraphs = textFor(event,row.level).split(/\n\s*\n/).filter(Boolean).map(par=>{
+        const paragraph = document.createElement('p');
+        paragraph.className = 'event-text';
+        paragraph.innerHTML = par;
+        return paragraph;
+      });
       const rationaleInput = textarea(row.rationale, val=>{ row.rationale = val; });
       const starterChips = createStarterChips(text=>{
         rationaleInput.value = text;
@@ -1067,6 +1221,52 @@ function renderQuestionsSection(){
     card.append(h('div',{class:'lock-overlay',role:'status','aria-live':'polite'},'Finish balancing your 36 points to unlock the reflection.'));
     section.append(card);
     return section;
+  }
+
+  // Rating comparison card
+  if(state.firstPicks){
+    const comparisonCard = h('section',{class:'card rating-comparison-card'});
+    const comparisonBody = h('div',{class:'card-b'});
+
+    const comparisonTable = h('div',{class:'rating-comparison-table'});
+
+    // Header row
+    const headerRow = h('div',{class:'comparison-row comparison-header'});
+    headerRow.append(
+      h('div',{class:'comparison-event'},'Event'),
+      h('div',{class:'comparison-before'},'Initial Rating'),
+      h('div',{class:'comparison-after'},'Final Rating'),
+      h('div',{class:'comparison-change'},'Change')
+    );
+    comparisonTable.appendChild(headerRow);
+
+    // Data rows
+    EVENTS.forEach(event => {
+      const initial = state.firstPicks[event.id] || 1;
+      const final = state.rows[event.id].rating || 1;
+      const change = final - initial;
+
+      const row = h('div',{class:'comparison-row'});
+      row.append(
+        h('div',{class:'comparison-event'}, event.title),
+        h('div',{class:'comparison-before'}, String(initial)),
+        h('div',{class:'comparison-after'}, String(final)),
+        h('div',{class:'comparison-change'+(change>0?' positive':change<0?' negative':' neutral')},
+          change === 0 ? '—' : (change > 0 ? '+' : '') + change
+        )
+      );
+      comparisonTable.appendChild(row);
+    });
+
+    comparisonBody.appendChild(comparisonTable);
+    comparisonCard.append(
+      h('div',{class:'card-h'},
+        h('h3',{},'How Your Ratings Changed'),
+        p('Compare your initial gut reactions to your final budget-constrained choices.', 'sub')
+      ),
+      comparisonBody
+    );
+    card.append(comparisonCard);
   }
 
   const filled = state.answers.name && state.answers.period && state.answers.q3 && state.answers.q4 && state.answers.q5;
