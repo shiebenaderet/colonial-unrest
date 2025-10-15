@@ -1495,7 +1495,8 @@ function createIntroIllustration(tag, subtitle, index){
   // Map tags to real historical images
   const imageMap = {
     'Calm': 'https://upload.wikimedia.org/wikipedia/commons/0/04/Soldats-britanniques-cantonnes-dans-une-maison-coloniale-americaine-annees-1770.png',
-    'Unrest': 'https://upload.wikimedia.org/wikipedia/commons/d/df/Repeal_of_the_Stamp_Act.jpg'
+    'Unrest': 'https://upload.wikimedia.org/wikipedia/commons/d/df/Repeal_of_the_Stamp_Act.jpg',
+    'Today': 'https://upload.wikimedia.org/wikipedia/commons/4/4c/Civil_Rights_March_on_Washington%2C_D.C._%28Leaders_marching_from_the_Washington_Monument_to_the_Lincoln_Memorial%29_-_NARA_-_542010.jpg'
   };
 
   const imageUrl = imageMap[tag];
@@ -1840,6 +1841,7 @@ function renderIntroSlides(){
     save();
     render();
   };
+
   overlay.appendChild(
     h('div',{class:'intro-slide'},
       h('div',{class:'intro-media'}, illustration),
