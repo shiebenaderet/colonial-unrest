@@ -8,7 +8,7 @@ Open `index.html` in any modern browser, or host it (e.g. GitHub Pages) so stude
 
 ### Activity flow
 1. **Overview** — vocabulary, learning goals, and how the point budget works.
-2. **Placards** — read each event (Simple / Core / Advanced), rate the unrest it created 1–8, and write a rationale.
+2. **Placards** — read each event at one of three reading levels (the tabs read **Explain / Default / Tell me more**, from simplest to most advanced), rate the unrest it created 1–8, and write a rationale.
 3. **Spend Your 36 Points** — rebalance all nine ratings to total exactly 36, forcing students to decide which events mattered most.
 4. **Reflection** — short-answer questions, pre-filled into a linked Google Form.
 

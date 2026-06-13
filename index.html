@@ -584,7 +584,7 @@ By repealing the law in 1766, Britain admitted defeat — but too late. The Stam
 But the colonists did notice. They believed these taxes were unfair, because they still had no representatives in Parliament to speak or vote for them. Once again, they said this was "taxation without representation."
 
 To show their anger, the colonists boycotted British goods—they refused to buy anything made in Britain.`,
-   core:`Charles Townshend, the new British Prime Minister, imposed a small indirect tax on lead, glass, paper, paint and tea. The tax was "indirect" because it was collected at the sea ports (such as the one on the picture) before the items reached colonial stores. Since the tax would then be included in the price the colonists paid at the stores—and not added onto the price like with the Stamp Act—Townshend hoped the colonists would not even notice they were paying a tax.
+   core:`Charles Townshend, a powerful British official in charge of the treasury (the Chancellor of the Exchequer), imposed a small indirect tax on lead, glass, paper, paint and tea. The tax was "indirect" because it was collected at the sea ports (such as the one on the picture) before the items reached colonial stores. Since the tax would then be included in the price the colonists paid at the stores—and not added onto the price like with the Stamp Act—Townshend hoped the colonists would not even notice they were paying a tax.
 
 The colonists, however, recognized the indirect tax. They saw it as an unjust form of TAXATION WITHOUT REPRESENTATION, since they had no representatives in Parliament from the colonies to vote on these taxes. As under the Stamp Act, they organized a boycott of British goods.`,
    adv:`On your slide, the broadside announcing the Townshend Acts lists new import duties on glass, paint, paper, and tea — ordinary items that suddenly became symbols of control. Charles Townshend, the British Chancellor of the Exchequer, claimed the taxes were "modest" and necessary for order. But colonists saw manipulation: the revenue paid royal officials, cutting assemblies out of power.
@@ -669,7 +669,7 @@ To British commanders, these colonists were criminals. To the militia, they were
 const STEPS = [
   {id:'splash', label:'Overview', anchor:'section-overview'},
   {id:'cards', label:'Placards', anchor:'section-placards'},
-  {id:'summary', label:'Finalize Budget', anchor:'section-summary'},
+  {id:'summary', label:'Spend 36 Points', anchor:'section-summary'},
   {id:'questions', label:'Reflection', anchor:'section-questions'}
 ];
 
@@ -862,6 +862,14 @@ function setPhase(p){
   const currentIdx = STEPS.findIndex(step => step.id===state.phase);
   const targetIdx = STEPS.findIndex(step => step.id===p);
   if(targetIdx < currentIdx) return;
+  // Snapshot first picks the first time the student reaches the budget, no
+  // matter how they got there (final placard button, timeline, or step chip).
+  // Without this, students who jump via the timeline lose the before/after
+  // comparison and their per-event data never reaches the Google Form.
+  if(p==='summary' && !state.firstPicks){
+    const snap = {}; EVENTS.forEach(ev => snap[ev.id] = clamp1to8(state.rows[ev.id].rating||1));
+    state.firstPicks = snap;
+  }
   state.phase = p;
   save();
   render();
@@ -998,7 +1006,7 @@ function renderSplashSection(){
         h('li',{}, 'Support each rating with evidence from the event, using cause-and-effect language.')
       )
     ),
-    p('As you progress, jot a complete-sentence rationale for every rating. Only after the ninth placard will the budget reveal unlock, letting you re-balance all of your scores in one place.', 'section-lead')
+    p('As you progress, write a short rationale explaining every rating. Only after the ninth placard will the budget reveal unlock, letting you re-balance all of your scores in one place.', 'section-lead')
   );
   card.append(intro);
   const container = h('div',{class:'splash-wrapper'});
@@ -1070,7 +1078,7 @@ function renderSplashSection(){
     ),
     h('aside',{class:'card splash-card secondary'},
       h('div',{class:'steps-header'},'Ready to begin?'),
-      h('p',{},'After this screen you will dive straight into the timeline. Keep your ratings honest and your sentences complete—your adjustments come later.'),
+      h('p',{},'After this screen you will dive straight into the timeline. Keep your ratings honest and explain your thinking—your adjustments come later.'),
       h('p',{},'When you feel prepared, use the button below to enter your first placard.'),
       h('div',{class:'row',style:'justify-content:center'}, btnGhost('Jump to placards', ()=>{ setPhase('cards'); scrollToSection('section-placards'); }, false))
     )
@@ -1225,7 +1233,7 @@ function renderPlacardsSection(){
           ),
           h('div',{class:'event-controls'},
             btnGhost('Previous placard', ()=>{ state.current=Math.max(0,state.current-1); save(); render(); }, state.current===0),
-            btn(state.current < EVENTS.length-1 ? 'Save & Continue →' : 'Reveal the Budget →', ()=>{
+            btn(state.current < EVENTS.length-1 ? 'Save & Continue →' : 'Spend Your 36 Points →', ()=>{
               const problem = rationaleProblem(row);
               if(problem) { toast(problem); return; }
               if(state.current < EVENTS.length-1){
@@ -1238,7 +1246,7 @@ function renderPlacardsSection(){
                 state.firstPicks = snap;
                 setPhase('summary');
                 scrollToSection('section-summary');
-                toast('Great work! Time to finalize your outrage budget.');
+                toast('Great work! Time to spend your 36 points.');
               }
             })
           )
@@ -1266,11 +1274,12 @@ function renderSummarySection(){
     span('Activity 2 • Weigh the Events','activity-badge'),
     h('h2',{},'Spend Your 36 Points'),
     p('Historians can’t call everything equally important. You have exactly 36 outrage points to spread across all nine events — so you have to decide which ones mattered most. Spending more on one event means spending less on another.', 'section-lead'),
-    p('As you rebalance, ask yourself: which events truly pushed the colonies toward revolution, and which were smaller steps along the way? Click any event to revisit its description, switch reading levels, or revise your rationale.', 'section-lead')
+    p('As you rebalance, ask yourself: which events truly pushed the colonies toward revolution, and which were smaller steps along the way? Click any event to revisit its description, switch reading levels, or revise your rationale.', 'section-lead'),
+    p('Tip: each rating stays between 1 and 8, so the lowest any event can go is 1. To free up points for a big event, lower several smaller ones.', 'note')
   );
   card.append(intro);
   if(locked){
-    card.append(h('div',{class:'lock-overlay',role:'status','aria-live':'polite'},'Rate every placard before you finalize the outrage budget.'));
+    card.append(h('div',{class:'lock-overlay',role:'status','aria-live':'polite'},'Rate every placard before you spend your 36 points.'));
     section.append(card);
     return section;
   }
@@ -1359,7 +1368,7 @@ function renderSummarySection(){
           starterChips,
           rationaleInput
         ),
-        span('Use a starter above or revise your own sentence so it ends with punctuation.', 'note')
+        span(state.relaxRationale ? 'Use a starter above or write a few words explaining your rating.' : 'Use a starter above or revise your own sentence so it ends with punctuation.', 'note')
       );
       return container;
     })() : null;
@@ -1648,14 +1657,14 @@ function modalContentFor(view){
     return [
       h('ol',{class:'info-list'},
         h('li',{}, 'Read a placard, select a level, and set the Unrest meter.'),
-        h('li',{}, 'Write a complete-sentence rationale that ends with punctuation.'),
+        h('li',{}, 'Write a rationale that explains why you chose your rating.'),
         h('li',{}, 'After all nine, you will rebalance everything on one summary screen (no spoilers until then!).')
       )
     ];
   }
   return [
     h('ul',{class:'info-list'},
-      h('li',{}, 'Aim for 6+ words and end with a period, ?, or !'),
+      h('li',{}, 'Aim for a full sentence — or a few clear words if “Shorter answers OK” is turned on.'),
       h('li',{}, 'Use cause-and-effect language (because, therefore, so).'),
       h('li',{}, 'If you change a rating later, update the rationale to match.')
     )
