@@ -140,6 +140,11 @@
   @media(min-width:640px){.glossary-grid{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}}
   .info-list{margin:0;padding-left:20px;color:var(--muted);font-size:14px;line-height:1.6}
   .info-list li{margin-bottom:6px}
+  .objectives{margin:14px 0 4px;padding:14px 16px;border-radius:14px;background:rgba(37,99,235,.1);border:1px solid rgba(37,99,235,.3)}
+  .objectives-head{margin:0 0 8px;font-size:14px;letter-spacing:.04em;text-transform:uppercase;color:var(--fg)}
+  .objectives-list{margin:0;padding-left:20px;font-size:14px;line-height:1.55;color:var(--fg)}
+  .objectives-list li{margin-bottom:6px}
+  body.light .objectives{background:rgba(37,99,235,.08);border-color:rgba(37,99,235,.28)}
   .steps-header{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
   .steps-list{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:12px;font-size:14px}
   .steps-list li{background:rgba(15,23,42,.55);border:1px solid rgba(148,163,184,.25);border-radius:14px;padding:12px}
@@ -179,6 +184,14 @@
   .event-link{font-size:13px}
   .event-link a{display:inline-flex;align-items:center;gap:6px}
   .event-link svg{width:12px;height:12px;fill:currentColor}
+  .key-terms{margin:14px 0 4px;border:1px solid var(--callout-border);border-radius:14px;background:var(--callout-bg);overflow:hidden}
+  .key-terms > summary{cursor:pointer;padding:10px 14px;font-weight:600;font-size:14px;color:var(--fg);list-style:none;display:flex;align-items:center;gap:8px}
+  .key-terms > summary::-webkit-details-marker{display:none}
+  .key-terms > summary::before{content:'＋';font-weight:700;color:var(--accent)}
+  .key-terms[open] > summary::before{content:'－'}
+  .key-terms > summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .key-terms-list{margin:0;padding:4px 16px 14px 34px;font-size:14px;line-height:1.55;color:var(--fg);display:grid;gap:8px}
+  .key-terms-list .cognate{display:block;margin-top:2px;font-size:12px;color:var(--muted);font-style:italic}
   .event-slider{display:grid;gap:12px;padding:16px;border-radius:16px;background:var(--panel-soft);border:1px solid var(--callout-border)}
   .event-slider label{display:flex;justify-content:space-between;align-items:center;font-weight:600}
   .event-slider label span{font-weight:400;font-size:14px;color:var(--muted)}
@@ -246,6 +259,32 @@
   .summary-footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:center;margin-top:12px}
   .summary-status{font-size:14px;color:var(--muted)}
   .summary-status strong{color:var(--fg)}
+  /* Budget feedback panel */
+  .budget-summary{display:grid;gap:8px;min-width:260px;flex:1 1 260px}
+  .budget-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .budget-badge{display:inline-flex;align-items:baseline;gap:2px;padding:4px 12px;border-radius:999px;font-size:20px;font-weight:700;border:1px solid var(--border);background:var(--surface-alt)}
+  .budget-badge span{font-size:13px;font-weight:500;color:var(--muted)}
+  .budget-badge.is-balanced{color:#bbf7d0;border-color:rgba(22,163,74,.5);background:rgba(22,163,74,.16)}
+  .budget-badge.is-under{color:#fde68a;border-color:rgba(217,119,6,.5);background:rgba(217,119,6,.14)}
+  .budget-badge.is-over{color:#fecaca;border-color:rgba(239,68,68,.5);background:rgba(239,68,68,.16)}
+  .budget-bar{height:12px;border-radius:999px;background:var(--progress-track);overflow:hidden;border:1px solid var(--border)}
+  .budget-bar-fill{height:100%;border-radius:999px;transition:width .25s ease,background .25s ease}
+  .budget-bar.is-balanced .budget-bar-fill{background:linear-gradient(90deg,#16a34a,#22c55e)}
+  .budget-bar.is-under .budget-bar-fill{background:linear-gradient(90deg,#2563eb,#60a5fa)}
+  .budget-bar.is-over{border-color:rgba(239,68,68,.6)}
+  .budget-bar.is-over .budget-bar-fill{background:linear-gradient(90deg,#ef4444,#f87171)}
+  .budget-hint{font-size:13px;font-weight:600}
+  .budget-hint.is-balanced{color:#4ade80}
+  .budget-hint.is-under{color:#fbbf24}
+  .budget-hint.is-over{color:#f87171}
+  .summary-actions-col{flex-direction:column;align-items:flex-end;gap:6px}
+  .budget-cta-hint{font-size:12px;color:var(--muted);max-width:240px;text-align:right}
+  body.light .budget-badge.is-balanced{color:#15803d;background:rgba(22,163,74,.12)}
+  body.light .budget-badge.is-under{color:#b45309;background:rgba(217,119,6,.12)}
+  body.light .budget-badge.is-over{color:#b91c1c;background:rgba(239,68,68,.12)}
+  body.light .budget-hint.is-balanced{color:#15803d}
+  body.light .budget-hint.is-under{color:#b45309}
+  body.light .budget-hint.is-over{color:#b91c1c}
   .summary-chart{margin-top:18px}
   body.light .summary-item{background:#ffffff;border-color:#e2e8f0}
   body.light .summary-toggle{border-color:#cbd5f5}
@@ -704,6 +743,68 @@ const RATIONALE_STARTERS = [
   'Colonists would have reacted by ... because ...'
 ];
 
+// Per-event key vocabulary. `c` lists cognates (Spanish · Portuguese · French)
+// for the many multilingual learners who can bridge from their home language.
+const GLOSSARY = {
+  A: [
+    {t:'proclamation', d:'an official public order from the government', c:'proclamación · proclamação · proclamation'},
+    {t:'frontier', d:'the edge of settled land, where colonists met Native nations', c:'frontera · fronteira · frontière'},
+    {t:'boundary', d:'a line that marks a limit you are not supposed to cross'}
+  ],
+  B: [
+    {t:'to quarter', d:'to give soldiers a place to live, plus food and supplies'},
+    {t:'troops', d:'soldiers', c:'tropas · tropas · troupes'}
+  ],
+  C: [
+    {t:'tax', d:'money people are required to pay to the government'},
+    {t:'boycott', d:'refusing to buy something as a form of protest', c:'boicot · boicote · boycott'},
+    {t:'repeal', d:'to cancel or undo a law'},
+    {t:'Sons of Liberty', d:'a group of colonists who organized protests against British taxes'}
+  ],
+  D: [
+    {t:'non-importation', d:'an agreement to stop importing (bringing in) British goods'},
+    {t:'customs', d:'taxes on goods entering a place — and the officials who collect them'},
+    {t:'smuggling', d:'bringing goods in secretly to avoid paying taxes'}
+  ],
+  E: [
+    {t:'massacre', d:'the killing of many people, often unarmed', c:'masacre · massacre · massacre'},
+    {t:'propaganda', d:'information spread to shape how people feel about something', c:'propaganda · propaganda · propagande'}
+  ],
+  F: [
+    {t:'monopoly', d:'complete control of a market by one company', c:'monopolio · monopólio · monopole'},
+    {t:'protest', d:'an action that shows strong public disagreement', c:'protesta · protesto · protestation'}
+  ],
+  G: [
+    {t:'coercive', d:'using force or threats to make people obey', c:'coercitivo · coercitivo · coercitif'},
+    {t:'charter', d:'a document that grants rights or self-government'},
+    {t:'blockade', d:'closing a port so ships cannot enter or leave', c:'bloqueo · bloqueio · blocus'}
+  ],
+  H: [
+    {t:'congress', d:'a formal meeting of chosen representatives', c:'congreso · congresso · congrès'},
+    {t:'delegate', d:'a person chosen to represent a group', c:'delegado · delegado · délégué'},
+    {t:'petition', d:'a formal written request to those in power', c:'petición · petição · pétition'}
+  ],
+  I: [
+    {t:'militia', d:'ordinary citizens trained to fight as part-time soldiers', c:'milicia · milícia · milice'},
+    {t:'redcoats', d:'British soldiers, named for their red uniforms'},
+    {t:'minutemen', d:'militia ready to fight at a minute’s notice'}
+  ]
+};
+function elKeyTerms(eventId){
+  const terms = GLOSSARY[eventId];
+  if(!terms || !terms.length) return null;
+  const details = h('details',{class:'key-terms'});
+  details.appendChild(h('summary',{}, 'Key terms'));
+  const list = h('ul',{class:'key-terms-list'});
+  terms.forEach(({t,d,c})=>{
+    const li = h('li',{}, strong(t), ` — ${d}`);
+    if(c) li.append(h('span',{class:'cognate'}, `Similar word in Spanish · Portuguese · French: ${c}`));
+    list.appendChild(li);
+  });
+  details.appendChild(list);
+  return details;
+}
+
 const REFLECTION_STARTERS = {
   q3: [
     'At first I rated events this way, but after learning about the 36-point budget I ...',
@@ -871,6 +972,14 @@ function renderSplashSection(){
       h('li',{}, strong('Unrest'), ' = rising frustration that can push people toward resistance. Think of it like building pressure in a bottle.'),
       h('li',{}, strong('Outrage points'), ' = your limited budget of 36 points that you will distribute later based on how explosive each event feels.'),
       h('li',{}, strong('Placards'), ' = concise overviews of the key events. Each gives you multiple reading levels so you can tune the explanation to your needs.')
+    ),
+    h('div',{class:'objectives'},
+      h('h3',{class:'objectives-head'},'By the end, you will be able to:'),
+      h('ul',{class:'objectives-list'},
+        h('li',{}, 'Explain how British actions between 1763 and 1775 pushed the colonies from grumbling toward open revolution.'),
+        h('li',{}, 'Weigh which events mattered most by spending a limited budget of outrage points — and defend your choices.'),
+        h('li',{}, 'Support each rating with evidence from the event, using cause-and-effect language.')
+      )
     ),
     p('As you progress, jot a complete-sentence rationale for every rating. Only after the ninth placard will the budget reveal unlock, letting you re-balance all of your scores in one place.', 'section-lead')
   );
@@ -1046,6 +1155,7 @@ function renderPlacardsSection(){
             return reading;
           })(),
           h('div',{class:'event-link'}, a(e.wiki,'Read more on Wikipedia →','link')),
+          elKeyTerms(e.id),
           (()=>{
             const valueLabel = span(`${row.rating} / 8`, 'pill');
             const meter = unrestMeter(row.rating, (val)=>{
@@ -1119,10 +1229,10 @@ function renderSummarySection(){
   const section = h('section',{class:'flow-section'+(locked?' locked':''),id:'section-summary'});
   const card = h('div',{class:'step-card'});
   const intro = h('div',{class:'step-intro'},
-    span('Activity 2 • Finalize the Budget','activity-badge'),
-    h('h2',{},'Balance Your 36 Points'),
-    p('Surprise! You only get 36 outrage points. Adjust the ratings below until the total fits the challenge.', 'section-lead'),
-    p('Click any event to revisit the description, switch reading levels, or double-check your rationale before moving on.', 'section-lead')
+    span('Activity 2 • Weigh the Events','activity-badge'),
+    h('h2',{},'Spend Your 36 Points'),
+    p('Historians can’t call everything equally important. You have exactly 36 outrage points to spread across all nine events — so you have to decide which ones mattered most. Spending more on one event means spending less on another.', 'section-lead'),
+    p('As you rebalance, ask yourself: which events truly pushed the colonies toward revolution, and which were smaller steps along the way? Click any event to revisit its description, switch reading levels, or revise your rationale.', 'section-lead')
   );
   card.append(intro);
   if(locked){
@@ -1209,6 +1319,7 @@ function renderSummarySection(){
         h('div',{}, span('Reading level','sub'), levelButtons),
         ...paragraphs,
         h('div',{class:'event-link'}, a(event.wiki,'Read on Wikipedia →','link')),
+        elKeyTerms(event.id),
         h('div',{},
           h('label',{},'Why did you choose that rating?'),
           starterChips,
@@ -1232,14 +1343,32 @@ function renderSummarySection(){
     summaryList.appendChild(item);
   });
 
-  const totalStatus = remaining===0 ? 'Balanced! You hit exactly 36 points.' : remaining>0 ? `${remaining} points remaining to assign.` : `${Math.abs(remaining)} points over the limit.`;
+  const budgetState = remaining===0 ? 'balanced' : remaining>0 ? 'under' : 'over';
+  const fillPct = Math.min(100, (total/36)*100);
+  const overAbs = Math.abs(remaining);
+  const badgeWord = budgetState==='balanced' ? 'Balanced — all 36 points spent'
+    : budgetState==='under' ? `${remaining} point${remaining===1?'':'s'} left to spend`
+    : `${overAbs} point${overAbs===1?'':'s'} over the limit`;
+  const ctaHint = budgetState==='under'
+    ? `Spend all 36 points to continue — ${remaining} still to assign.`
+    : `You’re ${overAbs} over — lower some ratings to reach exactly 36.`;
 
   card.append(
     summaryList,
     h('div',{class:'summary-footer'},
-      h('div',{class:'summary-status',role:'status'}, span('Current total: ','sub'), strong(String(total)), span(' / 36','sub'), span(` • ${totalStatus}`,'sub')),
-      h('div',{class:'summary-actions'},
-        btn('Continue to reflections →', ()=>{ setPhase('questions'); scrollToSection('section-questions'); }, remaining!==0)
+      h('div',{class:'budget-summary'},
+        h('div',{class:'budget-head'},
+          span('Points spent','sub'),
+          h('div',{class:`budget-badge is-${budgetState}`, role:'status'}, strong(String(total)), span(' / 36'))
+        ),
+        h('div',{class:`budget-bar is-${budgetState}`},
+          h('div',{class:'budget-bar-fill', style:`width:${fillPct}%`})
+        ),
+        span(badgeWord, `budget-hint is-${budgetState}`)
+      ),
+      h('div',{class:'summary-actions summary-actions-col'},
+        btn('Continue to reflections →', ()=>{ setPhase('questions'); scrollToSection('section-questions'); }, remaining!==0),
+        remaining!==0 ? span(ctaHint, 'budget-cta-hint') : null
       )
     ),
     h('section',{class:'card summary-chart'},
