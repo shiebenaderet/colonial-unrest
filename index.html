@@ -108,7 +108,11 @@
   nav.timeline li button{width:100%;border:1px solid var(--border);background:var(--surface);color:var(--fg);padding:10px 12px;border-radius:12px;text-align:left}
   nav.timeline li button.active{background:var(--accent);color:#fff}
   .timeline-year{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+  .timeline-year-row{display:flex;align-items:center;gap:6px}
+  .timeline-dot{display:inline-block;width:9px;height:9px;border-radius:50%;flex-shrink:0}
   .timeline-title{font-weight:600;display:block;margin-top:2px}
+  nav.timeline li button.active .timeline-year{color:rgba(255,255,255,.85)}
+  .timeline-legend{margin:8px 6px 2px;font-size:12px;color:var(--muted);text-align:center}
   .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(37,99,235,.12);border:1px solid rgba(37,99,235,.25);color:#bfdbfe}
   .note{font-size:12px;color:var(--muted)}
   .toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#0b1220;color:#fff;border:1px solid var(--border);padding:8px 12px;border-radius:10px}
@@ -166,6 +170,8 @@
   .event-card .card-h{display:flex;justify-content:space-between;align-items:center}
   .event-card .card-h strong{font-size:22px}
   .event-card .card-h .sub{font-size:14px}
+  .event-title-line{display:flex;align-items:center;gap:10px}
+  .event-heat-dot{display:inline-block;width:12px;height:12px;border-radius:50%;flex-shrink:0}
   .event-content{padding:22px 22px 26px;display:grid;gap:20px}
   .event-layout{display:grid;gap:24px}
   @media(min-width:960px){.event-layout{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);align-items:start}}
@@ -404,6 +410,17 @@
   .intro-image-overlay{padding:40px 30px;}
   .intro-image-title{font-size:60px;}
   .intro-image-subtitle{font-size:28px;}
+}
+
+/* Respect users who ask the OS to reduce motion (ADHD, vestibular, migraine). */
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{
+    animation-duration:0.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:0.001ms !important;
+    scroll-behavior:auto !important;
+  }
 }
 </style>
 </head>
@@ -807,9 +824,9 @@ function elKeyTerms(eventId){
 
 const REFLECTION_STARTERS = {
   q3: [
-    'At first I rated events this way, but after learning about the 36-point budget I ...',
-    'One event lost points because ...',
-    'I moved points toward ... since ...'
+    'I decided ... mattered more than I first thought because earlier events like ... had already ...',
+    'I moved points away from ... because, compared to what came before, it ...',
+    'Looking at the whole chain of events, ... changed my mind because ...'
   ],
   q4: [
     'The single most significant event was ... because ...',
@@ -955,7 +972,7 @@ function render(){
     pendingSummaryFocus = null;
     requestAnimationFrame(()=>{
       const target = document.getElementById(`summary-${focusId}`);
-      if(target) target.scrollIntoView({behavior:'smooth', block:'center'});
+      if(target) target.scrollIntoView({behavior: prefersReducedMotion()?'auto':'smooth', block:'center'});
     });
   }
   renderIntroModal();
@@ -1082,18 +1099,31 @@ function renderSplashSection(){
   return section;
 }
 
+// Escalation heat: cool blue (1763) → hot red (1775), keyed to event order.
+// Hue sweeps 217°→360° through indigo/violet/magenta so it reads as rising intensity.
+function heatColor(i, n=EVENTS.length, l=58){
+  const hue = 217 + (360-217) * (n>1 ? i/(n-1) : 0);
+  return `hsl(${Math.round(hue)%360}, 72%, ${l}%)`;
+}
 function elTimeline(){
   const nav = h('nav',{class:'timeline',ariaLabel:'Placard timeline'}, h('ul',{}));
   EVENTS.forEach((e,i)=>{
-    const button = h('button',{class: (i===state.current)?'active':'', onclick:()=>{
+    const heat = heatColor(i);
+    const active = i===state.current;
+    const button = h('button',{class: active?'active':'', onclick:()=>{
       state.current=i;
       save();
       render();
       scrollToSection('section-placards');
     }});
-    button.append(span(String(e.year),'timeline-year'), span(e.title,'timeline-title'));
+    button.style.borderLeft = `4px solid ${heat}`;
+    if(active){ button.style.background = heat; button.style.borderColor = heat; button.style.color = '#fff'; button.setAttribute('aria-current','true'); }
+    const dot = h('span',{class:'timeline-dot'});
+    dot.style.background = heat;
+    button.append(h('span',{class:'timeline-year-row'}, dot, span(String(e.year),'timeline-year')), span(e.title,'timeline-title'));
     nav.querySelector('ul').appendChild(h('li',{}, button));
   });
+  nav.appendChild(h('p',{class:'timeline-legend'}, 'Colour shows rising unrest: cooler blue (1763) → hotter red (1775).'));
   return nav;
 }
 
@@ -1124,10 +1154,14 @@ function renderPlacardsSection(){
 
   // placard content
   const eventCard = h('article',{class:'card event-card'});
+  const eventHeat = heatColor(state.current);
+  eventCard.style.borderTop = `4px solid ${eventHeat}`;
+  const titleDot = h('span',{class:'event-heat-dot'});
+  titleDot.style.background = eventHeat;
   eventCard.append(
     h('div',{class:'card-h'},
-      h('div',{},
-        h('strong',{}, e.title),
+      h('div',{class:'event-title-wrap'},
+        h('div',{class:'event-title-line'}, titleDot, h('strong',{}, e.title)),
         span(String(e.year), 'sub')
       )
     ),
@@ -1462,7 +1496,7 @@ function renderQuestionsSection(){
           input.focus();
         }, REFLECTION_STARTERS.q3);
         return h('div',{},
-          h('label',{},'3) How did you adjust after learning you only had 36 total points? Which lost or gained points?'),
+          h('label',{},'3) Now that the events build on each other, which one did you decide mattered MORE or LESS than your first guess? Name the points you moved and explain what — including earlier events leading up to it — changed your mind.'),
           starters,
           input
         );
@@ -1504,9 +1538,12 @@ function renderQuestionsSection(){
   return section;
 }
 
+function prefersReducedMotion(){
+  try{ return window.matchMedia('(prefers-reduced-motion: reduce)').matches; }catch{ return false; }
+}
 function scrollToSection(id){
   const el = document.getElementById(id);
-  if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  if(el) el.scrollIntoView({behavior: prefersReducedMotion()?'auto':'smooth', block:'start'});
 }
 
 function updateStepChips(){
@@ -1546,8 +1583,14 @@ const textarea = (val, on)=>{
   });
   return ta; 
 };
-function showIntroModal(view){ modalState = { open:true, view }; renderIntroModal(); }
-function hideIntroModal(){ modalState = { open:false, view:null }; renderIntroModal(); }
+let modalReturnFocus = null;
+function showIntroModal(view){ modalReturnFocus = document.activeElement; modalState = { open:true, view }; renderIntroModal(); }
+function hideIntroModal(){
+  modalState = { open:false, view:null };
+  renderIntroModal();
+  if(modalReturnFocus && typeof modalReturnFocus.focus==='function'){ modalReturnFocus.focus(); }
+  modalReturnFocus = null;
+}
 function renderIntroModal(){
   let modal = document.getElementById('introModal');
   if(!modal){
@@ -1562,15 +1605,31 @@ function renderIntroModal(){
     return;
   }
   const closeBtn = h('button',{class:'btn-ghost',onclick:hideIntroModal},'Close');
+  const titleId = 'introModalTitle';
+  const heading = h('h3',{}, modalState.view==='overview'?'Key Vocabulary': modalState.view==='flow' ? 'How this activity flows' : 'Tips for great answers');
+  heading.id = titleId;
   const wrap = h('div',{class:'modal-card'},
-    h('div',{class:'modal-header'},
-      h('h3',{}, modalState.view==='overview'?'Key Vocabulary': modalState.view==='flow' ? 'How this activity flows' : 'Tips for great answers'),
-      closeBtn
-    ),
+    h('div',{class:'modal-header'}, heading, closeBtn),
     h('div',{class:'modal-body'}, ...modalContentFor(modalState.view))
   );
+  wrap.setAttribute('role','dialog');
+  wrap.setAttribute('aria-modal','true');
+  wrap.setAttribute('aria-labelledby', titleId);
   modal.innerHTML = '';
   modal.appendChild(wrap);
+  // Focus trap + Escape + click-outside.
+  const focusables = ()=> wrap.querySelectorAll('a[href],button:not([disabled]),input,select,textarea,[tabindex]:not([tabindex="-1"])');
+  modal.onkeydown = (ev)=>{
+    if(ev.key==='Escape'){ ev.preventDefault(); hideIntroModal(); return; }
+    if(ev.key==='Tab'){
+      const f = focusables(); if(!f.length) return;
+      const first=f[0], last=f[f.length-1];
+      if(ev.shiftKey && document.activeElement===first){ ev.preventDefault(); last.focus(); }
+      else if(!ev.shiftKey && document.activeElement===last){ ev.preventDefault(); first.focus(); }
+    }
+  };
+  modal.onclick = (ev)=>{ if(ev.target===modal) hideIntroModal(); };
+  closeBtn.focus();
 }
 function textFor(e, level){ return level==='simple'?e.simple: level==='adv'?e.adv : e.core; }
 
@@ -2234,8 +2293,10 @@ function elChart(source){
   const SVG_NS = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(SVG_NS,'svg');
   svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  // The equivalent data is provided in a visually-hidden table below, so the
+  // SVG itself is decorative for assistive tech.
   svg.setAttribute('role','img');
-  svg.setAttribute('aria-label','Line chart showing cumulative outrage points');
+  svg.setAttribute('aria-hidden','true');
   svg.style.width = '100%';
   svg.style.minWidth = '640px';
 
@@ -2287,6 +2348,25 @@ function elChart(source){
 
   const wrap = h('div',{style:'overflow:auto'});
   wrap.appendChild(svg);
+
+  // Accessible data-table alternative (visually hidden).
+  const table = h('table',{class:'sr-only'});
+  table.appendChild(h('caption',{},'Cumulative outrage points by event'));
+  table.appendChild(h('thead',{}, h('tr',{},
+    h('th',{scope:'col'},'Event'), h('th',{scope:'col'},'Year'),
+    h('th',{scope:'col'},'Points'), h('th',{scope:'col'},'Running total')
+  )));
+  const tbody = h('tbody',{});
+  EVENTS.forEach((e,i)=>{
+    tbody.appendChild(h('tr',{},
+      h('th',{scope:'row'}, e.title),
+      h('td',{}, String(e.year)),
+      h('td',{}, String(pts[i].y)),
+      h('td',{}, String(cum[i].y))
+    ));
+  });
+  table.appendChild(tbody);
+  wrap.appendChild(table);
   return wrap;
 }
 
