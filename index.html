@@ -51,7 +51,7 @@
   .wrap{max-width:1100px;margin:0 auto;padding:16px}
   .row{display:flex;gap:12px;align-items:center}
   .step-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-  .chip{display:inline-flex;gap:6px;align-items:center;padding:4px 9px;border-radius:999px;font-size:12px;border:1px solid rgba(148,163,184,.3);color:var(--muted);background:rgba(15,23,42,.6);transition:all .2s;cursor:pointer}
+  .chip{display:inline-flex;gap:6px;align-items:center;min-height:24px;padding:4px 9px;border-radius:999px;font-size:12px;border:1px solid rgba(148,163,184,.3);color:var(--muted);background:rgba(15,23,42,.6);transition:all .2s;cursor:pointer}
   .chip.active{background:rgba(37,99,235,.2);color:#bfdbfe;border-color:rgba(37,99,235,.45)}
   .chip.done{background:rgba(22,163,74,.18);color:#bbf7d0;border-color:rgba(22,163,74,.4)}
   .chip-icon{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:rgba(148,163,184,.2);font-size:10px}
@@ -71,6 +71,7 @@
   body.light .brand-mark svg{stroke:#1e40af}
   select,input,textarea,button{font:inherit}
   button{cursor:pointer}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px}
   .btn{background:var(--accent);color:#fff;border:none;border-radius:12px;padding:10px 14px}
   .btn[disabled]{opacity:.5;cursor:not-allowed}
   .btn-ghost{background:transparent;color:var(--fg);border:1px solid var(--border);border-radius:12px;padding:8px 12px}
@@ -85,7 +86,8 @@
   .comparison-event{font-weight:500}
   .comparison-before,.comparison-after,.comparison-change{text-align:center;font-weight:600;font-variant-numeric:tabular-nums}
   .comparison-before{color:var(--muted)}
-  .comparison-after{color:var(--accent)}
+  .comparison-after{color:#60a5fa}
+  body.light .comparison-after{color:var(--accent)}
   .comparison-change.positive{color:#10b981}
   .comparison-change.negative{color:#ef4444}
   .comparison-change.neutral{color:var(--muted)}
@@ -182,6 +184,14 @@
   @media(min-width:960px){.event-layout{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);align-items:start}}
   .event-body{display:grid;gap:18px}
   .event-body .tabs{align-self:flex-start}
+  .substeps{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 4px;padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:var(--panel-soft)}
+  .substep{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);font-weight:600}
+  .substep-dot{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;border:1px solid var(--border);background:var(--surface);font-size:12px;flex-shrink:0}
+  .substep.active{color:var(--fg)}
+  .substep.active .substep-dot{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .substep.done .substep-dot{background:var(--ok);color:#fff;border-color:var(--ok)}
+  .substep-arrow{color:var(--muted)}
+  .substep-panel{display:grid;gap:18px}
   .level-tabs{gap:0;margin-bottom:4px}
   .level-tabs .tab{font-size:13px;padding:8px 12px}
   .event-text{font-size:17px;line-height:1.85;color:var(--fg);margin-bottom:16px;font-weight:400}
@@ -215,9 +225,16 @@
   .meter-cell.hot{border-color:rgba(239,68,68,.65);background:rgba(127,29,29,.3)}
   .meter-cell.hot::after{background:linear-gradient(180deg,rgba(239,68,68,.45),rgba(249,115,22,.55))}
   .meter-cell:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .meter-cell:hover{transform:scale(1.05);border-color:var(--accent)}
   .meter-input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
   .meter-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+  .budget-disclaimer{margin:6px 0 14px;padding:14px 16px;border-radius:14px;background:rgba(217,119,6,.12);border:1px solid rgba(217,119,6,.4)}
+  .budget-disclaimer strong{display:block;margin-bottom:4px;color:var(--warn);font-size:15px}
+  .budget-disclaimer-text{margin:0;color:var(--fg);font-size:14px;line-height:1.55}
+  body.light .budget-disclaimer{background:rgba(217,119,6,.1);border-color:rgba(180,83,9,.45)}
   .event-rationale{display:grid;gap:10px}
+  .field-error{margin:0;color:#fca5a5;font-size:13px;font-weight:600}
+  body.light .field-error{color:#b91c1c}
   .event-controls{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
   .event-figure{margin:0;display:grid;gap:12px}
   .image-frame{position:relative;display:grid;place-items:center;border-radius:20px;overflow:hidden;background:var(--panel-soft);border:1px solid var(--callout-border);aspect-ratio:4/3;min-height:260px;cursor:zoom-in;transition:transform .15s ease}
@@ -267,7 +284,11 @@
   .summary-levels button{padding:6px 10px;background:transparent;border:none;color:var(--fg);cursor:pointer}
   .summary-levels button.active{background:var(--accent);color:#fff}
   .summary-meter{display:grid;gap:10px}
-  .summary-footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:center;margin-top:12px}
+  .summary-footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:center;margin-top:12px;position:sticky;bottom:0;z-index:6;background:var(--surface);padding:12px;border-radius:14px;border:1px solid var(--border);box-shadow:0 -6px 18px rgba(0,0,0,.28)}
+  body.light .summary-footer{background:#fff;box-shadow:0 -6px 18px rgba(148,163,184,.3)}
+  .budget-nudge{font-size:12px;font-weight:600;color:#fbbf24}
+  body.light .budget-nudge{color:#b45309}
+  .translate-help{font-size:12px;color:var(--muted);margin:0 0 8px;line-height:1.5}
   .summary-status{font-size:14px;color:var(--muted)}
   .summary-status strong{color:var(--fg)}
   /* Budget feedback panel */
@@ -469,7 +490,7 @@
           </span>
         </button>
         <div class="accessibility">
-          <button class="access-toggle" id="accessToggle" type="button" aria-haspopup="true" aria-controls="accessPanel">
+          <button class="access-toggle" id="accessToggle" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="accessPanel">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c.9 0 1.7.3 2.4.9.3.2.4.7.2 1-.2.4-.7.5-1 .2-.4-.3-.9-.4-1.4-.4-.5 0-1 .1-1.4.4-.4.3-.5.8-.2 1.2.2.3.5.4.8.4h6.5c.6 0 1 .4 1 1s-.4 1-1 1h-3.6l1.4 13.1c.1.5-.3 1-.8 1.1h-.1c-.5 0-.9-.4-1-.9L12 14.8l-2.4 6.2c-.2.5-.7.8-1.2.7-.5-.1-.9-.6-.8-1.1L9 8h-3c-.6 0-1-.4-1-1s.4-1 1-1h2.5c.3 0 .6-.2.8-.4.3-.4.2-1-.2-1.2C8.4 4 7.9 3.9 7.4 3.9c-.5 0-1 .1-1.4.4-.3.3-.8.2-1-.2-.2-.3-.1-.8.2-1C6 2.3 6.9 2 7.8 2H12z"/></svg>
             Accessibility
           </button>
@@ -490,6 +511,7 @@
             </div>
             <div class="panel-group">
               <h4>Translate</h4>
+              <p class="translate-help">Pick your language, then open the activity in a new tab, translated. Your typed answers won’t be translated back, and this needs the page to be online.</p>
               <select id="translateSel" class="translate-select">
                 <option value="">Select language…</option>
                 <option value="es">Spanish</option>
@@ -553,11 +575,11 @@ The British wanted to prevent any more wars with Native Americans. They hoped it
 The colonists were frustrated by the Proclamation of 1763. Not only were they now unable to move westward, to cheap fertile land as they had hoped, but the Proclamation also made it clear that the British intended to maintain even tighter control over the colonies than ever before.`,
    adv:`The Proclamation of 1763 was more than a boundary line; it revealed a clash of worldviews. To British officials, limiting westward settlement would prevent costly frontier wars and protect trade with Native nations. To many colonists, it felt like a betrayal — they had fought in the French and Indian War expecting land as a reward.
 
-Letters from veterans and land speculators show deep frustration. George Washington called the measure "a temporary inconvenience," but one that "must eventually fall to pieces." (<a href="https://www.mountvernon.org/library/digitalhistory/digital-encyclopedia/article/proclamation-line-of-1763" target="_blank" rel="noopener noreferrer">Mount Vernon Historical Library</a>) Native nations, meanwhile, viewed it as a rare acknowledgment of sovereignty — an imperial promise often ignored in practice.
+Letters from veterans and land speculators show deep frustration. George Washington privately called the measure "a temporary expedient to quiet the minds of the Indians," one he expected "must fall of course in a few years." (<a href="https://www.mountvernon.org/library/digitalhistory/digital-encyclopedia/article/proclamation-line-of-1763" target="_blank" rel="noopener noreferrer">Mount Vernon Historical Library</a>) Native nations, meanwhile, viewed it as a rare acknowledgment of sovereignty — an imperial promise often ignored in practice.
 
 The Proclamation exposed a growing divide in motive: Britain sought control and balance, while settlers sought autonomy and opportunity. What looked to London like peacekeeping looked to the colonies like an early act of oppression — a boundary line that started to wear down colonial trust in Britain.`},
   {id:'B', title:'Quartering Act', year:1765, img:'images/quartering-act.png', wiki:'https://en.wikipedia.org/wiki/Quartering_Acts',
-   simple:`To quarter means to give someone a place to stay. The Quartering Act said that the colonies had to provide housing for British soldiers—in places like inns, empty buildings, and barracks—and had to give them things like food, candles, fuel, and even transportation.
+   simple:`To quarter means to give someone a place to stay. The Quartering Act said that the colonies had to provide housing for British soldiers—in places like inns, empty buildings, and barracks (buildings where soldiers live)—and had to give them things like food, candles, fuel, and even transportation.
 
 This law made many colonists angry. They didn't trust the soldiers and thought they were sent to watch over and control the colonists, not to protect them. The colonists also believed the British government should have asked for their permission before making a law that affected their homes and their money.`,
    core:`"To quarter" means to give soldiers a place to stay. The Quartering Act required the colonies to house British soldiers in barracks, inns, and unoccupied buildings. In addition, colonists had to provide fuel, candles, beer and transportation for the troops.
@@ -597,11 +619,11 @@ To show their anger, the colonists boycotted British goods—they refused to buy
    core:`Charles Townshend, a powerful British official in charge of the treasury (the Chancellor of the Exchequer), imposed a small indirect tax on lead, glass, paper, paint and tea. The tax was "indirect" because it was collected at the sea ports (such as the one in the picture) before the items reached colonial stores. Since the tax was built into the price the colonists paid at the stores—rather than added on visibly like the Stamp Act—Townshend hoped colonists would object to it less. (They did not: the duties were openly known and quickly resisted.)
 
 The colonists, however, recognized the indirect tax. They saw it as an unjust form of TAXATION WITHOUT REPRESENTATION, since they had no representatives in Parliament from the colonies to vote on these taxes. As under the Stamp Act, they organized a boycott of British goods.`,
-   adv:`On your slide, the broadside announcing the Townshend Acts lists new import duties on glass, paint, paper, and tea — ordinary items that suddenly became symbols of control. Charles Townshend, the British Chancellor of the Exchequer, claimed the taxes were "modest" and necessary for order. But colonists saw manipulation: the revenue paid royal officials, cutting assemblies out of power.
+   adv:`In the image above, the broadside announcing the Townshend Acts lists new import duties on glass, paint, paper, and tea — ordinary items that suddenly became symbols of control. Charles Townshend, the British Chancellor of the Exchequer, claimed the taxes were "modest" and necessary for order. But colonists saw manipulation: the revenue paid royal officials, cutting assemblies out of power.
 
 Letters from merchants reveal both economic pain and moral outrage. James Otis Jr., a lawyer and politician from Massachusetts wrote, "…the very act of taxing, exercised over those who are not represented, appears to me to be depriving them of one of their most essential rights, as freemen; and if continued, seems to be in effect an entire disfranchisement of every civil right" (<a href="https://www.americanrevolution.org/no-taxation-without-representation/?utm_source=chatgpt.com#:~:text=%E2%80%A6the%20very%20act%20of%20taxing%2C%20exercised%20over%20those%20who%20are%20not%20represented%2C%20appears%20to%20me%20to%20be%20depriving%20them%20of%20one%20of%20their%20most%20essential%20rights%2C%20as%20freemen%3B%20and%20if%20continued%2C%20seems%20to%20be%20in%20effect%20an%20entire%20disfranchisement%20of%20every%20civil%20right" target="_blank" rel="noopener noreferrer">AmericanRevolution.org</a>) Women joined in too; spinning bees became acts of protest, replacing imported fabric with homespun cloth. These "Daughters of Liberty" gave rebellion a domestic voice.
 
-As the slide image suggests, the acts blurred everyday life and empire. To the British, taxation was administration; to colonists, it was alienation. Every boycott, every homespun dress, turned politics into practice — and deepened the habit of resistance.`},
+As the image above suggests, the acts blurred everyday life and empire. To the British, taxation was administration; to colonists, it was alienation. Every boycott, every homespun dress, turned politics into practice — and deepened the habit of resistance.`},
   {id:'E', title:'Boston Massacre', year:1770, img:'images/boston-massacre.jpg', wiki:'https://en.wikipedia.org/wiki/Boston_Massacre',
    simple:`On March 5, 1770, a group of colonists in Boston began to shout at and tease British soldiers. Some colonists even threw snowballs at them. Things quickly got out of control, and the British soldiers fired their guns into the crowd. Five colonists were killed.
 
@@ -611,13 +633,13 @@ Many colonists thought the British soldiers were to blame. Angry citizens held a
 Most colonists believed that the British soldiers were completely at fault. The enraged citizens of Boston called a town meeting to demand the removal of the British troops and to argue for the trial of the British soldiers for murder. The British agreed to the colonists' demands.
 
 Paul Revere made a famous engraving of the event that spread across the colonies and made many people angrier—even though the real story was messier than the picture showed. Later, John Adams defended the soldiers in court, a reminder that people at the time did not all agree about who was to blame.`,
-   adv:`The engraving on your slide — Paul Revere's dramatic Boston Massacre — turned confusion into clarity. In his version, disciplined redcoats fire into a helpless crowd. The truth was messier: chaos, fear, and snowballs on a freezing March night. For soldiers, surrounded and taunted, it was self-defense. For colonists, it was proof that Britain ruled through violence.
+   adv:`The engraving shown here — Paul Revere's dramatic Boston Massacre — turned confusion into clarity. In his version, disciplined redcoats fire into a helpless crowd. The truth was messier: chaos, fear, and snowballs on a freezing March night. For soldiers, surrounded and taunted, it was self-defense. For colonists, it was proof that Britain ruled through violence.
 
 Within days, Revere's image spread across the colonies, stoking outrage. Yet another voice emerged — John Adams — who risked his reputation to defend the soldiers, reminding Bostonians that "facts are stubborn things." (<a href="https://founders.archives.gov/documents/Adams/05-03-02-0001-0004-0016#:~:text=I%20will%20enlarge%20no%20more%20on%20the%20evidence%2C%20but%20submit%20it%20to%20you.%E2%80%94Facts%20are%20stubborn%20things%3B%20and%20whatever%20may%20be%20our%20wishes%2C%20our%20inclinations%2C%20or%20the%20dictates%20of%20our%20passions%2C%20they%20cannot%20alter%20the%20state%20of%20facts%20and%20evidence" target="_blank" rel="noopener noreferrer">Founders.gov</a>)
 
-The event showed how images could shape truth. The slide's engraving reminds students that propaganda (information meant to influence opinion) became a revolutionary tool. The massacre's legacy wasn't just five deaths — it was the realization that perception could unite a movement faster than armies could suppress it.`},
+The event showed how images could shape truth. Revere had actually copied his engraving from one by Henry Pelham, who accused him of stealing the design — an irony inside a story about truth and propaganda. This engraving reminds us that propaganda (information meant to influence opinion) became a revolutionary tool. The massacre's legacy wasn't just five deaths — it was the realization that perception could unite a movement faster than armies could suppress it.`},
   {id:'F', title:'Boston Tea Party', year:1773, img:'images/boston-tea-party.jpg', wiki:'https://en.wikipedia.org/wiki/Boston_Tea_Party',
-   simple:`In 1773, the British government passed the Tea Act. This law gave one company—the British East India Company—a special advantage that let it sell tea very cheaply, undercutting colonial merchants and smugglers.
+   simple:`In 1773, the British government passed the Tea Act. This law gave one company—the British East India Company—a special advantage that let it sell tea very cheaply. That hurt colonial merchants and smugglers (sellers who avoided taxes), because they could not match the low price.
 
 Even though the Tea Act actually made tea cheaper, the colonists were angry. They believed it was unfair for Britain to make decisions for them without asking their opinion.
 
@@ -627,13 +649,13 @@ To protest the Tea Act, a group called the Sons of Liberty planned the Boston Te
 Despite the fact that this act actually lowered the price of tea, the colonists still opposed it. They viewed the Tea Act as merely another example of England making a decision that concerned the colonists without consulting them.
 
 To protest the Tea Act, the Sons of Liberty organized the Boston Tea Party. Dressed as Native Americans, colonists raided three British ships in the Boston harbor. They smashed open 342 chests of tea and dumped them into the harbor, while a crowd of people watched in approval.`,
-   adv:`Your slide shows men disguised as Mohawk warriors tossing chests of tea into Boston Harbor — a theatrical act with enormous consequences. The Boston Tea Party began as an argument over principle: even a cheap tax was still tyranny.
+   adv:`The image above shows men disguised as Mohawk warriors tossing chests of tea into Boston Harbor — a theatrical act with enormous consequences. The Boston Tea Party began as an argument over principle: even a cheap tax was still tyranny.
 
 British lawmakers thought colonists would accept the bargain — cheaper tea through monopoly. Instead, they underestimated pride. Samuel Adams argued that to buy the taxed tea was to "admit the right of taxation." (<a href="https://www.masshist.org/revolution/teaparty.php" target="_blank" rel="noopener noreferrer">Massachusetts Historical Society</a>) The protestors' disguises symbolized freedom and identity — colonists rejecting Britishness and adopting American defiance.
 
-To the British, this was criminal destruction of property; to the colonists, it was moral purification. The image on your slide freezes that moment — unity, disguise, rebellion. News of the protest spread quickly through the colonies and back to Britain. Within months, Britain would strike back with punishment so severe it erased any illusion of reconciliation.`},
+To the British, this was criminal destruction of property; to the colonists, it was moral purification. The image above freezes that moment — unity, disguise, rebellion. News of the protest spread quickly through the colonies and back to Britain. Within months, Britain would strike back with punishment so severe it erased any illusion of reconciliation.`},
   {id:'G', title:'Intolerable (Coercive) Acts', year:1774, img:'images/intolerable-acts.jpg', wiki:'https://en.wikipedia.org/wiki/Intolerable_Acts',
-   simple:`To coerce means to force someone to do something. After the Boston Tea Party, the British government wanted to punish the colonists and make them obey. They passed a set of laws called the Coercive Acts. These laws closed the port of Boston, put Massachusetts under military rule, and sharply restricted town meetings and the colonial legislature. The British hoped this would force the colonists to pay for the lost tea and to follow British rules.
+   simple:`To coerce means to force someone to do something. After the Boston Tea Party, the British government wanted to punish the colonists and make them obey. They passed a set of laws called the Coercive Acts. These laws closed the port of Boston, put Massachusetts under military rule, and sharply restricted town meetings and the colonial legislature (the group that makes local laws). The British hoped this would force the colonists to pay for the lost tea and to follow British rules.
 
 The colonists were shocked and angry. They called these laws the "Intolerable Acts" because they believed they were too harsh to accept. The laws were meant only for Massachusetts, but other colonies joined in protest, afraid they might lose their freedoms too.
 
@@ -643,7 +665,7 @@ Samuel Adams, shown in the picture on your slide, helped organize resistance and
 Samuel Adams, whose painting is on your slide, helped to stir up colonial response to these acts. The colonists call the acts the "Intolerable Acts" because they did not feel that they could tolerate them. The taxes they had been battling were nothing in comparison to this harsh British crackdown on colonial rights.
 
 Although the acts applied only to Massachusetts, the other colonies rallied to protest them. The colonists feared that if such British actions were to continue, the rest of the colonies were in danger of losing their liberties as well. On the day the acts went into effect, flags throughout the colonies were flown at half-mast. Meanwhile, in the towns surrounding Boston, "minutemen" began to store arms and to train for possible battle "at a minute's notice".`,
-   adv:`On the slide, a map of closed Boston Harbor represents punishment in policy form. The Intolerable Acts (called the Coercive Acts in Britain) shut down the port, replaced local leaders, and stationed troops inside the city. To Parliament, this was discipline; to colonists, it was collective suffering. Merchants went bankrupt, workers starved, and neighbors from as far away as Virginia sent food to the blockaded city. In a 1774 letter from George Washington to George William Fairfax:<blockquote style="margin: 16px 0; padding: 12px 16px; border-left: 4px solid var(--accent); background: var(--callout-bg); font-style: italic;">"In short the Ministry may rely on it … that Americans will never be tax'd without their own consent; that the cause of Boston, the despotick measures in respect to it, I mean now is and ever will be consider'd as the cause of America…" (<a href="https://www.mountvernon.org/library/digitalhistory/past-projects/quotes/article/in-short-the-ministry-may-rely-on-it-that-americans-will-never-be-taxd-without-their-own-consent-that-the-cause-of-boston-the-despotick-measures-in-respect-to-it-i-mean-now-is-and-ever-will-be-considerd-as-the-cause-of-america-not-that-we-approve-their-co" target="_blank" rel="noopener noreferrer">MountVernon.org</a>)</blockquote>What London intended as isolation instead created unity. The slide's imagery of a chained harbor captures the feeling of a city being punished. Across the colonies, people who had once felt distant now shared a common outrage. The Intolerable Acts didn't just close Boston — they opened the road to revolution.`},
+   adv:`In the image above, a map of closed Boston Harbor represents punishment in policy form. The Intolerable Acts (called the Coercive Acts in Britain) shut down the port, replaced local leaders, and stationed troops inside the city. To Parliament, this was discipline; to colonists, it was collective suffering. Merchants went bankrupt, workers starved, and neighbors from as far away as Virginia sent food to the blockaded city. In a 1774 letter from George Washington to George William Fairfax:<blockquote style="margin: 16px 0; padding: 12px 16px; border-left: 4px solid var(--accent); background: var(--callout-bg); font-style: italic;">"In short the Ministry may rely on it … that Americans will never be tax'd without their own consent; that the cause of Boston, the despotick measures in respect to it, I mean now is and ever will be consider'd as the cause of America…" (<a href="https://www.mountvernon.org/library/digitalhistory/past-projects/quotes/article/in-short-the-ministry-may-rely-on-it-that-americans-will-never-be-taxd-without-their-own-consent-that-the-cause-of-boston-the-despotick-measures-in-respect-to-it-i-mean-now-is-and-ever-will-be-considerd-as-the-cause-of-america-not-that-we-approve-their-co" target="_blank" rel="noopener noreferrer">MountVernon.org</a>)</blockquote>What London intended as isolation instead created unity. The image's depiction of a chained harbor captures the feeling of a city being punished. Across the colonies, people who had once felt distant now shared a common outrage. The Intolerable Acts didn't just close Boston — they opened the road to revolution.`},
   {id:'H', title:'First Continental Congress', year:1774, img:'images/continental-congress.jpg', wiki:'https://en.wikipedia.org/wiki/First_Continental_Congress',
    simple:`After the Coercive Acts, the colonies decided to work together for the first time. They realized that if they stayed divided, they could lose their rights and freedoms. The colonies wanted to stand as one group and send their complaints to Britain together.
 
@@ -655,15 +677,15 @@ After meeting for seven weeks, the delegates wrote a Declaration of Rights and l
 Representatives from 12 of the 13 colonies met and formed the First Continental Congress. They met in the building in Philadelphia that is featured on your slide. Men such as Samuel Adams, John Adams, George Washington and Patrick Henry attended.
 
 After seven weeks, the Congress drew up the Declaration of Rights, as well as appeals to the King and to the British people. In addition, Congress called for a complete boycott of all trade with England. Both exports to and imports from England would cease. Local committees enforced the boycott by publicly shaming and boycotting violators—who were occasionally tarred and feathered.`,
-   adv:`Your slide's painting of the First Continental Congress captures a remarkable scene — ordinary men performing extraordinary politics. Representatives from 12 colonies met in Philadelphia to debate how to respond to British power.
+   adv:`The painting above of the First Continental Congress captures a remarkable scene — ordinary men performing extraordinary politics. Representatives from 12 colonies met in Philadelphia to debate how to respond to British power.
 
-Inside Carpenter's Hall, voices clashed. Some delegates, like John Dickinson, urged patience and petition; others, like Patrick Henry, thundered, "I am not a Virginian, but an American!" (<a href="https://www.colonialwilliamsburg.org/discover/18th-century-people/nation-builders/patrick-henry/#:~:text=Distinctions%20between%20Virginians%2C%20Pennsylvanians%2C%20New%20Yorkers%2C%20and%20New%20Englanders%2C%20are%20no%20more.%20I%20am%20not%20a%20Virginian%2C%20but%20an%20American." target="_blank" rel="noopener noreferrer">Colonial Williamsburg</a>) The Congress agreed on boycotts and began organizing local committees to enforce them.
+Inside Carpenter's Hall, voices clashed. Some delegates, like John Dickinson, urged patience and petition; others, like Patrick Henry, reportedly declared, "I am not a Virginian, but an American!" (<a href="https://www.colonialwilliamsburg.org/discover/18th-century-people/nation-builders/patrick-henry/#:~:text=Distinctions%20between%20Virginians%2C%20Pennsylvanians%2C%20New%20Yorkers%2C%20and%20New%20Englanders%2C%20are%20no%20more.%20I%20am%20not%20a%20Virginian%2C%20but%20an%20American." target="_blank" rel="noopener noreferrer">Colonial Williamsburg</a>) That line survives only through a biography written decades later, so historians treat it as tradition rather than a recorded quote. The Congress agreed on boycotts and began organizing local committees to enforce them.
 
 The slide reminds us how the colonies transformed from scattered provinces into a united movement. This was the first rehearsal for self-government — with argument, compromise, and vision. Though still loyal to the king, the delegates had crossed a threshold: they were now speaking as Americans.`},
   {id:'I', title:'Lexington & Concord', year:1775, img:'images/lexington-concord.jpg', wiki:'https://en.wikipedia.org/wiki/Battles_of_Lexington_and_Concord',
    simple:`When the First Continental Congress asked Britain to change its unfair laws, Parliament refused. In April 1775, British soldiers left Boston and marched toward the nearby towns of Lexington and Concord. Their plan was to take away the colonists' weapons and gunpowder and to capture the leaders, Samuel Adams and John Hancock.
 
-At Lexington, a group of minutemen (colonists ready to fight at a minute's notice) met the British soldiers. No one knows who fired the first shot, but soon eight colonists were killed and ten were wounded. The British continued on to Concord, where more minutemen fought back. As the British retreated to Boston, the colonists fired at them from behind trees and fences. By the end of the day, 273 British soldiers had been killed or wounded, while the colonists had fewer than 100 casualties.
+At Lexington, a group of minutemen (colonists ready to fight at a minute's notice) met the British soldiers. No one knows who fired the first shot, but soon eight colonists were killed and ten were wounded. The British continued on to Concord, where more minutemen fought back. As the British retreated to Boston, the colonists fired at them from behind trees and fences. By the end of the day, 273 British soldiers had been killed or wounded, while the colonists had fewer than 100 casualties (soldiers killed or wounded).
 
 After these battles, thousands of minutemen gathered around Boston, ready for the next fight. The Second Continental Congress met again and chose George Washington to lead the new colonial army. The Revolutionary War had begun.`,
    core:`Parliament rejected all petitions for change that came from the First Continental Congress. In April 1775, British troops left Boston and marched to nearby Lexington and Concord. They planned to seize stores of colonial gunpowder and arms and to capture the "rebel" leaders, Samuel Adams and John Hancock.
@@ -671,7 +693,7 @@ After these battles, thousands of minutemen gathered around Boston, ready for th
 At Lexington, colonial minutemen—colonists who had joined the militia—met the British soldiers. No one knows who fired first, but when the smoke cleared, eight colonists were dead and ten were wounded. The "Redcoats" pushed on to Concord, where they were met by more minutemen. Then, while the British retreated back to Boston, minutemen fired on them from behind trees and fences. At day's end, the British suffered 273 casualties, while the colonists suffered less than one hundred.
 
 After the battles of Lexington and Concord, thousands of minutemen from the area gathered around Boston in anticipation of the next battle. The Second Continental Congress met and drafted a new appeal to the King. They also selected George Washington to head the army of minutemen surrounding Boston. The Revolutionary War had begun.`,
-   adv:`The image on your slide — the battle on the village green — marks the moment when debate became war. On April 19, 1775, British soldiers marched to seize weapons at Concord and arrest rebel leaders Samuel Adams and John Hancock. But through the night, riders like Paul Revere and William Dawes warned local militias that "the regulars are coming."
+   adv:`The image on your slide — the battle on the village green — marks the moment when debate became war. On April 19, 1775, British soldiers marched to seize weapons at Concord and arrest rebel leaders Samuel Adams and John Hancock. But through the night, riders like Paul Revere, William Dawes, and Samuel Prescott spread the alarm that "the regulars are coming out." The popular shortened version — "the regulars are coming" — comes from later retellings, not Revere's own account.
 
 At dawn in Lexington, nervous farmers faced the king's army. Captain John Parker reportedly ordered, "Stand your ground; don't fire unless fired upon; but if they mean to have a war, let it begin here." (<a href="https://www.battlefields.org/learn/biographies/john-parker?utm_source=chatgpt.com#:~:text=Parker%20is%20said%20to%20have%20told%20his%20men%2C%20%E2%80%9CStand%20your%20ground.%20Don%E2%80%99t%20fire%20unless%20fired%20upon%2C%20but%20if%20they%20mean%20to%20have%20a%20war%2C%20let%20it%20begin%20here.%E2%80%9D" target="_blank" rel="noopener noreferrer">American Battlefield Trust</a>) Historians note that this quote comes from later accounts and family tradition, not Parker's own recorded words — a reminder that memory and myth often intertwine in revolutionary history.
 
@@ -762,10 +784,42 @@ const INTRO_SLIDES = [
     tag:'Today',
     subtitle:'Nine events, one unrest budget.',
     question:'Today you will track what caused unrest in Colonial America.',
-    caption:'Read nine events, rate the unrest they create, and balance a 36-point unrest budget before you reflect.',
+    caption:'The photo shows a 20th-century civil-rights march — a reminder that unrest still pushes for change long after 1775. Now read nine events from 1763–1775, rate the unrest each created, and balance a 36-point budget before you reflect.',
     answers:[]
   }
 ];
+
+// ★★ "Some Support" reading tier — sits between simple (★) and core (★★★).
+// Spine facts kept identical to the other tiers; only language is leveled.
+const SOME_SUPPORT = {
+  A: `A proclamation is an official announcement. In 1763, Britain made the Proclamation of 1763. It said colonists could not settle west of the Appalachian Mountains. Britain had just won that land in the French and Indian War. Now it was reserved for Native Americans.
+
+Britain wanted to avoid more fighting with Native Americans. Leaders also thought colonists would be safer if they stayed east of the mountains. But many colonists were upset. They had hoped to move west and find cheap, good farmland. The law also showed that Britain wanted more control over the colonies.`,
+  B: `To quarter means to give soldiers a place to stay. The Quartering Act made the colonies house British soldiers. The soldiers stayed in barracks, inns, and empty buildings, not in private homes. The colonies also had to give them fuel, candles, and transportation.
+
+This law made many colonists angry. They did not trust the soldiers. They believed the troops came to control them, not to protect them. Colonists also felt Britain should have asked them first before passing such a law.`,
+  C: `After the French and Indian War, Britain was deep in debt. Leaders felt the colonists should help pay for their defense. So in 1765, Parliament passed the Stamp Act. It put a tax on printed paper, like newspapers, licenses, and playing cards. Colonists had to buy a stamp for each item to show they had paid.
+
+The colonists were angry. They had no representatives in Parliament to vote on the tax. They called this "taxation without representation." The Sons of Liberty blocked stamped paper at the docks. Merchants held a boycott, agreeing not to buy British goods. Leaders from nine colonies met as the Stamp Act Congress and asked Britain to repeal, or cancel, the law. Parliament did repeal it, but the anger kept growing.`,
+  D: `Charles Townshend was a British official in charge of money. He put new taxes on lead, glass, paper, paint, and tea. These taxes were indirect. That means they were collected at the ports, before goods reached the stores. The cost was hidden inside the price. Townshend hoped colonists would be less upset this way.
+
+But the colonists still noticed the taxes. They had no representatives in Parliament to vote on them. Once again, they called it "taxation without representation." To protest, they boycotted British goods. They refused to buy anything made in Britain.`,
+  E: `On March 5, 1770, colonists in Boston shouted at British soldiers. Some threw snowballs at them. The situation got out of control, and the soldiers fired into the crowd. Five colonists were killed.
+
+Most colonists blamed the soldiers. Angry citizens held a town meeting. They demanded that the troops leave Boston and stand trial for murder. The British agreed. Paul Revere made a famous picture of the event. It spread fast and made many colonists even angrier — even though the real story was messier than the picture showed.`,
+  F: `In 1773, Parliament passed the Tea Act. It gave one company, the British East India Company, a special advantage. The company could sell tea very cheaply. This hurt colonial merchants and smugglers, who could not match the low price.
+
+Even though tea was now cheaper, the colonists were angry. Britain had made a decision for them without asking. To protest, the Sons of Liberty planned the Boston Tea Party. Colonists dressed as Native Americans and boarded three British ships. They dumped 342 chests of tea into Boston Harbor while a crowd cheered.`,
+  G: `To coerce means to force someone to do something. After the Boston Tea Party, Britain wanted to punish the colonists. Parliament passed the Coercive Acts. These laws closed the port of Boston. They put Massachusetts under military rule and sharply limited town meetings.
+
+The colonists were shocked. They called the laws the "Intolerable Acts" because they were too harsh to accept. The laws targeted only Massachusetts, but other colonies joined the protest. They feared losing their own freedoms next. Samuel Adams helped organize the resistance. In towns near Boston, "minutemen" — colonists ready to fight quickly — began storing weapons and training for battle.`,
+  H: `After the Coercive Acts, the colonies decided to work together for the first time. They knew that if they stayed divided, they could lose their rights. They wanted to send their complaints to Britain as one group.
+
+In 1774, representatives from 12 of the 13 colonies met in Philadelphia. This meeting was the First Continental Congress. Leaders like Samuel Adams, John Adams, George Washington, and Patrick Henry attended. After seven weeks, they wrote a Declaration of Rights and letters to the King. They also agreed to boycott British trade. Local committees made sure people followed the boycott.`,
+  I: `Britain refused the requests from the First Continental Congress. In April 1775, British soldiers marched from Boston to Lexington and Concord. They wanted to seize the colonists' weapons and gunpowder. They also hoped to capture the leaders Samuel Adams and John Hancock.
+
+At Lexington, minutemen met the soldiers. No one knows who fired first, but eight colonists were killed and ten were wounded. The British pushed on to Concord, where more minutemen fought back. As the British retreated, colonists fired at them from behind trees and fences. By day's end, the British had 273 casualties, while the colonists had fewer than 100. Soon the Second Continental Congress chose George Washington to lead the new army. The Revolutionary War had begun.`
+};
 
 const RATIONALE_STARTERS = [
   'I chose this rating because ...',
@@ -784,7 +838,8 @@ const GLOSSARY = {
   ],
   B: [
     {t:'to quarter', d:'to give soldiers a place to live, plus food and supplies'},
-    {t:'troops', d:'soldiers', c:'tropas · tropas · troupes'}
+    {t:'troops', d:'soldiers', c:'tropas · tropas · troupes'},
+    {t:'barracks', d:'buildings where soldiers live'}
   ],
   C: [
     {t:'tax', d:'money people are required to pay to the government'},
@@ -793,6 +848,7 @@ const GLOSSARY = {
     {t:'Sons of Liberty', d:'a group of colonists who organized protests against British taxes'}
   ],
   D: [
+    {t:'indirect tax', d:'a tax built into a price and collected before goods reach the store'},
     {t:'non-importation', d:'an agreement to stop importing (bringing in) British goods'},
     {t:'customs', d:'taxes on goods entering a place — and the officials who collect them'},
     {t:'smuggling', d:'bringing goods in secretly to avoid paying taxes'}
@@ -808,7 +864,8 @@ const GLOSSARY = {
   G: [
     {t:'coercive', d:'using force or threats to make people obey', c:'coercitivo · coercitivo · coercitif'},
     {t:'charter', d:'a document that grants rights or self-government'},
-    {t:'blockade', d:'closing a port so ships cannot enter or leave', c:'bloqueo · bloqueio · blocus'}
+    {t:'blockade', d:'closing a port so ships cannot enter or leave', c:'bloqueo · bloqueio · blocus'},
+    {t:'legislature', d:'the group of people who make a colony’s laws'}
   ],
   H: [
     {t:'congress', d:'a formal meeting of chosen representatives', c:'congreso · congresso · congrès'},
@@ -818,7 +875,8 @@ const GLOSSARY = {
   I: [
     {t:'militia', d:'ordinary citizens trained to fight as part-time soldiers', c:'milicia · milícia · milice'},
     {t:'redcoats', d:'British soldiers, named for their red uniforms'},
-    {t:'minutemen', d:'militia ready to fight at a minute’s notice'}
+    {t:'minutemen', d:'militia ready to fight at a minute’s notice'},
+    {t:'casualties', d:'people killed or wounded'}
   ]
 };
 function elKeyTerms(eventId){
@@ -843,15 +901,22 @@ const REFLECTION_STARTERS = {
     'Looking at the whole chain of events, ... changed my mind because ...'
   ],
   q4: [
-    'The single most significant event was ... because ...',
-    'This event pushed anger highest when ...',
-    'Colonists reacted strongly because ...'
+    'The most significant event was ... because it changed what happened next by ...',
+    'In the long run, ... mattered more than ... because ...',
+    'Even though ... caused the most anger, ... was more significant because ...'
   ],
   q5: [
     'If the events stretched over 24 years, I think ... because ...',
     'A slower pace would change unrest by ...',
     'Even with more time, colonists would still ... because ...'
   ]
+};
+
+// Shorter sentence frames shown when "Shorter answers OK" is on.
+const REFLECTION_STARTERS_SIMPLE = {
+  q3: ['I changed ___ because ___.', 'I gave ___ more points because ___.', 'I gave ___ fewer points because ___.'],
+  q4: ['The most important event was ___.', '___ changed the most because ___.', '___ mattered most because ___.'],
+  q5: ['With more time, ___ because ___.', 'Slower change would ___.', 'It would still matter because ___.']
 };
 
 const EVENT_ART = {
@@ -1099,13 +1164,14 @@ function renderSplashSection(){
       h('label',{},'Your name', nameInput),
       h('label',{},'Period', periodInput)
     ),
+    span('Your progress saves on this browser only — use the same device to continue. Switching computers will start you over, so the Google Form at the end is your final record.', 'splash-note'),
     h('div',{class:'splash-btn-row'},
       span('Both fields are required to unlock the lesson.', 'splash-note'),
       beginBtn
     )
   );
 
-  container.append(hero, formCard);
+  container.append(formCard, hero);
   scrollBtn = btnGhost('Scroll to placards ↓', ()=>scrollToSection('section-placards'), state.phase==='splash');
   toggleBegin();
   card.append(
@@ -1129,12 +1195,13 @@ function elTimeline(){
     const active = i===state.current;
     const button = h('button',{class: active?'active':'', onclick:()=>{
       state.current=i;
+      state.sub='read';
       save();
       render();
       scrollToSection('section-placards');
     }});
     button.style.borderLeft = `4px solid ${heat}`;
-    if(active){ button.style.background = heat; button.style.borderColor = heat; button.style.color = '#fff'; button.setAttribute('aria-current','true'); }
+    if(active){ const deep = heatColor(i, EVENTS.length, 42); button.style.background = deep; button.style.borderColor = deep; button.style.color = '#fff'; button.setAttribute('aria-current','location'); }
     const dot = h('span',{class:'timeline-dot'});
     dot.style.background = heat;
     button.append(h('span',{class:'timeline-year-row'}, dot, span(String(e.year),'timeline-year')), span(e.title,'timeline-title'));
@@ -1153,7 +1220,7 @@ function renderPlacardsSection(){
     h('h2',{},'Rate the Unrest'),
     p('Open each placard, pick the reading level that makes sense for you, and decide how much unrest that moment added on a 1–8 scale.', 'section-lead'),
     p('Use the timeline buttons to jump around. When the Unrest meter and rationale are complete, save and move forward.', 'section-lead'),
-    p('For at least one event, try the “Tell me more” level — it shows how historians question the sources and stories behind the events.', 'note')
+    p('For at least one event, try the “★★★★ Challenge” level — it shows how historians question the sources and stories behind the events.', 'note')
   );
   card.append(intro);
   if(locked){
@@ -1176,6 +1243,143 @@ function renderPlacardsSection(){
   eventCard.style.borderTop = `4px solid ${eventHeat}`;
   const titleDot = h('span',{class:'event-heat-dot'});
   titleDot.style.background = eventHeat;
+  const sub = (state.sub === 'rate' || state.sub === 'explain') ? state.sub : 'read';
+  const isLast = state.current === EVENTS.length - 1;
+  const goPlacard = (idx)=>{ state.current = Math.max(0, Math.min(EVENTS.length-1, idx)); state.sub='read'; save(); render(); };
+
+  // sub-step indicator (Read → Rate → Explain)
+  const subOrder = ['read','rate','explain'];
+  const subLabels = { read:'Read', rate:'Rate', explain:'Explain' };
+  const subIdx = subOrder.indexOf(sub);
+  const stepNav = h('div',{class:'substeps', role:'list', 'aria-label':'Steps for this placard'});
+  subOrder.forEach((key,i)=>{
+    const item = h('div',{class:'substep'+(key===sub?' active':'')+(i<subIdx?' done':''), role:'listitem'},
+      span(i<subIdx ? '✓' : String(i+1),'substep-dot'), span(subLabels[key],'substep-label'));
+    if(key===sub) item.setAttribute('aria-current','step');
+    stepNav.append(item);
+    if(i < subOrder.length-1) stepNav.append(span('→','substep-arrow'));
+  });
+
+  // --- builders for each piece ---
+  const buildTabs = ()=>{
+    const tabs = h('div',{class:'tabs level-tabs'});
+    tabs.setAttribute('role','tablist');
+    tabs.setAttribute('aria-label','Reading level');
+    [['★ Most Support','simple'],['★★ Some Support','ss'],['★★★ Standard','core'],['★★★★ Challenge','adv']].forEach(([label,key])=>{
+      const b = h('button',{class:'tab '+(row.level===key?'active':''), onclick:()=>{row.level=key; save(); render();}}, label);
+      b.setAttribute('role','tab');
+      b.setAttribute('aria-selected', row.level===key ? 'true' : 'false');
+      b.setAttribute('aria-controls','reading-panel');
+      tabs.appendChild(b);
+    });
+    return tabs;
+  };
+  const buildReading = ()=>{
+    const reading = h('div',{class:'event-reading'});
+    reading.id = 'reading-panel';
+    reading.setAttribute('role','tabpanel');
+    reading.setAttribute('aria-label','Reading');
+    reading.setAttribute('tabindex','0');
+    const parts = textFor(e,row.level).split(/\n\s*\n/).filter(Boolean);
+    if(parts.length===0) parts.push(textFor(e,row.level));
+    parts.forEach(par => { const p=document.createElement('p'); p.className='event-text'; p.innerHTML=par; reading.appendChild(p); });
+    return reading;
+  };
+  const buildMeter = ()=>{
+    const valueLabel = span(`${row.rating} / 8`, 'pill');
+    const meter = unrestMeter(row.rating, (val)=>{
+      const clamped = clamp1to8(val);
+      if(row.rating === clamped) return;
+      row.rating = clamped;
+      valueLabel.textContent = `${clamped} / 8`;
+      save();
+    });
+    return h('div',{class:'event-slider'},
+      h('label',{}, 'Unrest‑o‑meter', valueLabel),
+      meter,
+      h('div',{class:'meter-labels'}, span('Calm','sub'), span('Rising','sub'), span('Boiling','sub'), span('Explosive','sub')),
+      span('Tap a box (or use the arrow keys) to set how much unrest this event added.', 'note')
+    );
+  };
+  const buildRationale = ()=> h('div',{class:'event-rationale'},
+    (()=>{
+      const input = textarea(row.rationale, v=>{ row.rationale=v; const er=document.getElementById('rationale-error'); if(er && rationaleProblem(row)===null){ er.textContent=''; er.classList.add('hidden'); input.removeAttribute('aria-invalid'); } });
+      input.id = 'rationale-input';
+      input.setAttribute('aria-describedby','rationale-error');
+      const label = h('label',{}, 'Why did you choose that rating?');
+      label.setAttribute('for','rationale-input');
+      const starters = createStarterChips(text=>{ input.value = text; row.rationale = text; input.focus(); });
+      const errEl = h('p',{class:'field-error hidden',id:'rationale-error'},'');
+      errEl.setAttribute('role','alert');
+      const helpText = state.relaxRationale
+        ? 'Use a starter above or write a few words explaining your rating.'
+        : 'Use a starter above or write your own complete sentence ending with punctuation.';
+      return [label, starters, input, errEl, span(helpText,'note')];
+    })()
+  );
+  const saveAndContinue = ()=>{
+    const problem = rationaleProblem(row);
+    if(problem){
+      const er=document.getElementById('rationale-error');
+      const inputEl=document.getElementById('rationale-input');
+      if(er){ er.textContent=problem; er.classList.remove('hidden'); }
+      if(inputEl){ inputEl.setAttribute('aria-invalid','true'); inputEl.focus(); }
+      toast(problem);
+      return;
+    }
+    if(!isLast){
+      state.current++; state.sub='read'; save(); render();
+      const half = Math.ceil(EVENTS.length/2);
+      if(state.current === half){ toast(`Halfway there — ${EVENTS.length - state.current} placards to go!`); }
+      else { toast('Saved! Next placard unlocked.'); }
+    } else {
+      const incomplete = EVENTS.filter(ev => !validateRow(state.rows[ev.id]));
+      if(incomplete.length){
+        state.current = EVENTS.findIndex(ev => ev.id===incomplete[0].id); state.sub='read';
+        save(); render();
+        toast(`${incomplete.length} placard${incomplete.length>1?'s':''} still need a rationale — starting with ${incomplete[0].title}.`);
+        return;
+      }
+      const snap = {}; EVENTS.forEach(ev => snap[ev.id] = clamp1to8(state.rows[ev.id].rating||1));
+      state.firstPicks = snap;
+      setPhase('summary'); scrollToSection('section-summary');
+      toast('Great work! Time to spend your 36 points.');
+    }
+  };
+
+  // --- current sub-step panel (one task on screen at a time) ---
+  let panel;
+  if(sub==='read'){
+    panel = h('div',{class:'substep-panel'},
+      buildTabs(), buildReading(),
+      h('div',{class:'event-link'}, a(e.wiki,'Read more on Wikipedia →','link')),
+      elKeyTerms(e.id),
+      h('div',{class:'event-controls'},
+        btnGhost('← Previous placard', ()=>goPlacard(state.current-1), state.current===0),
+        btn('Next: Rate the unrest →', ()=>{ state.sub='rate'; save(); render(); })
+      )
+    );
+  } else if(sub==='rate'){
+    panel = h('div',{class:'substep-panel'},
+      buildMeter(),
+      h('div',{class:'event-controls'},
+        btnGhost('← Back to reading', ()=>{ state.sub='read'; save(); render(); }),
+        btn('Next: Explain why →', ()=>{ state.sub='explain'; save(); render(); })
+      )
+    );
+  } else {
+    panel = h('div',{class:'substep-panel'},
+      buildRationale(),
+      h('div',{class:'event-controls'},
+        btnGhost('← Back to rating', ()=>{ state.sub='rate'; save(); render(); }),
+        btn(isLast ? 'Spend Your 36 Points →' : 'Save & Continue →', saveAndContinue)
+      )
+    );
+  }
+
+  const layoutKids = [ h('div',{class:'event-body'}, stepNav, panel) ];
+  if(sub==='read') layoutKids.push(elEventFigure(e));
+
   eventCard.append(
     h('div',{class:'card-h'},
       h('div',{class:'event-title-wrap'},
@@ -1184,88 +1388,7 @@ function renderPlacardsSection(){
       )
     ),
     h('div',{class:'event-content'},
-      h('div',{class:'event-layout'},
-        h('div',{class:'event-body'},
-          (()=>{
-            const tabs = h('div',{class:'tabs level-tabs'});
-            [['Explain','simple'],['Default','core'],['Tell me more','adv']].forEach(([label,key])=>{
-              const b = h('button',{class:'tab '+(row.level===key?'active':''), onclick:()=>{row.level=key; save(); render();}}, label);
-              tabs.appendChild(b);
-            });
-            return tabs;
-          })(),
-          (()=>{
-            const reading = h('div',{class:'event-reading'});
-            const parts = textFor(e,row.level).split(/\n\s*\n/).filter(Boolean);
-            if(parts.length===0) parts.push(textFor(e,row.level));
-            parts.forEach(par => {
-              const paragraph = document.createElement('p');
-              paragraph.className = 'event-text';
-              paragraph.innerHTML = par;
-              reading.appendChild(paragraph);
-            });
-            return reading;
-          })(),
-          h('div',{class:'event-link'}, a(e.wiki,'Read more on Wikipedia →','link')),
-          elKeyTerms(e.id),
-          (()=>{
-            const valueLabel = span(`${row.rating} / 8`, 'pill');
-            const meter = unrestMeter(row.rating, (val)=>{
-              const clamped = clamp1to8(val);
-              if(row.rating === clamped) return;
-              row.rating = clamped;
-              valueLabel.textContent = `${clamped} / 8`;
-              save();
-              if(state.phase!=='cards'){
-                render();
-              }
-            });
-            return h('div',{class:'event-slider'},
-              h('label',{}, 'Unrest‑o‑meter', valueLabel),
-              meter,
-              h('div',{class:'meter-labels'}, span('Calm','sub'), span('Rising','sub'), span('Boiling','sub'), span('Explosive','sub')),
-              span('Tap a box (or use the arrow keys) to set how much unrest this event added.', 'note')
-            );
-          })(),
-          h('div',{class:'event-rationale'},
-            h('label',{}, 'Why did you choose that rating?'),
-            (()=>{
-              const input = textarea(row.rationale, v=>{ row.rationale=v; });
-              const starters = createStarterChips(text=>{
-                input.value = text;
-                row.rationale = text;
-                input.focus();
-              });
-              const helpText = state.relaxRationale
-                ? 'Use a starter above or write a few words explaining your rating.'
-                : 'Use a starter above or write your own complete sentence ending with punctuation.';
-              return [starters, input, span(helpText,'note')];
-            })()
-          ),
-          h('div',{class:'event-controls'},
-            btnGhost('Previous placard', ()=>{ state.current=Math.max(0,state.current-1); save(); render(); }, state.current===0),
-            btn(state.current < EVENTS.length-1 ? 'Save & Continue →' : 'Spend Your 36 Points →', ()=>{
-              const problem = rationaleProblem(row);
-              if(problem) { toast(problem); return; }
-              if(state.current < EVENTS.length-1){
-                state.current++;
-                save();
-                render();
-                const half = Math.ceil(EVENTS.length/2);
-                if(state.current === half){ toast(`Halfway there — ${EVENTS.length - state.current} placards to go!`); }
-                else { toast('Saved! Next placard unlocked.'); }
-              } else {
-                const snap = {}; EVENTS.forEach(ev => snap[ev.id] = clamp1to8(state.rows[ev.id].rating||1));
-                state.firstPicks = snap;
-                setPhase('summary');
-                scrollToSection('section-summary');
-                toast('Great work! Time to spend your 36 points.');
-              }
-            })
-          )
-        ),
-        elEventFigure(e)
-      )
+      h('div',{class:'event-layout'}, ...layoutKids)
     )
   );
   card.append(
@@ -1286,8 +1409,11 @@ function renderSummarySection(){
   const intro = h('div',{class:'step-intro'},
     span('Activity 2 • Weigh the Events','activity-badge'),
     h('h2',{},'Spend Your 36 Points'),
-    p('This is a thinking game, not a measurement. Real historians don’t give events a fixed number of points, and more than one event can be hugely important. But giving you only 36 points forces a useful challenge: you can’t rate everything an 8, so you have to decide which events you think mattered most — and be ready to defend your choices. Spending more on one event means spending less on another.', 'section-lead'),
-    p('As you rebalance, ask yourself: which events truly pushed the colonies toward revolution, and which were smaller steps along the way? Click any event to revisit its description, switch reading levels, or revise your rationale.', 'section-lead'),
+    h('div',{class:'budget-disclaimer'},
+      strong('This is a thinking game, not a measurement.'),
+      p('Real historians don’t give events a fixed number of points, and more than one event can be hugely important. The 36-point limit (9 events × 4 points on average) just forces a useful challenge: you can’t rate everything an 8, so you have to decide which events mattered most — and be ready to defend your choices.', 'budget-disclaimer-text')
+    ),
+    p('Giving more points to one event means giving fewer to another. As you rebalance, ask yourself: which events truly pushed the colonies toward revolution, and which were smaller steps along the way? Click any event to revisit its description, switch reading levels, or revise your rationale.', 'section-lead'),
     p('Tip: each rating stays between 1 and 8, so the lowest any event can go is 1. To free up points for a big event, lower several smaller ones.', 'note')
   );
   card.append(intro);
@@ -1299,6 +1425,9 @@ function renderSummarySection(){
 
   const total = sumRatings();
   const remaining = 36 - total;
+  const ratingsArr = EVENTS.map(e=>state.rows[e.id].rating||1);
+  const allSame = ratingsArr.every(r=>r===ratingsArr[0]);
+  const showNudge = (allSame || total<=12) && remaining!==0;
   const summaryList = h('div',{class:'summary-list'});
 
   EVENTS.forEach((event, idx)=>{
@@ -1340,13 +1469,19 @@ function renderSummarySection(){
       const newRemaining = 36 - newTotal;
       const status = newRemaining===0 ? 'Balanced! Exactly 36 points.' : newRemaining>0 ? `${newRemaining} points left to assign.` : `${Math.abs(newRemaining)} points over the limit.`;
       announce(`${event.title} set to ${clamped}. Total ${newTotal} of 36. ${status}`);
+      if(newRemaining===0 && total !== 36){ toast('Balanced! All 36 points spent — nice work.'); }
       pendingSummaryFocus = event.id;
       render();
     });
 
     const levelButtons = h('div',{class:'summary-levels'});
-    [['Explain','simple'],['Default','core'],['Tell me more','adv']].forEach(([label,key])=>{
+    levelButtons.setAttribute('role','tablist');
+    levelButtons.setAttribute('aria-label','Reading level');
+    [['★ Most Support','simple'],['★★ Some Support','ss'],['★★★ Standard','core'],['★★★★ Challenge','adv']].forEach(([label,key])=>{
       const btnLevel = h('button',{class:row.level===key?'active':''}, label);
+      btnLevel.setAttribute('role','tab');
+      btnLevel.setAttribute('aria-selected', row.level===key ? 'true' : 'false');
+      btnLevel.setAttribute('aria-controls', bodyId);
       btnLevel.addEventListener('click', ()=>{
         if(row.level===key) return;
         row.level=key;
@@ -1420,7 +1555,8 @@ function renderSummarySection(){
         h('div',{class:`budget-bar is-${budgetState}`},
           h('div',{class:'budget-bar-fill', style:`width:${fillPct}%`})
         ),
-        span(badgeWord, `budget-hint is-${budgetState}`)
+        span(badgeWord, `budget-hint is-${budgetState}`),
+        showNudge ? span('Your ratings barely differ — raise the events that mattered most and lower the smaller ones to show your thinking.', 'budget-nudge') : null
       ),
       h('div',{class:'summary-actions summary-actions-col'},
         btn('Continue to reflections →', ()=>{ setPhase('questions'); scrollToSection('section-questions'); }, remaining!==0),
@@ -1520,47 +1656,44 @@ function renderQuestionsSection(){
     h('div',{class:'card-h'}, h('h3',{},'Reflection & Submit')), 
     h('div',{class:'card-b grid'},
       h('div',{class:'grid',style:'grid-template-columns:1fr 1fr;gap:12px'},
-        h('div',{}, h('label',{},'1) Name'), inp('answers.name', state.answers.name, v=>{ state.answers.name=v; save(); })),
-        h('div',{}, h('label',{},'2) Period'), inp('answers.period', state.answers.period, v=>{ state.answers.period=v; save(); }))
+        h('div',{}, h('label',{},'1) Name', inp('answers.name', state.answers.name, v=>{ state.answers.name=v; save(); }))),
+        h('div',{}, h('label',{},'2) Period', inp('answers.period', state.answers.period, v=>{ state.answers.period=v; save(); })))
       ),
       (()=>{
         const input = textarea(state.answers.q3, v=>{ state.answers.q3=v; });
+        input.id = 'q3-input';
         const starters = createStarterChips(text=>{
           input.value = text;
           state.answers.q3 = text;
           input.focus();
-        }, REFLECTION_STARTERS.q3);
-        return h('div',{},
-          h('label',{},'3) Which event did you decide mattered MORE or LESS than your first guess? Tell which points you moved, and what changed your mind.'),
-          starters,
-          input
-        );
+        }, (state.relaxRationale?REFLECTION_STARTERS_SIMPLE:REFLECTION_STARTERS).q3);
+        const label = h('label',{},'3) Which event did you decide mattered MORE or LESS than your first guess? Tell which points you moved, and what changed your mind.');
+        label.setAttribute('for','q3-input');
+        return h('div',{}, label, starters, input);
       })(),
       (()=>{
         const input = textarea(state.answers.q4, v=>{ state.answers.q4=v; });
+        input.id = 'q4-input';
         const starters = createStarterChips(text=>{
           input.value = text;
           state.answers.q4 = text;
           input.focus();
-        }, REFLECTION_STARTERS.q4);
-        return h('div',{},
-          h('label',{},'4) Which single event was most significant, and why?'),
-          starters,
-          input
-        );
+        }, (state.relaxRationale?REFLECTION_STARTERS_SIMPLE:REFLECTION_STARTERS).q4);
+        const label = h('label',{},'4) Which single event was the most significant — the one that most changed what happened next? Remember: the event that caused the most anger in the moment may not be the one with the biggest long-term effect. Explain your choice.');
+        label.setAttribute('for','q4-input');
+        return h('div',{}, label, starters, input);
       })(),
       (()=>{
         const input = textarea(state.answers.q5, v=>{ state.answers.q5=v; });
+        input.id = 'q5-input';
         const starters = createStarterChips(text=>{
           input.value = text;
           state.answers.q5 = text;
           input.focus();
-        }, REFLECTION_STARTERS.q5);
-        return h('div',{},
-          h('label',{},'5) Would these events be as impactful if they happened over 24 years instead of 12? Why/why not?'),
-          starters,
-          input
-        );
+        }, (state.relaxRationale?REFLECTION_STARTERS_SIMPLE:REFLECTION_STARTERS).q5);
+        const label = h('label',{},'5) Would these events be as impactful if they happened over 24 years (1763–1775 is 12 years) instead? Why or why not?');
+        label.setAttribute('for','q5-input');
+        return h('div',{}, label, starters, input);
       })(),
       h('div',{},
         a(buildFormURL(), filled?'Open Pre‑filled Google Form →':'Complete all fields above first', 'btn'),
@@ -1570,7 +1703,7 @@ function renderQuestionsSection(){
           const cb = h('input',{type:'checkbox'});
           cb.id = 'submitConfirm';
           cb.checked = state.submitted;
-          const label = h('label',{class:'submit-confirm-label'}, cb, span('I opened the form and clicked Submit.'));
+          const label = h('label',{class:'submit-confirm-label'}, cb, span('I clicked Submit and saw the Google “Your response has been recorded” page.'));
           label.setAttribute('for','submitConfirm');
           const done = h('p',{class:'submit-done note'+(state.submitted?'':' hidden')}, '✓ All done — thanks for turning in your work!');
           cb.addEventListener('change', e=>{
@@ -1683,7 +1816,7 @@ function renderIntroModal(){
   modal.onclick = (ev)=>{ if(ev.target===modal) hideIntroModal(); };
   closeBtn.focus();
 }
-function textFor(e, level){ return level==='simple'?e.simple: level==='adv'?e.adv : e.core; }
+function textFor(e, level){ return level==='simple'?e.simple : level==='ss'?(SOME_SUPPORT[e.id]||e.core) : level==='adv'?e.adv : e.core; }
 
 function modalContentFor(view){
   if(view==='overview'){
