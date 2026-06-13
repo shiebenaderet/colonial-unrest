@@ -4,6 +4,9 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Understanding Unrest — Simple</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap">
 <style>
   :root {
     --bg: #0f172a;        /* slate-900 */
@@ -24,7 +27,6 @@
     --progress-track: #1f2937;
     --meter-empty: rgba(15,23,42,.65);
   }
-  @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap');
   html{scroll-behavior:smooth}
   *{box-sizing:border-box}
   body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--fg);transition:background .25s ease,color .25s ease}
@@ -114,6 +116,7 @@
   footer{color:var(--muted);text-align:center;padding:36px 0}
   a.link{color:#93c5fd}
   .hidden{display:none}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
   main.wrap{padding-top:32px;padding-bottom:48px;position:relative}
   .splash-wrapper{display:grid;gap:24px;margin-top:20px}
   .splash-hero{display:grid;gap:24px}
@@ -260,6 +263,14 @@
   body.light nav.timeline{border-color:#e2e8f0;background:#ffffff}
   body.light nav.timeline li button{border-color:#e2e8f0}
   body.light .callout{background:rgba(191,219,254,.4)}
+  /* Light-mode contrast fixes: these elements use light-blue text that is
+     near-invisible (~1.2:1) on light backgrounds. Darken to meet WCAG AA. */
+  body.light a.link{color:#1d4ed8}
+  body.light .pill{color:#1e40af}
+  body.light .image-fallback .pill{color:#bfdbfe}
+  body.light .chip.active{color:#1e3a8a}
+  body.light .chip.done{color:#166534}
+  body.light .callout-badge{color:#1e3a8a}
   body.light .lock-overlay{background:rgba(241,245,249,.92);border-color:#cbd5f5;color:#475569}
   body.light .splash-card{background:linear-gradient(135deg,rgba(59,130,246,.12),rgba(255,255,255,.85));color:#0f172a}
   body.light .splash-card.secondary{background:linear-gradient(135deg,rgba(248,250,252,.88),rgba(251,191,36,.16))}
@@ -405,6 +416,13 @@
               </label>
             </div>
             <div class="panel-group">
+              <h4>Writing</h4>
+              <label class="toggle-pill" for="relaxToggle">
+                <input type="checkbox" id="relaxToggle" />
+                <span>Shorter answers OK (no punctuation required)</span>
+              </label>
+            </div>
+            <div class="panel-group">
               <h4>Translate</h4>
               <select id="translateSel" class="translate-select">
                 <option value="">Select language…</option>
@@ -425,7 +443,8 @@
   </header>
 
   <main class="wrap" id="app"></main>
-  <div id="toast" class="toast hidden"></div>
+  <div id="toast" class="toast hidden" role="status" aria-live="assertive" aria-atomic="true"></div>
+  <div id="srStatus" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
 
   <footer>United States History • Colonial Period • Unrest in the Colonies</footer>
 
@@ -454,7 +473,7 @@ const ENTRY = {
 };
 
 const EVENTS = [
-  {id:'A', title:'Proclamation of 1763', year:1763, img:'https://upload.wikimedia.org/wikipedia/commons/8/86/Map_of_territorial_growth_1775.jpg',
+  {id:'A', title:'Proclamation of 1763', year:1763, img:'images/proclamation-1763.jpg',
    wiki:'https://en.wikipedia.org/wiki/Royal_Proclamation_of_1763',
    simple:`A proclamation is an official announcement. In 1763, the British government made one called the Proclamation of 1763. It said that the land west of the Appalachian Mountains—land Britain had just won after the French and Indian War—would belong to Native Americans. Colonists were not allowed to move or settle there.
 
@@ -471,7 +490,7 @@ The colonists were frustrated by the Proclamation of 1763. Not only were they no
 Letters from veterans and land speculators show deep frustration. George Washington called the measure "a temporary inconvenience," but one that "must eventually fall to pieces." (<a href="https://www.mountvernon.org/library/digitalhistory/digital-encyclopedia/article/proclamation-line-of-1763" target="_blank" rel="noopener noreferrer">Mount Vernon Historical Library</a>) Native nations, meanwhile, viewed it as a rare acknowledgment of sovereignty — an imperial promise often ignored in practice.
 
 The Proclamation exposed a growing divide in motive: Britain sought control and balance, while settlers sought autonomy and opportunity. What looked to London like peacekeeping looked to the colonies like an early act of oppression — a boundary line that marked where loyalty began to crumble.`},
-  {id:'B', title:'Quartering Act', year:1765, img:'https://upload.wikimedia.org/wikipedia/commons/0/04/Soldats-britanniques-cantonnes-dans-une-maison-coloniale-americaine-annees-1770.png', wiki:'https://en.wikipedia.org/wiki/Quartering_Acts',
+  {id:'B', title:'Quartering Act', year:1765, img:'images/quartering-act.png', wiki:'https://en.wikipedia.org/wiki/Quartering_Acts',
    simple:`To quarter means to give someone a place to stay. The Quartering Act said that colonists had to let British soldiers live in their homes. They also had to give them things like food, candles, fuel, and even transportation.
 
 This law made many colonists angry. They didn't trust the soldiers and thought they were sent to watch over and control the colonists, not to protect them. The colonists also believed the British government should have asked for their permission before making a law that affected their homes and their money.`,
@@ -483,7 +502,7 @@ The Quartering Act angered the colonists. They were suspicious of troops. They b
 Newspapers accused Parliament of "keeping up standing armies in time of peace." In some cities, like New York, assemblies refused to pay for soldiers' supplies until Parliament suspended their legislative powers. (<a href="https://www.britannica.com/event/Quartering-Act" target="_blank" rel="noopener noreferrer">Britannica</a>) To British eyes, that was rebellion. To colonists, it was defense of principle.
 
 The act's real power was psychological. It turned distant government into daily intrusion — a soldier on your street, a cost on your table. Many colonists began to wonder: if Britain could force soldiers into our homes, what liberty could it not touch?`},
-  {id:'C', title:'Stamp Act', year:1765, img:'https://upload.wikimedia.org/wikipedia/commons/d/df/Repeal_of_the_Stamp_Act.jpg', wiki:'https://en.wikipedia.org/wiki/Stamp_Act_1765',
+  {id:'C', title:'Stamp Act', year:1765, img:'images/stamp-act.jpg', wiki:'https://en.wikipedia.org/wiki/Stamp_Act_1765',
    simple:`After the French and Indian War, Britain owed a lot of money. The British government thought the colonists should help pay for the cost of protecting them during the war. In 1765, Parliament passed a new law called the Stamp Act.
 
 The Stamp Act said that colonists had to pay a tax on printed items like newspapers, pamphlets, marriage licenses, and playing cards. People had to buy a stamp and put it on each paper to show they had paid the tax.
@@ -503,7 +522,7 @@ Throughout the colonies, people responded in a number of ways: Groups such as th
 Pamphlets cried, "No taxation without representation!" — a slogan that echoed from Virginia to Massachusetts. James Otis, an early protest leader, argued that "taxation without representation is tyranny." (<a href="https://www.masshist.org/revolution/stamp.php" target="_blank" rel="noopener noreferrer">Massachusetts Historical Society</a>) Boycotts spread, uniting merchants, printers, and farmers in a common cause. Even Benjamin Franklin, once loyal to Britain, warned Parliament that the act would "light the fires of discontent." (<a href="https://www.parliament.uk/about/living-heritage/evolutionofparliament/legislativescrutiny/parliament-and-empire/parliament-and-the-american-colonies-before-1765/the-stamp-act-and-the-american-colonies-1763-67/" target="_blank" rel="noopener noreferrer">UK Parliament Archives</a>)
 
 By repealing the law in 1766, Britain admitted defeat — but too late. The Stamp Act taught colonists that shared resistance could work, and that liberty was not just an idea but a practice. Every meeting, boycott, and petition was rehearsal for revolution.`},
-  {id:'D', title:'Townshend Acts', year:1767, img:'https://upload.wikimedia.org/wikipedia/commons/9/9a/CharlesTownshend.jpg', wiki:'https://en.wikipedia.org/wiki/Townshend_Acts',
+  {id:'D', title:'Townshend Acts', year:1767, img:'images/townshend-acts.jpg', wiki:'https://en.wikipedia.org/wiki/Townshend_Acts',
    simple:`Charles Townshend, a British leader, created new taxes on lead, glass, paper, paint, and tea. These taxes were indirect, which means they were collected before the goods ever reached the stores. The tax was added at the sea ports, so the cost was already built into the price. Townshend hoped the colonists wouldn't notice they were paying extra money to Britain.
 
 But the colonists did notice. They believed these taxes were unfair, because they still had no representatives in Parliament to speak or vote for them. Once again, they said this was "taxation without representation."
@@ -517,7 +536,7 @@ The colonists, however, recognized the indirect tax. They saw it as an unjust fo
 Letters from merchants reveal both economic pain and moral outrage. James Otis Jr., a lawyer and politician from Massachusetts wrote, "…the very act of taxing, exercised over those who are not represented, appears to me to be depriving them of one of their most essential rights, as freemen; and if continued, seems to be in effect an entire disfranchisement of every civil right" (<a href="https://www.americanrevolution.org/no-taxation-without-representation/?utm_source=chatgpt.com#:~:text=%E2%80%A6the%20very%20act%20of%20taxing%2C%20exercised%20over%20those%20who%20are%20not%20represented%2C%20appears%20to%20me%20to%20be%20depriving%20them%20of%20one%20of%20their%20most%20essential%20rights%2C%20as%20freemen%3B%20and%20if%20continued%2C%20seems%20to%20be%20in%20effect%20an%20entire%20disfranchisement%20of%20every%20civil%20right" target="_blank" rel="noopener noreferrer">AmericanRevolution.org</a>) Women joined in too; spinning bees became acts of protest, replacing imported fabric with homespun cloth. These "Daughters of Liberty" gave rebellion a domestic voice.
 
 As the slide image suggests, the acts blurred everyday life and empire. To the British, taxation was administration; to colonists, it was alienation. Every boycott, every homespun dress, turned politics into practice — and deepened the habit of resistance.`},
-  {id:'E', title:'Boston Massacre', year:1770, img:'https://upload.wikimedia.org/wikipedia/commons/b/bd/%22The_Boston_Massacre%22%2C_03-05-1770_-_NARA_-_513326.jpg', wiki:'https://en.wikipedia.org/wiki/Boston_Massacre',
+  {id:'E', title:'Boston Massacre', year:1770, img:'images/boston-massacre.jpg', wiki:'https://en.wikipedia.org/wiki/Boston_Massacre',
    simple:`On March 5, 1770, a group of colonists in Boston began to shout at and tease British soldiers. Some colonists even threw snowballs at them. Things quickly got out of control, and the British soldiers fired their guns into the crowd. Five colonists were killed.
 
 Many colonists thought the British soldiers were to blame. Angry citizens held a town meeting and demanded that the soldiers be removed from Boston and be put on trial for murder. The British government agreed to these demands.`,
@@ -529,7 +548,7 @@ Most colonists believed that the British soldiers were completely at fault. The 
 Within days, Revere's image spread across the colonies, stoking outrage. Yet another voice emerged — John Adams — who risked his reputation to defend the soldiers, reminding Bostonians that "facts are stubborn things." (<a href="https://founders.archives.gov/documents/Adams/05-03-02-0001-0004-0016#:~:text=I%20will%20enlarge%20no%20more%20on%20the%20evidence%2C%20but%20submit%20it%20to%20you.%E2%80%94Facts%20are%20stubborn%20things%3B%20and%20whatever%20may%20be%20our%20wishes%2C%20our%20inclinations%2C%20or%20the%20dictates%20of%20our%20passions%2C%20they%20cannot%20alter%20the%20state%20of%20facts%20and%20evidence" target="_blank" rel="noopener noreferrer">Founders.gov</a>)
 
 The event showed how images could shape truth. The slide's engraving reminds students that propaganda (information meant to influence opinion) became a revolutionary tool. The massacre's legacy wasn't just five deaths — it was the realization that perception could unite a movement faster than armies could suppress it.`},
-  {id:'F', title:'Boston Tea Party', year:1773, img:'https://upload.wikimedia.org/wikipedia/commons/5/52/Boston_Tea_Party_Currier_colored.jpg', wiki:'https://en.wikipedia.org/wiki/Boston_Tea_Party',
+  {id:'F', title:'Boston Tea Party', year:1773, img:'images/boston-tea-party.jpg', wiki:'https://en.wikipedia.org/wiki/Boston_Tea_Party',
    simple:`In 1773, the British government passed the Tea Act. This law gave one company—the British East India Company—a monopoly, which means they were the only company allowed to sell tea to the American colonies.
 
 Even though the Tea Act actually made tea cheaper, the colonists were angry. They believed it was unfair for Britain to make decisions for them without asking their opinion.
@@ -545,7 +564,7 @@ To protest the Tea Act, the Sons of Liberty organized the Boston Tea Party. Dres
 British lawmakers thought colonists would accept the bargain — cheaper tea through monopoly. Instead, they underestimated pride. Samuel Adams argued that to buy the taxed tea was to "admit the right of taxation." (<a href="https://www.masshist.org/revolution/teaparty.php" target="_blank" rel="noopener noreferrer">Massachusetts Historical Society</a>) The protestors' disguises symbolized freedom and identity — colonists rejecting Britishness and adopting American defiance.
 
 To the British, this was criminal destruction of property; to the colonists, it was moral purification. The image on your slide freezes that moment — unity, disguise, rebellion. The splash of tea was heard around the world. Within months, Britain would strike back with punishment so severe it erased any illusion of reconciliation.`},
-  {id:'G', title:'Intolerable (Coercive) Acts', year:1774, img:'https://upload.wikimedia.org/wikipedia/commons/5/57/The_able_doctor%2C_or_America_swallowing_the_bitter_draught_%28NYPL_Hades-248165-425086%29.jpg', wiki:'https://en.wikipedia.org/wiki/Intolerable_Acts',
+  {id:'G', title:'Intolerable (Coercive) Acts', year:1774, img:'images/intolerable-acts.jpg', wiki:'https://en.wikipedia.org/wiki/Intolerable_Acts',
    simple:`To coerce means to force someone to do something. After the Boston Tea Party, the British government wanted to punish the colonists and make them obey. They passed a set of laws called the Coercive Acts. These laws closed the port of Boston, put Massachusetts under military rule, and ended town meetings and the colonial legislature. The British hoped this would force the colonists to pay for the lost tea and to follow British rules.
 
 The colonists were shocked and angry. They called these laws the "Intolerable Acts" because they believed they were too harsh to accept. The laws were meant only for Massachusetts, but other colonies joined in protest, afraid they might lose their freedoms too.
@@ -557,7 +576,7 @@ Sam Adams, whose painting is on the Google slide, helped to stir up colonial res
 
 Although the acts applied only to Massachusetts, the other colonies rallied to protest them. The colonists feared that if such British actions were to continue, the rest of the colonies were in danger of losing their liberties as well. On the day the acts went into effect, flags throughout the colonies were flown at half-mast. Meanwhile, in the towns surrounding Boston, "minutemen" began to store arms and to train for possible battle "at a minute's notice".`,
    adv:`On the slide, a map of closed Boston Harbor represents punishment in policy form. The Intolerable Acts (called the Coercive Acts in Britain) shut down the port, replaced local leaders, and stationed troops inside the city. To Parliament, this was discipline; to colonists, it was collective suffering. Merchants went bankrupt, workers starved, and neighbors from as far away as Virginia sent food to the blockaded city. In a 1774 letter from George Washington to George William Fairfax:<blockquote style="margin: 16px 0; padding: 12px 16px; border-left: 4px solid var(--accent); background: var(--callout-bg); font-style: italic;">"In short the Ministry may rely on it … that Americans will never be tax'd without their own consent; that the cause of Boston, the despotick measures in respect to it, I mean now is and ever will be consider'd as the cause of America…" (<a href="https://www.mountvernon.org/library/digitalhistory/past-projects/quotes/article/in-short-the-ministry-may-rely-on-it-that-americans-will-never-be-taxd-without-their-own-consent-that-the-cause-of-boston-the-despotick-measures-in-respect-to-it-i-mean-now-is-and-ever-will-be-considerd-as-the-cause-of-america-not-that-we-approve-their-co" target="_blank" rel="noopener noreferrer">MountVernon.org</a>)</blockquote>What London intended as isolation instead created unity. The slide's imagery of a chained harbor perfectly captures the feeling: freedom held hostage. Across the colonies, people who had once felt distant now shared a common outrage. The Intolerable Acts didn't just close Boston — they opened the road to revolution.`},
-  {id:'H', title:'First Continental Congress', year:1774, img:'https://upload.wikimedia.org/wikipedia/commons/8/85/1st-continental-congress-1.jpg', wiki:'https://en.wikipedia.org/wiki/First_Continental_Congress',
+  {id:'H', title:'First Continental Congress', year:1774, img:'images/continental-congress.jpg', wiki:'https://en.wikipedia.org/wiki/First_Continental_Congress',
    simple:`After the Coercive Acts, the colonies decided to work together for the first time. They realized that if they stayed divided, they could lose their rights and freedoms. The colonies wanted to stand as one group and send their complaints to Britain together.
 
 In 1774, representatives from 12 of the 13 colonies met in Philadelphia at a meeting called the First Continental Congress. Some of the famous leaders there were Samuel Adams, John Adams, George Washington, and Patrick Henry.
@@ -573,7 +592,7 @@ After seven weeks, the Congress drew up the Declaration of Rights, as well as ap
 Inside Carpenter's Hall, voices clashed. Some delegates, like John Dickinson, urged patience and petition; others, like Patrick Henry, thundered, "I am not a Virginian, but an American!" (<a href="https://www.colonialwilliamsburg.org/discover/18th-century-people/nation-builders/patrick-henry/#:~:text=Distinctions%20between%20Virginians%2C%20Pennsylvanians%2C%20New%20Yorkers%2C%20and%20New%20Englanders%2C%20are%20no%20more.%20I%20am%20not%20a%20Virginian%2C%20but%20an%20American." target="_blank" rel="noopener noreferrer">Colonial Williamsburg</a>) The Congress agreed on boycotts and began organizing local committees to enforce them.
 
 The slide reminds us how the colonies transformed from scattered provinces into a united movement. This was the first rehearsal for self-government — with argument, compromise, and vision. Though still loyal to the king, the delegates had crossed a threshold: they were now speaking as Americans.`},
-  {id:'I', title:'Lexington & Concord', year:1775, img:'https://upload.wikimedia.org/wikipedia/commons/3/3b/The_Battle_of_Lexington.jpg', wiki:'https://en.wikipedia.org/wiki/Battles_of_Lexington_and_Concord',
+  {id:'I', title:'Lexington & Concord', year:1775, img:'images/lexington-concord.jpg', wiki:'https://en.wikipedia.org/wiki/Battles_of_Lexington_and_Concord',
    simple:`When the First Continental Congress asked Britain to change its unfair laws, Parliament refused. In April 1775, British soldiers left Boston and marched toward the nearby towns of Lexington and Concord. Their plan was to take away the colonists' weapons and gunpowder and to capture the leaders, Samuel Adams and John Hancock.
 
 At Lexington, a group of minutemen (colonists ready to fight at a minute's notice) met the British soldiers. No one knows who fired the first shot, but soon eight colonists were killed and ten were wounded. The British continued on to Concord, where more minutemen fought back. As the British retreated to Boston, the colonists fired at them from behind trees and fences. By the end of the day, the British lost 273 soldiers, while the colonists lost fewer than 100.
@@ -610,6 +629,7 @@ function defaultState(){
     answers: { name:'', period:'', q3:'', q4:'', q5:'' },
     theme: 'dark',
     font: 'default',
+    relaxRationale: false,
     summaryOpen: {},
     introStep: -1,
     introFeedback: null,
@@ -626,6 +646,7 @@ function load(){
     st.answers = Object.assign(def.answers, st.answers||{});
     st.theme = (st.theme==='light')?'light':'dark';
     st.font = (st.font==='dyslexic')?'dyslexic':'default';
+    st.relaxRationale = Boolean(st.relaxRationale);
     st.summaryOpen = st.summaryOpen && typeof st.summaryOpen==='object' ? st.summaryOpen : {};
     EVENTS.forEach(ev=>{ st.summaryOpen[ev.id] = Boolean(st.summaryOpen[ev.id]); });
     st.introStep = Number.isInteger(st.introStep)?st.introStep:-1;
@@ -716,6 +737,8 @@ const EVENT_ART = {
 // ----- Utilities -----
 const $ = sel => document.querySelector(sel);
 function toast(msg, ms=1600){ const t=$('#toast'); t.textContent=msg; t.classList.remove('hidden'); setTimeout(()=>t.classList.add('hidden'), ms); }
+// Persistent screen-reader announcer that survives re-renders (lives outside #app).
+function announce(msg){ const el=$('#srStatus'); if(!el) return; el.textContent=''; setTimeout(()=>{ el.textContent=msg; }, 50); }
 function setPhase(p){
   if(!STEPS.some(step => step.id===p)) return;
   const currentIdx = STEPS.findIndex(step => step.id===state.phase);
@@ -726,7 +749,23 @@ function setPhase(p){
   render();
 }
 function clamp1to8(n){ n=+n; if(!Number.isFinite(n)) return 1; return Math.min(8, Math.max(1, Math.round(n))); }
-function validateRow(r){ const okNum = r && Number.isFinite(+r.rating) && r.rating>=1 && r.rating<=8; const txt = (r.rationale||'').trim(); const words = txt.split(/\s+/).filter(Boolean); const sent = /[.!?]$/.test(txt) && words.length>=6; return okNum && sent; }
+// Returns null if the row is valid, otherwise a specific, student-friendly reason.
+// In relaxed mode (accessibility accommodation) the punctuation rule is dropped
+// and the minimum length is lowered, so written-expression needs and dictation
+// (which often omits end punctuation) aren't blocked.
+function rationaleProblem(r){
+  const okNum = r && Number.isFinite(+r.rating) && r.rating>=1 && r.rating<=8;
+  if(!okNum) return 'Pick a rating from 1 to 8 first.';
+  const txt = (r.rationale||'').trim();
+  const words = txt.split(/\s+/).filter(Boolean);
+  if(!txt) return 'Add a sentence explaining your rating.';
+  const relaxed = state && state.relaxRationale;
+  const minWords = relaxed ? 3 : 6;
+  if(words.length < minWords) return `Write at least ${minWords} words explaining why.`;
+  if(!relaxed && !/[.!?]$/.test(txt)) return 'End your sentence with a period, question mark, or exclamation point.';
+  return null;
+}
+function validateRow(r){ return rationaleProblem(r) === null; }
 function buildFormURL(){
   const u = new URL(FORM_BASE);
   u.searchParams.set('usp','pp_url');
@@ -1034,13 +1073,17 @@ function renderPlacardsSection(){
                 row.rationale = text;
                 input.focus();
               });
-              return [starters, input, span('Use a starter above or write your own complete sentence ending with punctuation.','note')];
+              const helpText = state.relaxRationale
+                ? 'Use a starter above or write a few words explaining your rating.'
+                : 'Use a starter above or write your own complete sentence ending with punctuation.';
+              return [starters, input, span(helpText,'note')];
             })()
           ),
           h('div',{class:'event-controls'},
             btnGhost('Previous placard', ()=>{ state.current=Math.max(0,state.current-1); save(); render(); }, state.current===0),
             btn(state.current < EVENTS.length-1 ? 'Save & Continue →' : 'Reveal the Budget →', ()=>{
-              if(!validateRow(row)) { toast('Add a 1–8 rating and one complete sentence.'); return; }
+              const problem = rationaleProblem(row);
+              if(problem) { toast(problem); return; }
               if(state.current < EVENTS.length-1){
                 state.current++;
                 save();
@@ -1127,6 +1170,10 @@ function renderSummarySection(){
       if(row.rating === clamped) return;
       row.rating = clamped;
       save();
+      const newTotal = sumRatings();
+      const newRemaining = 36 - newTotal;
+      const status = newRemaining===0 ? 'Balanced! Exactly 36 points.' : newRemaining>0 ? `${newRemaining} points left to assign.` : `${Math.abs(newRemaining)} points over the limit.`;
+      announce(`${event.title} set to ${clamped}. Total ${newTotal} of 36. ${status}`);
       pendingSummaryFocus = event.id;
       render();
     });
@@ -1190,7 +1237,7 @@ function renderSummarySection(){
   card.append(
     summaryList,
     h('div',{class:'summary-footer'},
-      h('div',{class:'summary-status'}, span('Current total: ','sub'), strong(String(total)), span(' / 36','sub'), span(` • ${totalStatus}`,'sub')),
+      h('div',{class:'summary-status',role:'status'}, span('Current total: ','sub'), strong(String(total)), span(' / 36','sub'), span(` • ${totalStatus}`,'sub')),
       h('div',{class:'summary-actions'},
         btn('Continue to reflections →', ()=>{ setPhase('questions'); scrollToSection('section-questions'); }, remaining!==0)
       )
@@ -1494,9 +1541,9 @@ function splitLines(text, maxLength=24){
 function createIntroIllustration(tag, subtitle, index){
   // Map tags to real historical images
   const imageMap = {
-    'Calm': 'https://upload.wikimedia.org/wikipedia/commons/0/04/Soldats-britanniques-cantonnes-dans-une-maison-coloniale-americaine-annees-1770.png',
-    'Unrest': 'https://upload.wikimedia.org/wikipedia/commons/d/df/Repeal_of_the_Stamp_Act.jpg',
-    'Today': 'https://upload.wikimedia.org/wikipedia/commons/4/4c/Civil_Rights_March_on_Washington%2C_D.C._%28Leaders_marching_from_the_Washington_Monument_to_the_Lincoln_Memorial%29_-_NARA_-_542010.jpg'
+    'Calm': 'images/quartering-act.png',
+    'Unrest': 'images/stamp-act.jpg',
+    'Today': 'images/civil-rights-march.jpg'
   };
 
   const imageUrl = imageMap[tag];
@@ -2009,7 +2056,6 @@ function elEventFigure(event){
     img.referrerPolicy = 'no-referrer-when-downgrade';
 
     const timeout = setTimeout(() => {
-      console.warn(`Image timeout for ${event.title}, using fallback`);
       stopLoading();
       ensureFallback();
       frame.classList.add('image-error');
@@ -2020,7 +2066,6 @@ function elEventFigure(event){
 
     img.addEventListener('load', ()=>{
       clearTimeout(timeout);
-      console.log(`✓ Image loaded successfully: ${event.title}`);
       currentSrc = primarySrc;
       frame.classList.remove('image-error');
       stopLoading();
@@ -2031,7 +2076,6 @@ function elEventFigure(event){
 
     img.addEventListener('error', (e)=>{
       clearTimeout(timeout);
-      console.error(`✗ Image failed to load: ${event.title}`, e);
       stopLoading();
       ensureFallback();
       frame.classList.add('image-error');
@@ -2040,7 +2084,6 @@ function elEventFigure(event){
       setInteractive(false);
     });
 
-    console.log(`Loading image for ${event.title}: ${primarySrc}`);
     img.src = primarySrc;
   }else{
     stopLoading();
@@ -2150,18 +2193,11 @@ function attachHeaderListeners() {
 const accessToggle = $('#accessToggle');
 const accessPanel = $('#accessPanel');
 const fontToggle = $('#fontToggle');
+const relaxToggle = $('#relaxToggle');
 const translateSelEl = $('#translateSel');
 const translateGoEl = $('#translateGo');
 
-console.log('Accessibility elements found:', {
-  accessToggle: !!accessToggle,
-  accessPanel: !!accessPanel,
-  fontToggle: !!fontToggle,
-  translateSelEl: !!translateSelEl,
-  translateGoEl: !!translateGoEl
-});
-
-const closeAccessPanel = ()=>{ 
+const closeAccessPanel = ()=>{
   if(accessPanel){ 
     accessPanel.classList.add('hidden'); 
     if(accessToggle) accessToggle.setAttribute('aria-expanded','false'); 
@@ -2170,10 +2206,20 @@ const closeAccessPanel = ()=>{
 
 if(fontToggle){
   fontToggle.checked = state.font==='dyslexic';
-  fontToggle.addEventListener('change', (e)=>{ 
-    state.font = e.target.checked?'dyslexic':'default'; 
-    save(); 
-    render(); 
+  fontToggle.addEventListener('change', (e)=>{
+    state.font = e.target.checked?'dyslexic':'default';
+    save();
+    render();
+  });
+}
+
+if(relaxToggle){
+  relaxToggle.checked = state.relaxRationale;
+  relaxToggle.addEventListener('change', (e)=>{
+    state.relaxRationale = e.target.checked;
+    save();
+    render();
+    toast(e.target.checked ? 'Shorter answers are now accepted.' : 'Full sentences required again.');
   });
 }
 
@@ -2205,6 +2251,12 @@ if(translateSelEl && translateGoEl){
   translateGoEl.addEventListener('click', ()=>{
     if(!translateSelEl.value) return;
     const lang = translateSelEl.value;
+    // Google Translate's web proxy can only reach a publicly hosted page,
+    // not a local file:// page. Warn instead of opening a dead tab.
+    if(location.protocol === 'file:'){
+      toast('Translation works once this page is hosted online (e.g. GitHub Pages), not when opened as a local file.');
+      return;
+    }
     const target = `https://translate.google.com/translate?sl=en&tl=${encodeURIComponent(lang)}&u=${encodeURIComponent(location.href)}`;
     window.open(target,'_blank','noopener');
     closeAccessPanel();
