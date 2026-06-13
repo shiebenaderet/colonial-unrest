@@ -149,6 +149,11 @@
   .objectives-list{margin:0;padding-left:20px;font-size:14px;line-height:1.55;color:var(--fg)}
   .objectives-list li{margin-bottom:6px}
   body.light .objectives{background:rgba(37,99,235,.08);border-color:rgba(37,99,235,.28)}
+  .think-deeper{margin:0 0 18px;padding:16px 18px;border-radius:16px;background:rgba(217,119,6,.12);border:1px solid rgba(217,119,6,.35)}
+  .think-deeper-head{margin:0 0 6px;font-size:15px;color:var(--fg)}
+  .think-deeper-lead{margin:0 0 8px;font-size:14px;color:var(--fg)}
+  .think-deeper-list{margin:0;padding-left:20px;font-size:14px;line-height:1.6;color:var(--fg);display:grid;gap:8px}
+  body.light .think-deeper{background:rgba(217,119,6,.1);border-color:rgba(180,83,9,.35)}
   .steps-header{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
   .steps-list{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:12px;font-size:14px}
   .steps-list li{background:rgba(15,23,42,.55);border:1px solid rgba(148,163,184,.25);border-radius:14px;padding:12px}
@@ -598,7 +603,9 @@ As the slide image suggests, the acts blurred everyday life and empire. To the B
 Many colonists thought the British soldiers were to blame. Angry citizens held a town meeting and demanded that the soldiers be removed from Boston and be put on trial for murder. The British government agreed to these demands.`,
    core:`On March 5, 1770, a mob of colonists in Boston began to harass British troops, taunting them and throwing snowballs. The situation soon got out of hand, and finally the troops opened fire. Five colonists died.
 
-Most colonists believed that the British soldiers were completely at fault. The enraged citizens of Boston called a town meeting to demand the removal of the British troops and to argue for the trial of the British soldiers for murder. The British agreed to the colonists' demands.`,
+Most colonists believed that the British soldiers were completely at fault. The enraged citizens of Boston called a town meeting to demand the removal of the British troops and to argue for the trial of the British soldiers for murder. The British agreed to the colonists' demands.
+
+Paul Revere made a famous engraving of the event that spread across the colonies and made many people angrier—even though the real story was messier than the picture showed. Later, John Adams defended the soldiers in court, a reminder that people at the time did not all agree about who was to blame.`,
    adv:`The engraving on your slide — Paul Revere's dramatic Boston Massacre — turned confusion into clarity. In his version, disciplined redcoats fire into a helpless crowd. The truth was messier: chaos, fear, and snowballs on a freezing March night. For soldiers, surrounded and taunted, it was self-defense. For colonists, it was proof that Britain ruled through violence.
 
 Within days, Revere's image spread across the colonies, stoking outrage. Yet another voice emerged — John Adams — who risked his reputation to defend the soldiers, reminding Bostonians that "facts are stubborn things." (<a href="https://founders.archives.gov/documents/Adams/05-03-02-0001-0004-0016#:~:text=I%20will%20enlarge%20no%20more%20on%20the%20evidence%2C%20but%20submit%20it%20to%20you.%E2%80%94Facts%20are%20stubborn%20things%3B%20and%20whatever%20may%20be%20our%20wishes%2C%20our%20inclinations%2C%20or%20the%20dictates%20of%20our%20passions%2C%20they%20cannot%20alter%20the%20state%20of%20facts%20and%20evidence" target="_blank" rel="noopener noreferrer">Founders.gov</a>)
@@ -992,12 +999,7 @@ function renderSplashSection(){
   const intro = h('div',{class:'step-intro'},
     span('Activity 0 • Get Ready','activity-badge'),
     h('h2',{},'Preview the Mission'),
-    p('Before you start rating events, get familiar with the vocabulary and how the activity unfolds.', 'section-lead'),
-    h('ul',{class:'info-list'},
-      h('li',{}, strong('Unrest'), ' = rising frustration that can push people toward resistance. Think of it like building pressure in a bottle.'),
-      h('li',{}, strong('Unrest points'), ' = your limited budget of 36 points that you will distribute later based on how much each event raised tensions.'),
-      h('li',{}, strong('Placards'), ' = concise overviews of the key events. Each gives you multiple reading levels so you can tune the explanation to your needs.')
-    ),
+    p('Here’s the goal before you jump in. (New words like “unrest” and “placard” are explained in the Key Vocabulary button up top whenever you need them.)', 'section-lead'),
     h('div',{class:'objectives'},
       h('h3',{class:'objectives-head'},'By the end, you will be able to:'),
       h('ul',{class:'objectives-list'},
@@ -1006,7 +1008,7 @@ function renderSplashSection(){
         h('li',{}, 'Support each rating with evidence from the event, using cause-and-effect language.')
       )
     ),
-    p('As you progress, write a short rationale explaining every rating. Only after the ninth placard will the budget reveal unlock, letting you re-balance all of your scores in one place.', 'section-lead')
+    p('You’ll write a short reason for each rating. After the ninth placard, you’ll unlock the budget and rebalance everything.', 'section-lead')
   );
   card.append(intro);
   const container = h('div',{class:'splash-wrapper'});
@@ -1018,8 +1020,8 @@ function renderSplashSection(){
     const period = (state.answers.period||'').trim();
     const ready = Boolean(name && period);
     if(beginBtn){
-      if(ready){ beginBtn.removeAttribute('disabled'); }
-      else { beginBtn.setAttribute('disabled',''); }
+      if(ready){ beginBtn.removeAttribute('disabled'); beginBtn.textContent = 'Begin →'; }
+      else { beginBtn.setAttribute('disabled',''); beginBtn.textContent = 'Enter your name to begin'; }
     }
     if(scrollBtn){
       if(state.phase==='splash' && !ready){ scrollBtn.setAttribute('disabled',''); }
@@ -1143,7 +1145,8 @@ function renderPlacardsSection(){
     span('Activity 1 • Explore Placards','activity-badge'),
     h('h2',{},'Rate the Unrest'),
     p('Open each placard, pick the reading level that makes sense for you, and decide how much unrest that moment added on a 1–8 scale.', 'section-lead'),
-    p('Use the timeline buttons to jump around. When the Unrest meter and rationale are complete, save and move forward.', 'section-lead')
+    p('Use the timeline buttons to jump around. When the Unrest meter and rationale are complete, save and move forward.', 'section-lead'),
+    p('For at least one event, try the “Tell me more” level — it shows how historians question the sources and stories behind the events.', 'note')
   );
   card.append(intro);
   if(locked){
@@ -1213,7 +1216,8 @@ function renderPlacardsSection(){
             return h('div',{class:'event-slider'},
               h('label',{}, 'Unrest‑o‑meter', valueLabel),
               meter,
-              h('div',{class:'meter-labels'}, span('Calm','sub'), span('Rising','sub'), span('Boiling','sub'), span('Explosive','sub'))
+              h('div',{class:'meter-labels'}, span('Calm','sub'), span('Rising','sub'), span('Boiling','sub'), span('Explosive','sub')),
+              span('Tap a box (or use the arrow keys) to set how much unrest this event added.', 'note')
             );
           })(),
           h('div',{class:'event-rationale'},
@@ -1240,7 +1244,9 @@ function renderPlacardsSection(){
                 state.current++;
                 save();
                 render();
-                toast('Saved! Next placard unlocked.');
+                const half = Math.ceil(EVENTS.length/2);
+                if(state.current === half){ toast(`Halfway there — ${EVENTS.length - state.current} placards to go!`); }
+                else { toast('Saved! Next placard unlocked.'); }
               } else {
                 const snap = {}; EVENTS.forEach(ev => snap[ev.id] = clamp1to8(state.rows[ev.id].rating||1));
                 state.firstPicks = snap;
@@ -1442,6 +1448,19 @@ function renderQuestionsSection(){
     return section;
   }
 
+  // Think-deeper prompt (for class discussion — not submitted to the form)
+  card.append(
+    h('div',{class:'think-deeper'},
+      h('h3',{class:'think-deeper-head'},'Think deeper (for class discussion)'),
+      h('p',{class:'think-deeper-lead'},'This activity follows the colonists who pushed toward revolution — but they were not the only people living through these years. Talk through:'),
+      h('ul',{class:'think-deeper-list'},
+        h('li',{}, 'Not everyone wanted to break away. How might a ', strong('Loyalist'), ' — a colonist loyal to Britain — have rated these same events?'),
+        h('li',{}, 'Whose experiences are left out of this story? Consider ', strong('Native nations'), ', ', strong('enslaved people'), ', and ', strong('women'), ', whose lives these events also changed.'),
+        h('li',{}, 'Revolution was not guaranteed. Looking at your timeline, ', strong('where could this chain of events have stopped'), ' short of war?')
+      )
+    )
+  );
+
   // Rating comparison card
   if(state.firstPicks){
     const comparisonCard = h('section',{class:'card rating-comparison-card'});
@@ -1505,7 +1524,7 @@ function renderQuestionsSection(){
           input.focus();
         }, REFLECTION_STARTERS.q3);
         return h('div',{},
-          h('label',{},'3) Now that the events build on each other, which one did you decide mattered MORE or LESS than your first guess? Name the points you moved and explain what — including earlier events leading up to it — changed your mind.'),
+          h('label',{},'3) Which event did you decide mattered MORE or LESS than your first guess? Tell which points you moved, and what changed your mind.'),
           starters,
           input
         );
