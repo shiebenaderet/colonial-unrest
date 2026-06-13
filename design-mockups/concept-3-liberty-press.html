@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Concept 3 — Liberty Press (rebuilt mockup)</title>
+<!--
+  CONCEPT 3 — "LIBERTY PRESS"
+  A revolutionary-era broadside / colonial newspaper.
+  Fonts (Google Fonts): masthead + headings = Zilla Slab (slab serif);
+                         body = Spectral (old-style serif). Lexend kept for the a11y toggle.
+  Palette tokens are exposed at :root for easy extraction in the Apply step.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Lexend:wght@400;600&display=swap">
+<style>
+  :root{
+    /* ---- Liberty Press design tokens ---- */
+    --paper:        #efe9da;   /* warm cream parchment (page bg) */
+    --paper-card:   #f6f1e6;   /* slightly lighter cream for cards */
+    --ink:          #1a1410;   /* near-black warm ink (body text) */
+    --masthead-bg:  #14110d;   /* rich black nameplate block */
+    --masthead-fg:  #f3ecdb;   /* cream on the black masthead */
+    --accent:       #9d1c1c;   /* revolutionary red (headings, rules, focus) */
+    --accent-deep:  #7c1414;   /* darker red for hovers */
+    --gold:         #b0894e;   /* nameplate / dateline gold */
+    --muted:        #6b5f4c;   /* sepia-brown secondary text */
+    --rule:         #1a1410;   /* heavy black rule */
+    --rule-soft:    #cbbf9f;   /* hairline sepia rule */
+    --border:       #d7cdb2;   /* card / control border */
+    --surface:      #efe9da;
+    --tab-active-bg:#14110d;
+    --tab-active-fg:#f3ecdb;
+    --focus:        #9d1c1c;
+  }
+  *{box-sizing:border-box}
+  html{ -webkit-text-size-adjust:100% }
+  body{
+    margin:0;
+    font-family:'Spectral', Georgia, 'Times New Roman', serif;
+    color:var(--ink);
+    background:var(--paper);
+    /* faint paper grain */
+    background-image:
+      radial-gradient(rgba(26,20,16,.025) 1px, transparent 1px),
+      radial-gradient(rgba(26,20,16,.02) 1px, transparent 1px);
+    background-size:3px 3px, 5px 5px;
+    background-position:0 0, 2px 2px;
+    line-height:1.55;
+  }
+  .wrap{max-width:1180px;margin:0 auto;background:var(--paper);box-shadow:0 0 0 1px var(--rule-soft);}
+
+  /* ---------- MASTHEAD ---------- */
+  .masthead{
+    background:var(--masthead-bg);
+    color:var(--masthead-fg);
+    padding:26px 34px 22px;
+    display:flex;justify-content:space-between;align-items:flex-start;gap:24px;
+    border-bottom:4px double var(--gold);
+  }
+  .masthead h1{
+    font-family:'Zilla Slab', serif;
+    font-weight:700;
+    font-size:clamp(34px, 6vw, 68px);
+    line-height:.95;
+    margin:0;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+  }
+  .masthead .dek{
+    font-family:'Zilla Slab', serif;
+    font-weight:500;
+    text-transform:uppercase;
+    letter-spacing:.22em;
+    font-size:clamp(11px,1.6vw,15px);
+    color:var(--gold);
+    margin-top:10px;
+  }
+  .nameplate{
+    text-align:right;
+    font-family:'Zilla Slab', serif;
+    color:var(--gold);
+    text-transform:uppercase;
+    letter-spacing:.18em;
+    font-size:13px;
+    line-height:1.5;
+    white-space:nowrap;
+    padding-top:6px;
+  }
+  .nameplate small{display:block;color:var(--masthead-fg);opacity:.55;letter-spacing:.16em;font-size:11px;margin-top:6px}
+
+  /* ---------- NAV TABS ---------- */
+  .tabs{
+    display:grid;grid-template-columns:repeat(4,1fr);
+    background:var(--paper-card);
+    border-bottom:3px solid var(--rule);
+  }
+  .tab{
+    font-family:'Zilla Slab', serif;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    font-size:clamp(13px,1.5vw,18px);
+    text-align:center;
+    padding:18px 12px;
+    color:var(--ink);
+    background:transparent;
+    border:0;border-right:1px solid var(--rule-soft);
+    cursor:pointer;
+    transition:background .15s ease,color .15s ease;
+  }
+  .tab:last-child{border-right:0}
+  .tab:hover{background:rgba(157,28,28,.07)}
+  .tab.active{background:var(--tab-active-bg);color:var(--tab-active-fg)}
+  .tab:focus-visible{outline:3px solid var(--focus);outline-offset:-3px}
+
+  /* ---------- CALLOUT BAND ---------- */
+  .callout{
+    background:#efe7d2;
+    border-bottom:1px solid var(--rule-soft);
+    border-top:1px solid var(--rule-soft);
+    color:var(--accent);
+    text-align:center;
+    font-weight:600;
+    font-size:clamp(13px,1.6vw,16px);
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    padding:16px 28px;
+  }
+
+  /* ---------- BODY ---------- */
+  main{padding:26px 34px 40px}
+  .section-head{
+    display:flex;align-items:baseline;justify-content:space-between;gap:18px;flex-wrap:wrap;
+    border-bottom:2px solid var(--rule);
+    padding-bottom:8px;margin-bottom:18px;
+  }
+  .section-title{
+    font-family:'Zilla Slab', serif;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    color:var(--accent);
+    font-size:clamp(20px,3vw,30px);
+    margin:0;
+  }
+  .section-meta{color:var(--ink);font-size:14px;font-style:italic}
+
+  /* drop-cap lead paragraph, newspaper style */
+  .lead{font-size:17px;margin:0 0 18px;max-width:66ch}
+  .lead::first-letter{
+    font-family:'Zilla Slab', serif;
+    font-weight:700;
+    color:var(--accent);
+    float:left;
+    font-size:62px;
+    line-height:.8;
+    padding:4px 10px 0 0;
+  }
+
+  /* ---------- BAR TIMELINE ---------- */
+  .bars{display:grid;grid-template-columns:repeat(9,1fr);gap:10px;align-items:end;margin:6px 0 0;min-height:210px}
+  .barcol{display:flex;flex-direction:column;align-items:center;gap:0}
+  .bar{
+    width:100%;max-width:78px;border-radius:7px 7px 3px 3px;
+    box-shadow:inset 0 -3px 0 rgba(0,0,0,.12);
+  }
+  .barcol.active .bar{outline:3px solid var(--accent);outline-offset:3px;border-radius:7px}
+  .barcol .year{font-family:'Spectral',serif;margin-top:10px;font-size:15px;color:var(--ink)}
+  .barcol.active .year{font-weight:700}
+  .barcol .rate{font-size:14px;color:var(--muted);margin-top:2px}
+  .rule-heavy{height:4px;background:var(--rule);margin-top:6px;border-radius:2px}
+
+  /* ---------- buttons (sample) ---------- */
+  .btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
+  .btn{
+    font-family:'Zilla Slab',serif;font-weight:600;text-transform:uppercase;letter-spacing:.05em;
+    padding:12px 22px;border-radius:4px;cursor:pointer;font-size:15px;
+    border:2px solid var(--ink);
+  }
+  .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .btn.primary:hover{background:var(--accent-deep);border-color:var(--accent-deep)}
+  .btn.secondary{background:transparent;color:var(--ink)}
+  .btn.secondary:hover{background:rgba(26,20,16,.06)}
+  .btn:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+
+  /* concept badge */
+  .badge{
+    position:fixed;left:14px;bottom:14px;z-index:50;
+    background:var(--masthead-bg);color:var(--gold);
+    font-family:'Zilla Slab',serif;font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+    padding:8px 14px;border-radius:4px;border:1px solid var(--gold);
+    box-shadow:0 4px 14px rgba(0,0,0,.25);
+  }
+  .badge b{color:var(--masthead-fg)}
+
+  @media (max-width:680px){
+    .tabs{grid-template-columns:repeat(2,1fr)}
+    .bars{grid-template-columns:repeat(9,1fr);gap:5px;min-height:150px}
+    .nameplate{display:none}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- MASTHEAD -->
+    <header class="masthead">
+      <div>
+        <h1>Understanding Unrest</h1>
+        <div class="dek">The Road to Revolution · 1763&ndash;1775</div>
+      </div>
+      <div class="nameplate">
+        Colonial Affairs<br>Daily Intelligencer
+        <small>Price: Two Pence</small>
+      </div>
+    </header>
+
+    <!-- NAV -->
+    <nav class="tabs" aria-label="Activity sections">
+      <button class="tab">1.&nbsp;Overview</button>
+      <button class="tab active" aria-current="page">2.&nbsp;Placards</button>
+      <button class="tab">3.&nbsp;Spend 36 Points</button>
+      <button class="tab">4.&nbsp;Reflection</button>
+    </nav>
+
+    <!-- CALLOUT -->
+    <div class="callout">
+      Try the ① Read → ② Rate → ③ Explain steps, the four reading levels, and the rating-driven timeline (bar height = rating).
+    </div>
+
+    <!-- BODY -->
+    <main>
+      <div class="section-head">
+        <h2 class="section-title">The Nine Events</h2>
+        <span class="section-meta">Bar height = your rating · colour = year (1763 → 1775)</span>
+      </div>
+
+      <p class="lead">From a frontier proclamation to the first shots at Lexington, nine events turned grumbling colonies toward open revolution. Rate how much unrest each one stirred, then defend your thinking — historians weigh causes, they do not just count them.</p>
+
+      <!-- BAR TIMELINE (colour = year heat ramp blue→red, kept from the app) -->
+      <div class="bars" id="bars"></div>
+      <div class="rule-heavy"></div>
+
+      <div class="btn-row">
+        <button class="btn primary">Save &amp; Continue →</button>
+        <button class="btn secondary">Back</button>
+      </div>
+    </main>
+  </div>
+
+  <div class="badge"><b>Concept 3</b> · Liberty Press</div>
+
+<script>
+  // Year heat ramp (cool blue 1763 → hot red 1775), matching the live app's heatColor().
+  const events = [
+    {year:1763, rate:3}, {year:1765, rate:4}, {year:1765, rate:6},
+    {year:1767, rate:5}, {year:1770, rate:8, active:true}, {year:1773, rate:7},
+    {year:1774, rate:6}, {year:1774, rate:4}, {year:1775, rate:7}
+  ];
+  const n = events.length;
+  function heat(i){ const hue = 215 - (215/(n-1))*i; return `hsl(${Math.round((hue%360+360)%360)}, 72%, 52%)`; }
+  const bars = document.getElementById('bars');
+  events.forEach((e,i)=>{
+    const col = document.createElement('div');
+    col.className = 'barcol' + (e.active?' active':'');
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+    bar.style.height = (40 + e.rate*20) + 'px';
+    bar.style.background = heat(i);
+    const yr = document.createElement('div'); yr.className='year'; yr.textContent = e.year;
+    const rt = document.createElement('div'); rt.className='rate'; rt.textContent = e.rate;
+    col.append(bar, yr, rt);
+    bars.appendChild(col);
+  });
+</script>
+</body>
+</html>
