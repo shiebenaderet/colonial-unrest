@@ -2,3 +2,6 @@
 .claude/
 DESIGN_REVIEW.md
 REVIEW_PANEL.md
+REVIEW_PANEL_*.md
+index.backup-*.html
+design-mockups/
