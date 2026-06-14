@@ -32,13 +32,13 @@
   }
   html{scroll-behavior:smooth}
   *{box-sizing:border-box}
-  body{margin:0;font-family:'Spectral',Georgia,'Times New Roman',serif;background:var(--bg);color:var(--fg);transition:background .25s ease,color .25s ease}
+  body{margin:0;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--fg);transition:background .25s ease,color .25s ease}
   body.font-dyslexic{font-family:'Lexend',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;letter-spacing:0.03em;line-height:1.65;font-weight:400}
   body.light{
     /* Liberty Press — parchment broadside (default look) */
     --bg:#efe9da;
     --fg:#1a1410;
-    --muted:#6b5f4c;
+    --muted:#564a33;
     --panel:#f6f1e6;
     --border:#d7cdb2;
     --accent:#9d1c1c;
@@ -467,49 +467,57 @@
      Honors the dark/light toggle, the Lexend a11y font, and focus rings.
      ============================================================ */
 
-  /* Headings in slab type (body text stays in Spectral serif) */
-  h1,h2,h3,h4,.section-title,.card-h strong,.budget-head,.summary-title{
-    font-family:'Zilla Slab',Georgia,serif;
-  }
+  /* Default look = CLEAN & readable. Full broadside flavor is opt-in via
+     body.broadside (the "Broadside style" toggle). Contrast fixes apply to both. */
+
+  /* ---- Headings: clean sans by default; slab only in Broadside mode ---- */
+  body.broadside h1, body.broadside h2, body.broadside h3, body.broadside h4,
+  body.broadside .section-title, body.broadside .card-h strong,
+  body.broadside .budget-head, body.broadside .summary-title{font-family:'Zilla Slab',Georgia,serif;}
   body.font-dyslexic h1, body.font-dyslexic h2, body.font-dyslexic h3,
   body.font-dyslexic h4, body.font-dyslexic .section-title{font-family:'Lexend',sans-serif !important;}
 
-  /* --- Masthead (always the black nameplate block) --- */
-  header{background:var(--masthead-bg,#14110d) !important;backdrop-filter:none !important;border-bottom:4px double var(--gold) !important;}
+  /* ---- Broadside body type (opt-in serif) ---- */
+  body.broadside{font-family:'Spectral',Georgia,'Times New Roman',serif}
+  body.broadside.font-dyslexic{font-family:'Lexend',system-ui,sans-serif}
+
+  /* ---- Masthead: always the black nameplate block (slimmed) ---- */
+  :root{--masthead-bg:#14110d}
+  header{background:var(--masthead-bg) !important;backdrop-filter:none !important;border-bottom:3px solid var(--gold) !important;}
+  body.broadside header{border-bottom:4px double var(--gold) !important;}
   header .bar{background:transparent;height:0}
-  header .brand-mark{display:none !important;}     /* typographic masthead, no icon */
+  header .brand-mark{display:none !important;}
   .brand-title strong{
     font-family:'Zilla Slab',serif;font-weight:700;text-transform:uppercase;
-    letter-spacing:.5px;line-height:.95;
-    font-size:clamp(26px,4.4vw,52px);color:#f3ecdb;
+    letter-spacing:.5px;line-height:1;font-size:clamp(22px,3.4vw,38px);color:#f3ecdb;
   }
   .brand-title .sub{
     font-family:'Zilla Slab',serif;text-transform:uppercase;font-weight:500;
-    letter-spacing:.2em;font-size:clamp(10px,1.4vw,14px);color:var(--gold);margin-top:6px;
+    letter-spacing:.18em;font-size:clamp(10px,1.3vw,13px);color:var(--gold);margin-top:5px;
   }
-  .nameplate{
-    margin-left:auto;text-align:right;align-self:flex-start;
+  /* nameplate is pure flavor — only in Broadside mode */
+  .nameplate{display:none}
+  body.broadside .nameplate{
+    display:block;margin-left:auto;text-align:right;align-self:flex-start;
     font-family:'Zilla Slab',serif;text-transform:uppercase;letter-spacing:.18em;
     color:var(--gold);font-size:13px;line-height:1.5;white-space:nowrap;
   }
   .nameplate span{display:block;color:#f3ecdb;opacity:.6;font-size:11px;letter-spacing:.16em}
-  @media(max-width:680px){.nameplate{display:none}}
-  /* keep header controls legible on black */
+  @media(max-width:680px){body.broadside .nameplate{display:none}}
   header .btn-ghost{color:#f3ecdb;border-color:rgba(243,236,219,.35)}
   header .btn-ghost:hover{background:rgba(243,236,219,.1)}
   header .access-toggle{color:#f3ecdb}
   header .access-toggle svg{fill:var(--gold)}
 
-  /* --- Step navigation as broadside tabs (active = black) --- */
-  :root{--masthead-bg:#14110d}
+  /* ---- Step nav tabs (clean both modes; slab caps only in broadside) ---- */
   .step-chips{gap:0;margin-top:14px;border:2px solid var(--ink,#1a1410);border-radius:4px;overflow:hidden;background:#f6f1e6}
   body:not(.light) .step-chips{background:#221d16;border-color:#3a3328}
   .step-chips .chip{
     border:0;border-right:1px solid var(--rule-soft,#cbbf9f);border-radius:0;
-    background:transparent;color:var(--fg);
-    font-family:'Zilla Slab',serif;font-weight:600;text-transform:uppercase;letter-spacing:.05em;
+    background:transparent;color:var(--fg);font-weight:600;
     font-size:13px;padding:10px 14px;min-height:40px;
   }
+  body.broadside .step-chips .chip{font-family:'Zilla Slab',serif;text-transform:uppercase;letter-spacing:.05em}
   body:not(.light) .step-chips .chip{border-right-color:#3a3328}
   .step-chips .chip:last-child{border-right:0}
   .step-chips .chip.active{background:#14110d;color:#f3ecdb}
@@ -517,32 +525,36 @@
   .step-chips .chip .chip-icon{background:transparent;width:auto;height:auto;font-weight:700;margin-right:2px}
   .step-chips .chip.active .chip-icon{color:var(--gold)}
 
-  /* --- Section headings: red slab, underlined like a newspaper rule --- */
+  /* ---- Section headings: section h2 red; quiet (sentence case) by default, caps in broadside ---- */
   .card-h{background:transparent;border-bottom:2px solid var(--accent)}
-  .card-h strong, .section-title, .summary-title, #app h2{
-    color:var(--accent);text-transform:uppercase;letter-spacing:.03em;font-weight:700;
-  }
-  /* keep the black masthead title cream, never red */
+  #app h2, .section-title, .summary-title{color:var(--accent);font-weight:700}
+  body.broadside #app h2, body.broadside .section-title, body.broadside .summary-title,
+  body.broadside .card-h strong{text-transform:uppercase;letter-spacing:.03em;color:var(--accent)}
   header h2, .brand-title strong{color:#f3ecdb}
 
-  /* --- Drop cap on lead/intro paragraphs --- */
-  .section-lead::first-letter, .splash-lead::first-letter, .intro-lead::first-letter{
+  /* ---- Drop caps: Broadside only, one per section, never under the readable font ---- */
+  body.broadside .section-lead:first-of-type::first-letter{
     font-family:'Zilla Slab',serif;font-weight:700;color:var(--accent);
-    float:left;font-size:3.4em;line-height:.78;padding:4px 10px 0 0;
+    float:left;font-size:3.2em;line-height:.78;padding:4px 10px 0 0;
   }
+  body.broadside.font-dyslexic .section-lead::first-letter{float:none;font-size:inherit;color:inherit;padding:0;font-family:inherit}
 
-  /* --- Rules & primary buttons in broadside spirit --- */
-  .btn{font-family:'Zilla Slab',serif;font-weight:600;text-transform:uppercase;letter-spacing:.04em;border-radius:4px}
-  .btn-ghost{border-radius:4px}
+  /* ---- Buttons & cards: sentence-case sans by default; slab caps in broadside ---- */
+  .btn,.btn-ghost,.tabs{border-radius:4px}
   .card{border-radius:8px}
-  .tabs{border-radius:4px}
-  .tab{font-family:'Zilla Slab',serif;text-transform:uppercase;letter-spacing:.03em;font-size:12px}
+  body.broadside .btn{font-family:'Zilla Slab',serif;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+  body.broadside .tab{font-family:'Zilla Slab',serif;text-transform:uppercase;letter-spacing:.03em;font-size:12px}
 
-  /* --- Recolor the leftover blue "after" figure to ink/red --- */
-  .comparison-after{color:var(--accent)}
-  body.light .comparison-after{color:var(--accent)}
-
-  /* --- Top progress bar: thin gold rule, not the rainbow --- */
+  /* ===== Wave 1 legibility fixes (apply in BOTH modes) ===== */
+  .event-text{max-width:66ch}                                   /* comfortable line length */
+  body.light .event-text a{color:#1d4ed8}                       /* AA: light-mode source links */
+  body.light .event-text a:hover{color:#1e3a8a}
+  body:not(.light) .btn{background:#c5342f}                     /* AA: dark-mode white-on-red buttons */
+  /* Unrest meter recolored from blue to the red heat scale */
+  .meter-cell.filled{border-color:rgba(157,28,28,.55);background:rgba(157,28,28,.16)}
+  .meter-cell.filled::after{background:linear-gradient(180deg,rgba(157,28,28,.4),rgba(157,28,28,.72))}
+  body.light .meter-cell.filled{border-color:rgba(157,28,28,.55);background:rgba(157,28,28,.14)}
+  .comparison-after, body.light .comparison-after{color:var(--accent)}
   .progress > div{background:linear-gradient(90deg,var(--gold),var(--accent))}
 </style>
 </head>
@@ -592,6 +604,10 @@
               <label class="toggle-pill" for="fontToggle">
                 <input type="checkbox" id="fontToggle" />
                 <span>Use readable font (Lexend)</span>
+              </label>
+              <label class="toggle-pill" for="broadsideToggle">
+                <input type="checkbox" id="broadsideToggle" />
+                <span>Broadside style (decorative newspaper look)</span>
               </label>
             </div>
             <div class="panel-group">
@@ -811,6 +827,7 @@ function defaultState(){
     answers: { name:'', period:'', q3:'', q4:'', q5:'' },
     theme: 'light',
     font: 'default',
+    broadside: false,
     relaxRationale: false,
     submitted: false,
     summaryOpen: {},
@@ -1107,8 +1124,11 @@ function render(){
   document.body.style.color = state.theme==='light' ? '#1a1410' : '#ece3d0';
   document.body.classList.toggle('light', state.theme==='light');
   document.body.classList.toggle('font-dyslexic', state.font==='dyslexic');
+  document.body.classList.toggle('broadside', state.broadside===true);
   const fontToggle = $('#fontToggle');
   if(fontToggle) fontToggle.checked = state.font==='dyslexic';
+  const broadsideToggle = $('#broadsideToggle');
+  if(broadsideToggle) broadsideToggle.checked = state.broadside===true;
   const translateSel = $('#translateSel');
   const translateGo = $('#translateGo');
   if(translateSel && translateGo){
@@ -2680,6 +2700,7 @@ function attachHeaderListeners() {
 const accessToggle = $('#accessToggle');
 const accessPanel = $('#accessPanel');
 const fontToggle = $('#fontToggle');
+const broadsideToggle = $('#broadsideToggle');
 const relaxToggle = $('#relaxToggle');
 const translateSelEl = $('#translateSel');
 const translateGoEl = $('#translateGo');
@@ -2695,6 +2716,15 @@ if(fontToggle){
   fontToggle.checked = state.font==='dyslexic';
   fontToggle.addEventListener('change', (e)=>{
     state.font = e.target.checked?'dyslexic':'default';
+    save();
+    render();
+  });
+}
+
+if(broadsideToggle){
+  broadsideToggle.checked = state.broadside===true;
+  broadsideToggle.addEventListener('change', (e)=>{
+    state.broadside = e.target.checked;
     save();
     render();
   });
