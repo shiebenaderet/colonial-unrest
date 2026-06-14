@@ -1284,8 +1284,7 @@ function renderSplashSection(){
     h('aside',{class:'card splash-card secondary'},
       h('div',{class:'steps-header'},'Ready to begin?'),
       h('p',{},'After this screen you will dive straight into the timeline. Keep your ratings honest and explain your thinking—your adjustments come later.'),
-      h('p',{},'When you feel prepared, use the button below to enter your first placard.'),
-      h('div',{class:'row',style:'justify-content:center'}, btnGhost('Jump to placards', ()=>{ setPhase('cards'); scrollToSection('section-placards'); }, false))
+      h('p',{},'When you’re ready, fill in your name and period above, then press Begin.')
     )
   );
 
@@ -1303,12 +1302,8 @@ function renderSplashSection(){
   );
 
   container.append(formCard, hero);
-  scrollBtn = btnGhost('Scroll to placards ↓', ()=>scrollToSection('section-placards'), state.phase==='splash');
   toggleBegin();
-  card.append(
-    container,
-    h('div',{class:'row',style:'justify-content:flex-end'}, scrollBtn)
-  );
+  card.append(container);
   section.append(card);
   return section;
 }
