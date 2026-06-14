@@ -524,6 +524,7 @@
   .step-chips .chip.done{background:transparent;color:var(--accent)}
   .step-chips .chip .chip-icon{background:transparent;width:auto;height:auto;font-weight:700;margin-right:2px}
   .step-chips .chip.active .chip-icon{color:var(--gold)}
+  .step-chips .chip-locked{opacity:.4;cursor:not-allowed}
 
   /* ---- Section headings: section h2 red; quiet (sentence case) by default, caps in broadside ---- */
   .card-h{background:transparent;border-bottom:2px solid var(--accent)}
@@ -821,6 +822,7 @@ function defaultState(){
   const rows = {}; EVENTS.forEach(e => rows[e.id] = emptyRow());
   return {
     phase: 'intro', // intro -> splash -> cards -> summary -> questions
+    maxStep: 0,     // furthest step index reached (gates forward chip nav)
     current: 0,
     rows,
     firstPicks: null,
@@ -1060,8 +1062,20 @@ function setPhase(p){
     state.firstPicks = snap;
   }
   state.phase = p;
+  state.maxStep = Math.max(state.maxStep||0, targetIdx);
   save();
   render();
+  window.scrollTo({top:0, behavior: prefersReducedMotion()?'auto':'smooth'});
+}
+// Backward / lateral navigation to an already-reached step (used by the step chips
+// and the header Overview button). Does NOT let students skip ahead past a gate.
+function navStep(idx){
+  if(idx<0 || idx>=STEPS.length) return;
+  if(idx > (state.maxStep||0)) return;       // can't jump to a step not yet unlocked
+  state.phase = STEPS[idx].id;
+  save();
+  render();
+  window.scrollTo({top:0, behavior: prefersReducedMotion()?'auto':'smooth'});
 }
 function clamp1to8(n){ n=+n; if(!Number.isFinite(n)) return 1; return Math.min(8, Math.max(1, Math.round(n))); }
 // Returns null if the row is valid, otherwise a specific, student-friendly reason.
@@ -1159,13 +1173,17 @@ function render(){
     renderIntroModal();
     return;
   }
-  const sections = [
-    renderSplashSection(),
-    renderPlacardsSection(),
-    renderSummarySection(),
-    renderQuestionsSection()
-  ];
-  sections.filter(Boolean).forEach(sec => root.appendChild(sec));
+  // One screen at a time: render only the section for the current phase.
+  const curIdx = STEPS.findIndex(s => s.id===state.phase);
+  if(curIdx >= 0) state.maxStep = Math.max(state.maxStep||0, curIdx);
+  const sectionFor = {
+    splash:   renderSplashSection,
+    cards:    renderPlacardsSection,
+    summary:  renderSummarySection,
+    questions:renderQuestionsSection
+  };
+  const sec = (sectionFor[state.phase] || renderSplashSection)();
+  if(sec) root.appendChild(sec);
   updateStepChips();
   if(pendingSummaryFocus){
     const focusId = pendingSummaryFocus;
@@ -1850,15 +1868,18 @@ function updateStepChips(){
   wrap.innerHTML = '';
   const phase = state.phase==='intro' ? 'splash' : state.phase;
   const currentIdx = STEPS.findIndex(step => step.id===phase);
+  const maxStep = state.maxStep||0;
   STEPS.forEach((step, idx)=>{
+    const reached = idx <= maxStep;
     const chip = h('button',{class:'chip',type:'button'});
     if(idx < currentIdx) chip.classList.add('done');
     else if(idx === currentIdx) chip.classList.add('active');
-    chip.setAttribute('aria-label', `Go to ${step.label}${idx===currentIdx ? ' (current step)' : ''}`);
+    if(!reached){ chip.classList.add('chip-locked'); chip.disabled = true; }
+    chip.setAttribute('aria-label', `${reached?'Go to':'Locked:'} ${step.label}${idx===currentIdx ? ' (current step)' : ''}`);
     if(idx===currentIdx) chip.setAttribute('aria-current','step');
-    const iconText = idx < currentIdx ? '✓' : String(idx+1);
+    const iconText = idx < currentIdx ? '✓' : (reached ? String(idx+1) : '🔒');
     chip.append(span(iconText,'chip-icon'), span(step.label));
-    chip.addEventListener('click', ()=>scrollToSection(step.anchor));
+    if(reached) chip.addEventListener('click', ()=> navStep(idx));
     wrap.appendChild(chip);
   });
 }
@@ -2690,7 +2711,7 @@ function attachHeaderListeners() {
   
   const overviewBtn = $('#overviewBtn');
   if(overviewBtn){
-    overviewBtn.addEventListener('click', ()=> scrollToSection('section-overview'));
+    overviewBtn.addEventListener('click', ()=> navStep(0));
   }
   
   headerEventListenersAttached = true;
