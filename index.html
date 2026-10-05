@@ -824,6 +824,21 @@
   .comparison-change.positive{color:var(--ok) !important}.comparison-change.negative{color:var(--accent) !important}
   .card-h h3{color:var(--fg) !important}
   .card-h{border-bottom:1px solid var(--border) !important}
+
+  .fm-scale{margin:0 0 10px;border-radius:10px;background:var(--surface-alt);padding:8px 12px}
+  .fm-scale summary{cursor:pointer;font-weight:700;color:var(--fg)}
+  .fm-scale .fm-hint{margin:6px 0}
+  .fm-scale-list{list-style:none;margin:4px 0 2px;padding:0;display:grid;gap:4px;font-size:15px;line-height:1.4}
+  .fm-scale-list li{display:flex;gap:8px;align-items:baseline}
+  .fm-scale-n{flex:none;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;font-weight:800;font-size:13px;color:#fff;background:#7a4f00}
+  .fm-scale-list li:nth-child(2) .fm-scale-n{background:#7f4300}.fm-scale-list li:nth-child(3) .fm-scale-n{background:#853800}
+  .fm-scale-list li:nth-child(4) .fm-scale-n{background:#8a2d00}.fm-scale-list li:nth-child(5) .fm-scale-n{background:#8c2200}
+  .fm-scale-list li:nth-child(6) .fm-scale-n{background:#8a170b}.fm-scale-list li:nth-child(7) .fm-scale-n{background:#7f0f0f}
+  .fm-scale-list li:nth-child(8) .fm-scale-n{background:#660a0a}
+  .fm-meaning{margin:8px 0 0;font-size:15px;font-weight:600;color:var(--fg)}
+  .fm-meaning:empty{display:none}
+
+  .meter.unrated .meter-cell.filled, body.light .meter.unrated .meter-cell.filled{background:var(--surface-alt) !important;border-color:var(--edge) !important;color:var(--fg) !important}
 </style>
 </head>
 <body>
@@ -1879,6 +1894,30 @@ function elTimeline(){
   return nav;
 }
 
+// What each number on the unrest scale means, in terms of how colonists would
+// react, so students rate by evidence of reaction rather than by gut feeling.
+// Grouped under the meter's four labels (Calm, Rising, Boiling, Explosive).
+const SCALE = [
+  {n:1, band:'Calm',      name:'Barely noticed', desc:'Most colonists shrug it off.'},
+  {n:2, band:'Calm',      name:'Grumbling',      desc:'Some colonists complain to each other.'},
+  {n:3, band:'Rising',    name:'Upset',          desc:'People argue about it in town and in newspapers.'},
+  {n:4, band:'Rising',    name:'Angry',          desc:'Colonists send complaints and petitions to Britain.'},
+  {n:5, band:'Boiling',   name:'Protest',        desc:'Colonists boycott, march, or refuse to obey the law.'},
+  {n:6, band:'Boiling',   name:'Fury',           desc:'Crowds turn rough, and protest spreads to other colonies.'},
+  {n:7, band:'Explosive', name:'Defiance',       desc:'Colonies work together to openly defy Britain.'},
+  {n:8, band:'Explosive', name:'Ready to fight', desc:'Colonists arm themselves, and fighting breaks out.'}
+];
+function elScaleKey(open){
+  const det = h('details',{class:'fm-scale'});
+  if(open) det.open = true;
+  det.appendChild(h('summary',{}, 'What do the numbers mean?'));
+  det.appendChild(p('Imagine you live in the colonies. How would people react to this event? Pick the number that matches.', 'fm-hint'));
+  const list = h('ol',{class:'fm-scale-list'});
+  SCALE.forEach(s=> list.appendChild(h('li',{}, span(String(s.n),'fm-scale-n'), h('span',{}, strong(s.name), ` — ${s.desc}`))));
+  det.appendChild(list);
+  return det;
+}
+
 // One placard per screen: the reading on the left, rate-and-explain on the
 // right, so the evidence stays in view while students write.
 function elProgressDots(){
@@ -1925,21 +1964,31 @@ function renderPlacardsSection(){
 
   // your turn: 1) rate, 2) explain (opens once a number is picked)
   const rated = !!row.rated;
-  const valueLabel = span(rated ? `${row.rating} of 8` : 'Pick a number', 'fm-pill');
+  const scaleName = n => (SCALE[n-1]||{}).name || '';
+  const valueLabel = span(rated ? `${row.rating} · ${scaleName(row.rating)}` : 'Pick a number', 'fm-pill');
+  const meaning = p(rated ? `${row.rating} means: ${SCALE[row.rating-1].name}. ${SCALE[row.rating-1].desc}` : '', 'fm-meaning');
+  meaning.setAttribute('aria-live','polite');
   const meter = unrestMeter(row.rating, (val, opts)=>{
     if(!opts || !opts.source) return;   // the meter's own first draw, not a student's pick
     const clamped = clamp1to8(val);
     const first = !row.rated;
     row.rating = clamped; row.rated = true; save();
-    valueLabel.textContent = `${clamped} of 8`;
+    valueLabel.textContent = `${clamped} · ${scaleName(clamped)}`;
+    meaning.textContent = `${clamped} means: ${SCALE[clamped-1].name}. ${SCALE[clamped-1].desc}`;
     const q = document.getElementById('why-q'); if(q) q.textContent = `Why did this event cause ${clamped} out of 8 unrest?`;
     if(first) render();
   });
   if(!rated) meter.classList.add('unrated');
+  meter.querySelectorAll('.meter-cell').forEach((cell,i)=>{
+    const sc = SCALE[i]; cell.title = `${sc.n} · ${sc.name}: ${sc.desc}`;
+    cell.setAttribute('aria-label', `${sc.n} out of 8, ${sc.name}: ${sc.desc}`);
+  });
   const step1 = h('div',{class:'fm-step'},
     h('h3',{}, span('1','fm-num'), 'How much unrest did this cause?', valueLabel),
+    elScaleKey(state.current===0 && !rated),
     meter,
-    h('div',{class:'meter-labels'}, span('1 Calm','sub'), span('Rising','sub'), span('Boiling','sub'), span('8 Explosive','sub'))
+    h('div',{class:'meter-labels'}, span('1 Calm','sub'), span('Rising','sub'), span('Boiling','sub'), span('8 Explosive','sub')),
+    meaning
   );
 
   const input = textarea(row.rationale, v=>{ row.rationale=v; const er=document.getElementById('rationale-error'); if(er && rationaleProblem(row)===null){ er.textContent=''; er.classList.add('hidden'); input.removeAttribute('aria-invalid'); } });
