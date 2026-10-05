@@ -603,6 +603,25 @@
   .walt-name{font-size:1rem}
   .walt-lvl{font-weight:700;color:var(--muted)}
   .unit-word{display:inline-block;font-size:.75rem;font-weight:700;padding:1px 8px;border-radius:999px;background:var(--surface-alt);border:1px solid var(--accent);color:var(--accent);vertical-align:middle}
+
+  .supports{margin:6px 0 8px}
+  .support-look{margin:4px 0 8px;font-weight:600;color:var(--fg)}
+  .support-label{display:block;font-size:.85rem;font-weight:700;color:var(--muted);margin:6px 0 4px}
+  .support-push{margin:8px 0 0;padding:8px 10px;border-left:4px solid var(--gold);background:var(--surface-alt);border-radius:6px}
+  .word-bank{display:flex;flex-wrap:wrap;gap:6px}
+  .bank-word{font:inherit;font-size:.9rem;padding:6px 12px;min-height:36px;border-radius:999px;border:1px dashed var(--accent);background:var(--panel);color:var(--fg);cursor:pointer}
+  .bank-word:hover,.bank-word:focus-visible{background:var(--surface-alt);outline:2px solid var(--accent);outline-offset:1px}
+  .reflection-q{padding:12px 0;border-bottom:1px solid var(--border)}
+  .reflection-q > label{font-weight:700;font-size:1.05rem;display:block;margin-bottom:2px}
+  .turn-in{border:2px solid var(--accent);border-radius:12px;padding:14px 16px;background:var(--surface)}
+  .turn-in h3{margin:0 0 6px}
+  .turn-in-steps{margin:0 0 10px 1.2em;padding:0;line-height:1.6}
+  .work-details{margin-top:10px}
+  .work-details summary{cursor:pointer;font-weight:600}
+  .work-preview{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.85rem;margin-top:6px}
+
+  header .btn-ghost,body.light header .btn-ghost{color:#ece3d0;border-color:#a99e86}
+  header .btn-ghost:hover,header .btn-ghost:focus-visible,body.light header .btn-ghost:hover{background:rgba(255,255,255,.08);color:#fff}
 </style>
 </head>
 <body>
@@ -692,27 +711,6 @@
 <script>
 // ----- Config -----
 const STORAGE_KEY = 'unrest-simple-v1';
-const FORM_BASE = 'https://docs.google.com/forms/d/e/1FAIpQLSciHhkpZr_FdBbpUB5U71vpPu8H4K4Dugt9zjc3p2Xb7oWAZg/viewform';
-const ENTRY = {
-  name: 'entry.70224343',
-  period: 'entry.578966706',
-  q3: 'entry.1068421844',
-  q4: 'entry.1093978586',
-  q5: 'entry.1000939606',
-  // Individual ratings fields extracted from your Google Form
-  ratings: {
-    A: { initial: 'entry.1337223317', final: 'entry.648796874', change: 'entry.1219208158' }, // Proclamation of 1763
-    B: { initial: 'entry.1684408202', final: 'entry.931434818', change: 'entry.2018326302' }, // Quartering Act
-    C: { initial: 'entry.479587404', final: 'entry.91444500', change: 'entry.1961643911' }, // Stamp Act
-    D: { initial: 'entry.1140900703', final: 'entry.1792609842', change: 'entry.957176765' }, // Townshend Acts
-    E: { initial: 'entry.881467983', final: 'entry.348332677', change: 'entry.1186567480' }, // Boston Massacre
-    F: { initial: 'entry.780890034', final: 'entry.746372765', change: 'entry.1040803028' }, // Boston Tea Party
-    G: { initial: 'entry.2131795004', final: 'entry.435188937', change: 'entry.944113980' }, // Intolerable Acts
-    H: { initial: 'entry.325848132', final: 'entry.1559088857', change: 'entry.1743203411' }, // First Continental Congress
-    I: { initial: 'entry.2123341685', final: 'entry.1878782964', change: 'entry.1455041330' }  // Lexington & Concord
-  }
-};
-
 const EVENTS = [
   {id:'A', title:'Proclamation of 1763', year:1763, img:'images/proclamation-1763.jpg',
    wiki:'https://en.wikipedia.org/wiki/Royal_Proclamation_of_1763',
@@ -1300,24 +1298,6 @@ function elKeyTerms(eventId){
   return details;
 }
 
-const REFLECTION_STARTERS = {
-  q3: [
-    'I decided ... mattered more than I first thought because earlier events like ... had already ...',
-    'I moved points away from ... because, compared to what came before, it ...',
-    'Looking at the whole chain of events, ... changed my mind because ...'
-  ],
-  q4: [
-    'The most significant event was ... because it changed what happened next by ...',
-    'In the long run, ... mattered more than ... because ...',
-    'Even though ... caused the most anger, ... was more significant because ...'
-  ],
-  q5: [
-    'If the events stretched over 24 years, I think ... because ...',
-    'A slower pace would change unrest by ...',
-    'Even with more time, colonists would still ... because ...'
-  ]
-};
-
 // Shorter sentence frames shown when "Shorter answers OK" is on.
 const REFLECTION_STARTERS_SIMPLE = {
   q3: ['I changed ___ because ___.', 'I gave ___ more points because ___.', 'I gave ___ fewer points because ___.'],
@@ -1350,7 +1330,7 @@ function setPhase(p){
   // Snapshot first picks the first time the student reaches the budget, no
   // matter how they got there (final placard button, timeline, or step chip).
   // Without this, students who jump via the timeline lose the before/after
-  // comparison and their per-event data never reaches the Google Form.
+  // comparison and their per-event data never reaches their turned-in work.
   if(p==='summary' && !state.firstPicks){
     const snap = {}; EVENTS.forEach(ev => snap[ev.id] = clamp1to8(state.rows[ev.id].rating||1));
     state.firstPicks = snap;
@@ -1382,39 +1362,36 @@ function rationaleProblem(r){
   const txt = (r.rationale||'').trim();
   const words = txt.split(/\s+/).filter(Boolean);
   if(!txt) return 'Add a sentence explaining your rating.';
-  const relaxed = state && state.relaxRationale;
+  const relaxed = state && (state.relaxRationale || r.level==='l0');
   const minWords = relaxed ? 3 : 6;
   if(words.length < minWords) return `Write at least ${minWords} words explaining why.`;
   if(!relaxed && !/[.!?]$/.test(txt)) return 'End your sentence with a period, question mark, or exclamation point.';
   return null;
 }
 function validateRow(r){ return rationaleProblem(r) === null; }
-function buildFormURL(){
-  const u = new URL(FORM_BASE);
-  u.searchParams.set('usp','pp_url');
-  u.searchParams.set(ENTRY.name, state.answers.name||'');
-  u.searchParams.set(ENTRY.period, state.answers.period||'');
-  u.searchParams.set(ENTRY.q3, state.answers.q3||'');
-  u.searchParams.set(ENTRY.q4, state.answers.q4||'');
-  u.searchParams.set(ENTRY.q5, state.answers.q5||'');
-
-  // Add individual ratings data if firstPicks exists
-  if(state.firstPicks && ENTRY.ratings){
-    EVENTS.forEach(event => {
-      const initial = state.firstPicks[event.id] || 1;
-      const final = state.rows[event.id].rating || 1;
-      const change = final - initial;
-
-      const eventEntry = ENTRY.ratings[event.id];
-      if(eventEntry){
-        u.searchParams.set(eventEntry.initial, String(initial));
-        u.searchParams.set(eventEntry.final, String(final));
-        u.searchParams.set(eventEntry.change, String(change));
-      }
-    });
-  }
-
-  return u.toString();
+// Plain-text record of everything the student did, for the Canvas text entry.
+function buildWorkText(){
+  const A = state.answers, L = [];
+  const lvl = state.readLevel ? levelLabel(state.readLevel) : 'not chosen';
+  const lang = state.readLevel==='l0' && state.l0lang!=='en' ? ` (${(L0_LANGS.find(([k])=>k===state.l0lang)||[])[1]})` : '';
+  L.push('UNREST IN THE COLONIES');
+  L.push(`${A.name||'(no name)'} · Period ${A.period||'?'} · Starting reading level: ${lvl}${lang}`);
+  L.push('');
+  L.push('MY RATINGS AND REASONS (first rating → final points)');
+  EVENTS.forEach((ev,i)=>{
+    const r = state.rows[ev.id];
+    const first = state.firstPicks ? state.firstPicks[ev.id] : r.rating;
+    L.push(`${i+1}. ${ev.title} (${ev.year}): ${first} → ${r.rating}  [read at ${levelLabel(r.level)}]`);
+    L.push(`   Why: ${(r.rationale||'').trim() || '(no reason written)'}`);
+  });
+  L.push(`Total points: ${sumRatings()} of 36`);
+  L.push('');
+  L.push('REFLECTION');
+  ['q3','q4','q5'].forEach((k,i)=>{
+    L.push(`${i+1}) ${REFLECTION_QS[k].q}`);
+    L.push(`   ${(A[k]||'').trim() || '(not answered)'}`);
+  });
+  return L.join('\n');
 }
 function sumRatings(){ return EVENTS.reduce((s,e)=> s + (+state.rows[e.id].rating||0), 0); }
 
@@ -1771,13 +1748,13 @@ function renderPlacardsSection(){
       const input = textarea(row.rationale, v=>{ row.rationale=v; const er=document.getElementById('rationale-error'); if(er && rationaleProblem(row)===null){ er.textContent=''; er.classList.add('hidden'); input.removeAttribute('aria-invalid'); } });
       input.id = 'rationale-input';
       input.setAttribute('aria-describedby','rationale-error');
-      const label = h('label',{}, 'Why did you choose that rating?');
+      const label = h('label',{}, `Why did this event cause that much unrest? (You gave it ${row.rating} out of 8.)`);
       label.setAttribute('for','rationale-input');
-      const starters = createStarterChips(text=>{ input.value = text; row.rationale = text; input.focus(); });
+      const starters = rationaleSupports(e.id, row.level, input, v=>{ row.rationale = v; });
       const errEl = h('p',{class:'field-error hidden',id:'rationale-error'},'');
       errEl.setAttribute('role','alert');
-      const helpText = state.relaxRationale
-        ? 'Use a starter above or write a few words explaining your rating.'
+      const helpText = (state.relaxRationale || row.level==='l0')
+        ? 'Use a starter or the word bank, or write a few words in your own way.'
         : 'Use a starter above or write your own complete sentence ending with punctuation.';
       return [label, starters, input, errEl, span(helpText,'note')];
     })()
@@ -1962,11 +1939,7 @@ function renderSummarySection(){
       const readingBox = h('div',{class:'summary-reading'});
       fillReading(readingBox, event, row.level);
       const rationaleInput = textarea(row.rationale, val=>{ row.rationale = val; });
-      const starterChips = createStarterChips(text=>{
-        rationaleInput.value = text;
-        row.rationale = text;
-        rationaleInput.focus();
-      });
+      const starterChips = rationaleSupports(event.id, row.level, rationaleInput, v=>{ row.rationale = v; });
       container.append(
         h('div',{}, span('Reading level','sub'), levelButtons),
         row.level==='l0' ? elLangPicker() : null,
@@ -1974,7 +1947,7 @@ function renderSummarySection(){
         h('div',{class:'event-link'}, a(event.wiki,'Read on Wikipedia →','link')),
         elKeyTerms(event.id),
         h('div',{},
-          h('label',{},'Why did you choose that rating?'),
+          h('label',{},'Why did this event cause that much unrest?'),
           starterChips,
           rationaleInput
         ),
@@ -2044,7 +2017,7 @@ function renderQuestionsSection(){
   const intro = h('div',{class:'step-intro'},
     span('Activity 3 • Reflect & Share','activity-badge'),
     h('h2',{},'Write Your Takeaways'),
-    p('Capture how your thinking shifted, identify the flashpoint event, and consider the pace of change before you submit the form.', 'section-lead')
+    p('Answer three questions about how your thinking changed, then turn in your work on Canvas.', 'section-lead')
   );
   card.append(intro);
   if(locked){
@@ -2112,71 +2085,71 @@ function renderQuestionsSection(){
     card.append(comparisonCard);
   }
 
-  const filled = state.answers.name && state.answers.period && state.answers.q3 && state.answers.q4 && state.answers.q5;
+  const lvl = supportLevel();
   const reflectionCard = h('section',{class:'card'});
+  const missingNote = p('', 'note');
+  function updateMissing(){
+    const n = ['q3','q4','q5'].filter(k=>!(state.answers[k]||'').trim()).length;
+    missingNote.textContent = n ? `You still have ${n} reflection question${n>1?'s':''} to answer. You can copy now, but answer all three first if you can.` : 'All three questions answered. Copy your work and turn it in.';
+  }
+  updateMissing();
+  const qBlocks = ['q3','q4','q5'].map((key, i)=>{
+    const cfg = REFLECTION_QS[key];
+    const input = textarea(state.answers[key], v=>{ state.answers[key]=v; updateMissing(); });
+    input.id = `${key}-input`;
+    const starters = state.relaxRationale && lvl!=='l0' ? REFLECTION_STARTERS_SIMPLE[key] : cfg[lvl];
+    const label = h('label',{}, `${i+1}) ${cfg.q}`);
+    label.setAttribute('for', input.id);
+    const supports = elSupports({ look:cfg.look, starters, bank: lvl==='l0' ? cfg.bank : null, push: lvl==='adv' ? cfg.push : null }, input, v=>{ state.answers[key]=v; updateMissing(); });
+    return h('div',{class:'reflection-q'}, label, supports, input);
+  });
+
+  // Turn in: copy everything (ratings, every reason, reflections) as plain text
+  // to paste into the Canvas text-entry assignment.
+  const workText = buildWorkText();
+  const preview = h('textarea',{class:'field work-preview', rows:8, readOnly:true});
+  preview.value = workText;
+  preview.setAttribute('aria-label','Your work, ready to paste into Canvas');
+  const copyBtn = btn('Copy my work', async ()=>{
+    const text = buildWorkText();
+    preview.value = text;
+    let ok = false;
+    try{ await navigator.clipboard.writeText(text); ok = true; }catch{}
+    if(!ok){ preview.focus(); preview.select(); try{ ok = document.execCommand('copy'); }catch{} }
+    toast(ok ? 'Copied! Now paste it into Canvas.' : 'Press Ctrl+C to copy the selected text.');
+    announce(ok ? 'Your work is copied. Paste it into the Canvas assignment.' : 'Text selected. Press Control C to copy.');
+  });
+  copyBtn.classList.add('btn-large');
+
+  const confirmWrap = h('div',{class:'submit-confirm'});
+  const cb = h('input',{type:'checkbox'});
+  cb.id = 'submitConfirm';
+  cb.checked = state.submitted;
+  const cbLabel = h('label',{class:'submit-confirm-label'}, cb, span('I pasted my work into the Canvas assignment and clicked Submit.'));
+  cbLabel.setAttribute('for','submitConfirm');
+  const done = h('p',{class:'submit-done note'+(state.submitted?'':' hidden')}, '✓ All done — thanks for turning in your work!');
+  cb.addEventListener('change', e=>{
+    state.submitted = e.target.checked; save();
+    done.classList.toggle('hidden', !state.submitted);
+    if(state.submitted) toast('Nice — you’re all done!');
+  });
+  confirmWrap.append(cbLabel, done);
+
   reflectionCard.append(
-    h('div',{class:'card-h'}, h('h3',{},'Reflection & Submit')), 
+    h('div',{class:'card-h'}, h('h3',{},'Reflect, then turn in on Canvas')),
     h('div',{class:'card-b grid'},
-      h('div',{class:'grid',style:'grid-template-columns:1fr 1fr;gap:12px'},
-        h('div',{}, h('label',{},'1) Name', inp('answers.name', state.answers.name, v=>{ state.answers.name=v; save(); }))),
-        h('div',{}, h('label',{},'2) Period', inp('answers.period', state.answers.period, v=>{ state.answers.period=v; save(); })))
-      ),
-      (()=>{
-        const input = textarea(state.answers.q3, v=>{ state.answers.q3=v; });
-        input.id = 'q3-input';
-        const starters = createStarterChips(text=>{
-          input.value = text;
-          state.answers.q3 = text;
-          input.focus();
-        }, (state.relaxRationale?REFLECTION_STARTERS_SIMPLE:REFLECTION_STARTERS).q3);
-        const label = h('label',{},'3) Which event did you decide mattered MORE or LESS than your first guess? Tell which points you moved, and what changed your mind.');
-        label.setAttribute('for','q3-input');
-        return h('div',{}, label, starters, input);
-      })(),
-      (()=>{
-        const input = textarea(state.answers.q4, v=>{ state.answers.q4=v; });
-        input.id = 'q4-input';
-        const starters = createStarterChips(text=>{
-          input.value = text;
-          state.answers.q4 = text;
-          input.focus();
-        }, (state.relaxRationale?REFLECTION_STARTERS_SIMPLE:REFLECTION_STARTERS).q4);
-        const label = h('label',{},'4) Which single event was the most significant — the one that most changed what happened next? Remember: the event that caused the most anger in the moment may not be the one with the biggest long-term effect. Explain your choice.');
-        label.setAttribute('for','q4-input');
-        return h('div',{}, label, starters, input);
-      })(),
-      (()=>{
-        const input = textarea(state.answers.q5, v=>{ state.answers.q5=v; });
-        input.id = 'q5-input';
-        const starters = createStarterChips(text=>{
-          input.value = text;
-          state.answers.q5 = text;
-          input.focus();
-        }, (state.relaxRationale?REFLECTION_STARTERS_SIMPLE:REFLECTION_STARTERS).q5);
-        const label = h('label',{},'5) Would these events be as impactful if they happened over 24 years (1763–1775 is 12 years) instead? Why or why not?');
-        label.setAttribute('for','q5-input');
-        return h('div',{}, label, starters, input);
-      })(),
-      h('div',{},
-        a(buildFormURL(), filled?'Open Pre‑filled Google Form →':'Complete all fields above first', 'btn'),
-        !filled ? p('Fill all fields to enable the Form link.', 'note') : p('Your answers will be pre‑filled. Important: in the new tab, scroll down and click Submit — the form is not turned in until you do.', 'note'),
-        filled ? (()=>{
-          const wrap = h('div',{class:'submit-confirm'});
-          const cb = h('input',{type:'checkbox'});
-          cb.id = 'submitConfirm';
-          cb.checked = state.submitted;
-          const label = h('label',{class:'submit-confirm-label'}, cb, span('I clicked Submit and saw the Google “Your response has been recorded” page.'));
-          label.setAttribute('for','submitConfirm');
-          const done = h('p',{class:'submit-done note'+(state.submitted?'':' hidden')}, '✓ All done — thanks for turning in your work!');
-          cb.addEventListener('change', e=>{
-            state.submitted = e.target.checked;
-            save();
-            done.classList.toggle('hidden', !state.submitted);
-            if(state.submitted) toast('Nice — you’re all done!');
-          });
-          wrap.append(label, done);
-          return wrap;
-        })() : null
+      ...qBlocks,
+      h('div',{class:'turn-in'},
+        h('h3',{},'Turn in your work'),
+        h('ol',{class:'turn-in-steps'},
+          h('li',{}, 'Press ', strong('Copy my work'), '.'),
+          h('li',{}, 'Open the Canvas assignment ', strong('Unrest in the Colonies'), ' and press ', strong('Start Assignment'), '.'),
+          h('li',{}, 'Paste (', strong('Ctrl + V'), ') into the text box, then press ', strong('Submit Assignment'), '.')
+        ),
+        missingNote,
+        copyBtn,
+        h('details',{class:'work-details'}, h('summary',{},'See what will be copied'), preview),
+        confirmWrap
       )
     )
   );
@@ -2343,6 +2316,77 @@ function modalContentFor(view){
       h('li',{}, 'If you change a rating later, update the rationale to match.')
     )
   ];
+}
+
+// ----- Writing supports, by reading level -----
+// One direct question; every question gets a "Look at" (where the evidence is)
+// and starters that open the student's own answer (never the answer with a
+// blank). Level 0 adds a word bank and a fuller frame; Level 3 adds a push
+// toward the level-4 criterion (weigh against what was already moving).
+const WORD_BANK_RATIONALE = ['angry','unfair','tax','soldiers','control','protest','boycott','Parliament','vote','punish','freedom','rights'];
+const RATIONALE_SUPPORT = {
+  l0:   { starters:['I gave it a ___ because colonists felt ___ when Britain ___.', 'Colonists were angry because ___.'], bank:true },
+  ss:   { starters:['I gave it a ___ because ___.', 'This made colonists angry because ___.', 'This was a big deal because ___.'] },
+  core: { starters: RATIONALE_STARTERS },
+  adv:  { starters:['Compared to ___ before it, this event ___ because ___.', 'A Loyalist might rate this lower because ___, but I think ___.', 'This mattered less than it looks because colonists were already ___.'],
+          push:'Going further: was this event a new cause of anger, or did it add to anger that was already moving?' }
+};
+const RATIONALE_LOOK = 'Look at: the part of the reading that tells how colonists reacted.';
+const REFLECTION_QS = {
+  q3: { q:'Which event did you move the most points on, and what changed your mind?',
+        look:'Look at: the “How Your Ratings Changed” table above.',
+        l0:['I changed ___ from ___ to ___. I changed it because ___.'], bank:['more','less','important','angry','first','later','because'],
+        ss:['I moved ___ from ___ to ___ points because ___.', 'At first I gave ___ more points, but then ___.'],
+        core:['I moved ___ from ___ to ___ points because ___.', 'I decided ___ mattered more than I first thought because earlier events like ___ had already ___.'],
+        adv:['At first I thought ___, but after comparing it with ___, I decided ___ because ___.', 'Looking at the whole chain of events, ___ changed my mind because ___.'] },
+  q4: { q:'Which event changed what happened next the most, and how?',
+        look:'Look at: your two highest-rated events, and what came right after them on the timeline.',
+        l0:['The most important event was ___. After it, ___ happened.'], bank:['led to','after','so','because','war','protest','punish'],
+        ss:['___ changed what happened next because it led to ___.', 'After ___, colonists ___.'],
+        core:['___ changed what happened next the most because it led to ___.', 'In the long run, ___ mattered more than ___ because ___.'],
+        adv:['___ caused the most anger in the moment, but ___ mattered more in the long run because ___.', '___ changed history, but it worked because ___ was already moving.'],
+        push:'Going further: the event that caused the most anger at the time may not be the one with the biggest effect later. Which is yours?' },
+  q5: { q:'If these nine events had been spread over 24 years instead of 12, would the colonies still have gone to war? Why or why not?',
+        look:'Look at: the dates on the timeline. How close together were the events?',
+        l0:['With more time, colonists would feel ___ because ___.'], bank:['calm','angry','time','forget','again','faster','slower'],
+        ss:['If the events were spread out, I think ___ because ___.', 'Events close together made colonists ___.'],
+        core:['If the events stretched over 24 years, I think ___ because ___.', 'Even with more time, colonists would still ___ because ___.'],
+        adv:['Twelve years mattered because ___; with twice as long, colonists might ___, but ___.', 'The pace mattered less than ___, because ___.'] }
+};
+function supportLevel(){ return state.readLevel || 'core'; }
+// Insert a word at the cursor of a textarea (word bank chips).
+function insertAtCursor(input, word, onChange){
+  const start = input.selectionStart ?? input.value.length, end = input.selectionEnd ?? input.value.length;
+  const before = input.value.slice(0,start), after = input.value.slice(end);
+  const pad = before && !/\s$/.test(before) ? ' ' : '';
+  input.value = before + pad + word + ' ' + after.replace(/^\s+/,'');
+  const pos = (before + pad + word + ' ').length;
+  input.focus(); input.setSelectionRange(pos, pos);
+  onChange(input.value); debouncedSave();
+}
+// Builds the support block for one question: Look at, starters, (word bank), (push).
+function elSupports({look, starters, bank, push}, input, onChange){
+  const box = h('div',{class:'supports'});
+  if(look) box.appendChild(p(look, 'support-look'));
+  if(starters && starters.length){
+    box.appendChild(span('Start with:','support-label'));
+    box.appendChild(createStarterChips(text=>{ input.value = text; onChange(text); input.focus(); }, starters));
+  }
+  if(bank && bank.length){
+    box.appendChild(span('Word bank (tap a word to add it):','support-label'));
+    box.appendChild(h('div',{class:'word-bank'}, bank.map(w=>{
+      const b = h('button',{class:'bank-word',type:'button'}, w);
+      b.addEventListener('click', ()=>insertAtCursor(input, w, onChange));
+      return b;
+    })));
+  }
+  if(push) box.appendChild(p(push, 'support-push'));
+  return box;
+}
+function rationaleSupports(eventId, level, input, onChange){
+  const cfg = RATIONALE_SUPPORT[level] || RATIONALE_SUPPORT.core;
+  const terms = (GLOSSARY[eventId]||[]).map(t=>t.t).filter(t=>t.length<28);
+  return elSupports({ look:RATIONALE_LOOK, starters:cfg.starters, bank: cfg.bank ? [...terms, ...WORD_BANK_RATIONALE] : null, push:cfg.push }, input, onChange);
 }
 
 function createStarterChips(onSelect, list=RATIONALE_STARTERS){
