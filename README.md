@@ -4,7 +4,7 @@ An interactive, single-file classroom activity for middle school U.S. History. S
 
 ## Using it
 
-Open `index.html` in any modern browser, or host it (e.g. GitHub Pages) so students reach it by link. No build step or server required — everything is in the one HTML file. Progress autosaves in the browser (localStorage), so students can close the tab and resume on the same device.
+Students use it at **https://unrest.mrbsocialstudies.org** (GitHub Pages, set by the `CNAME` file; the old `shiebenaderet.github.io/colonial-unrest/` link redirects there). You can also open `index.html` directly in any modern browser. No build step or server required — everything is in the one HTML file. Progress autosaves in the browser (localStorage), so students can close the tab and resume on the same device.
 
 ### Activity flow
 1. **Overview** — vocabulary, learning goals, and how the point budget works.
