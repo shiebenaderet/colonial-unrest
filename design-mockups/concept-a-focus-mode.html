@@ -36,6 +36,8 @@
     --chip-bg:#18233a; --chip-ink:#d6e2ff; --chip-rule:#7d97cf; --field:#120f0c;
     color-scheme:dark }
   *{box-sizing:border-box}
+  [hidden]{display:none!important}
+  .reading a{color:var(--accent);font-weight:600}
   body{background:var(--ground);color:var(--ink);font-family:var(--face-body);line-height:1.5;font-size:16px}
   .page{max-width:1240px;margin:0 auto;padding-inline:16px;padding-block:24px 64px}
   .intro{background:var(--card);border:1px solid var(--rule);border-radius:14px;padding:18px 22px;margin-bottom:8px;max-width:72ch}
@@ -60,7 +62,7 @@
   .dots{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
   .dot{width:26px;height:26px;border-radius:50%;border:2px solid var(--mast-rule);display:inline-flex;align-items:center;justify-content:center;font:inherit;font-size:11px;font-weight:700;color:var(--mast-ink);cursor:pointer;background:transparent;padding:0;font-variant-numeric:tabular-nums}
   .dot.now{background:var(--mast-ink);color:var(--mast)}
-  .dot.budget{width:auto;border-radius:13px;padding:0 9px;border-style:dashed;cursor:default}
+  .dot.budget{width:auto;border-radius:13px;padding:0 9px;cursor:default}
   .mast .sp{flex:1}
   .mbtn{font:inherit;font-size:13px;font-weight:700;border-radius:8px;padding:6px 12px;cursor:pointer;border:2px solid var(--mast-ink);background:transparent;color:var(--mast-ink);display:inline-flex;gap:6px;align-items:center}
   .mbtn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
@@ -72,7 +74,7 @@
   .pane-h{padding:10px 14px 8px;border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
   .ev-title{font-family:var(--face-display);font-size:21px;font-weight:800;margin:0}
   .ev-year{color:var(--muted);font-weight:600;font-variant-numeric:tabular-nums}
-  .levels{display:flex;border:2px solid var(--edge);border-radius:8px;overflow:hidden;margin-left:auto}
+  .levels{display:flex;border:1.5px solid var(--edge);border-radius:8px;overflow:hidden;margin-left:auto}
   .levels button{font:inherit;font-size:12.5px;font-weight:700;padding:6px 10px;border:0;border-left:1px solid var(--edge);background:transparent;cursor:pointer;color:var(--ink)}
   .levels button:first-child{border-left:0}
   .levels button[aria-pressed=true]{background:var(--accent);color:var(--on-accent)}
@@ -81,31 +83,32 @@
   .reading .fig{float:right;width:34%;margin:2px 0 8px 12px;border-radius:8px;border:1px solid var(--rule)}
   .langrow{display:flex;gap:8px;align-items:center;font-size:13px;font-weight:700;padding:6px 16px 0}
   select,input,textarea{background:var(--field);color:var(--ink)}
-  .langrow select{font:inherit;font-size:14px;padding:5px 8px;border-radius:6px;border:2px solid var(--edge)}
+  .langrow select{font:inherit;font-size:14px;padding:5px 8px;border-radius:6px;border:1.5px solid var(--edge)}
   .terms{margin-top:auto;border-top:1px solid var(--rule);padding:8px 14px;font-size:14px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-  .term{background:var(--tint);color:var(--ink);border:1px solid var(--accent);border-radius:999px;padding:2px 10px}
+  .term{background:var(--tint);color:var(--ink);border-radius:999px;padding:3px 10px}
 
   .turn{padding:12px 14px;overflow:auto;display:flex;flex-direction:column;gap:10px;flex:1}
-  .step{border:2px solid var(--edge);border-radius:10px;padding:10px 12px}
-  .step.active{border-color:var(--accent)}
+  .step{padding:4px 2px 12px}
+  .step + .step{border-top:1px solid var(--rule);padding-top:14px}
+  
   .step h3{margin:0 0 6px;font-size:14.5px;display:flex;gap:8px;align-items:center}
   .num{display:inline-flex;width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--on-accent);font-size:12px;align-items:center;justify-content:center;flex:none}
-  .step.locked{border-style:dashed}
+  .step.locked .num{background:var(--muted)}
   .step.locked .chips,.step.locked textarea{pointer-events:none}
   .meter{display:grid;grid-template-columns:repeat(8,1fr);gap:4px}
-  .meter button{font:inherit;font-weight:800;font-size:14px;height:36px;border-radius:6px;border:2px solid var(--edge);background:var(--paper);color:var(--ink);cursor:pointer;font-variant-numeric:tabular-nums}
-  .meter button.on{color:#ffffff;border-color:var(--ink)}
+  .meter button{font:inherit;font-weight:800;font-size:14px;height:36px;border-radius:6px;border:1.5px solid var(--edge);background:var(--paper);color:var(--ink);cursor:pointer;font-variant-numeric:tabular-nums}
+  .meter button.on{color:#ffffff;border-color:transparent}
   .scale{display:flex;justify-content:space-between;font-size:12.5px;font-weight:600;color:var(--muted);margin-top:3px}
   .look{font-size:13px;font-weight:700;margin:0 0 6px}
   .chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px}
-  .chip{font:inherit;font-size:13px;border-radius:999px;padding:4px 10px;border:1px solid var(--chip-rule);background:var(--chip-bg);cursor:pointer;color:var(--chip-ink);text-align:left}
-  .bank{font:inherit;font-size:13px;border-radius:999px;padding:4px 10px;border:2px dashed var(--accent);background:var(--card);color:var(--ink);cursor:pointer}
-  .push{font-size:13.5px;color:var(--ink);border-left:4px solid var(--gold);background:var(--paper);padding:6px 8px;border-radius:4px;margin:0 0 6px}
-  textarea{width:100%;font:inherit;font-size:15px;border:2px solid var(--edge);border-radius:8px;padding:8px;min-height:74px;resize:vertical}
+  .chip{font:inherit;font-size:13px;border-radius:999px;padding:5px 11px;border:0;background:var(--chip-bg);cursor:pointer;color:var(--chip-ink);text-align:left}
+  .bank{font:inherit;font-size:13px;border-radius:999px;padding:5px 11px;border:0;background:var(--tint);color:var(--ink);cursor:pointer}
+  .push{font-size:13.5px;color:var(--ink);background:var(--paper);padding:6px 8px;border-radius:4px;margin:0 0 6px}
+  textarea{width:100%;font:inherit;font-size:15px;border:1.5px solid var(--edge);border-radius:8px;padding:8px;min-height:74px;resize:vertical}
   .actions{display:flex;justify-content:space-between;align-items:center;margin-top:auto;gap:8px;flex-wrap:wrap}
   .btn{font:inherit;font-weight:800;font-size:14px;border-radius:8px;padding:8px 14px;border:0;background:var(--accent);color:var(--on-accent);cursor:pointer}
-  .btn:disabled{background:var(--paper);color:var(--muted);border:2px dashed var(--edge);cursor:not-allowed}
-  .btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--edge)}
+  .btn:disabled{background:var(--paper);color:var(--muted);cursor:not-allowed}
+  .btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--edge)}
   .lbl{font-size:13px;font-weight:700;color:var(--muted);margin:2px 0 4px;letter-spacing:.02em}
   .hint{font-size:13.5px;color:var(--muted);margin:6px 0 0}
 
@@ -113,14 +116,14 @@
   .welcome .pane{padding:14px 16px}
   .welcome h2{margin:0 0 4px;font-family:var(--face-display);font-size:22px}
   .field{display:flex;flex-direction:column;font-size:13px;font-weight:700;gap:3px;margin:8px 0;min-width:0}
-  .field input{font:inherit;font-size:15px;padding:7px 9px;border:2px solid var(--edge);border-radius:8px;width:100%}
+  .field input{font:inherit;font-size:15px;padding:7px 9px;border:1.5px solid var(--edge);border-radius:8px;width:100%}
   .row3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px}
   .lvcards{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:8px}
-  .lvcard{border:2px solid var(--edge);border-radius:10px;padding:9px 11px;cursor:pointer;background:var(--paper);text-align:left;font:inherit;color:inherit;min-width:0}
-  .lvcard[aria-pressed=true]{border:3px solid var(--accent);background:var(--tint);padding:8px 10px}
+  .lvcard{border:1px solid var(--rule);border-radius:10px;padding:9px 11px;cursor:pointer;background:var(--paper);text-align:left;font:inherit;color:inherit;min-width:0}
+  .lvcard[aria-pressed=true]{border:2px solid var(--accent);background:var(--tint);padding:8px 10px}
   .lvcard b{font-size:15px}
   .lvcard .d{display:block;font-size:13px;color:var(--muted)}
-  .lvcard .sample{display:block;font-size:14px;margin-top:5px;padding-top:5px;border-top:1px dashed var(--rule)}
+  .lvcard .sample{display:block;font-size:14px;margin-top:6px}
   .goals{font-size:14px;margin:6px 0 0;padding-left:18px}
 
   /* Phones and narrow windows: drop the device frame, stack the panes. */
@@ -237,7 +240,7 @@
     <div class="note"><span class="pin">2</span><b>Progress dots replace the nine-tile timeline.</b> The current timeline and three intro paragraphs push the reading below the fold on a Chromebook. The dots keep the timeline's cool-to-hot colors, you can still click back, and the budget is the last stop.</div>
     <div class="note"><span class="pin">3</span><b>The reading never leaves the screen.</b> Today it disappears during Explain, even though the prompt says "look at the reading." The level switch sits beside the title, and key terms sit underneath it.</div>
     <div class="note"><span class="pin">4</span><b>Rate and explain side by side.</b> Step 2 unlocks once a number is picked, so the order stays clear without separate Read, Rate, and Explain screens. That's one screen per placard instead of three.</div>
-    <div class="note"><span class="pin">5</span><b>Supports follow the level.</b> Switch levels on the left and watch the starters change. Level 0 gets the word bank, and Level 3 gets the "Going further" push.</div>
+    <div class="note"><span class="pin">5</span><b>Supports follow the level and the placard.</b> Switch levels on the left and watch the starters change. Level 0 gets a word bank drawn only from this placard's reading. Starters fit where the placard falls: this is the first placard, so none of them ask students to compare it with an earlier event. On later placards, they name the event the student just read.</div>
   </div>
 </div>
 
@@ -252,10 +255,10 @@ var SAMPLES = {
 };
 var DESC = { l0:'Short sentences. Key words explained. Spanish, Portuguese, Russian, Chinese.', l1:'Short paragraphs in plain words.', l2:'Grade-level reading with some analysis.', l3:'Primary sources and different points of view.' };
 var SUP = {
-  l0:{s:['I gave it a ___ because colonists felt ___ when Britain ___.','Colonists were angry because ___.'], bank:['Proclamation of 1763','angry','unfair','land','west','control','farmland','Native American nations']},
+  l0:{s:['I gave it a ___ because colonists felt ___ when Britain ___.','Colonists were angry because ___.'], bank:['Proclamation of 1763','king','west','mountains','land','farmland','Native American nations','control','angry','because','so']},
   l1:{s:['I gave it a ___ because ___.','This made colonists angry because ___.','This was a big deal because ___.']},
-  l2:{s:['I chose this rating because ...','This event pushed unrest higher when ...','Colonists would have reacted by ... because ...']},
-  l3:{s:['Compared to ___ before it, this event ___ because ___.','A Loyalist might rate this lower because ___, but I think ___.'], push:'Going further: was this a new cause of anger, or did it add to anger that was already moving?'}
+  l2:{s:['I chose this rating because ___.','This event pushed unrest higher when ___.','Colonists would have reacted by ___ because ___.']},
+  l3:{s:['Britain saw this rule as ___, but colonists saw it as ___ because ___.','A Loyalist might rate this lower because ___, but I think ___.'], push:'Going further: was this anger new, or did it come from something colonists already wanted?'}
 };
 var level = 'l0', lang = 'es', rating = 0;
 // Meter fills, cool to hot; white numbers on each are 7:1 or better.
@@ -324,7 +327,7 @@ function draw() {
     c.onclick = function () { if (!rating) return; var t = $('why'); t.value = (t.value ? t.value.replace(/\s*$/, ' ') : '') + w + ' '; t.focus(); };
     $('bank').appendChild(c);
   });
-  $('push').hidden = !sup.push; $('push').textContent = sup.push || '';
+  $('push').hidden = !sup.push; $('push').innerHTML = sup.push ? '<b>Going further:</b> ' + sup.push.replace(/^Going further: /,'') : '';
 }
 function drawMeter() {
   [].forEach.call($('meter').children, function (b, i) {
