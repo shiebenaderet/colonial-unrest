@@ -33,7 +33,7 @@ All levels carry the same facts. Level 0 and its translations were fact-checked 
 Every question has one direct prompt, a **Look at** (where to find the evidence), and **Start with** sentence starters keyed to the student's level. Level 0 adds a tap-to-insert **word bank** and accepts shorter answers. Level 3 adds a **Going further** prompt aimed at the level-4 criterion.
 
 ### Paper backup
-`tracker.html` prints two half-sheet trackers per letter page. Every level uses the same sheet: event, level read, my rating, one word for why, our group's points, and the class average. It is the paper record for the Day 5 group budget and a backup if a computer resets.
+`tracker.html` prints two half-sheet trackers per letter page. Every level uses the same sheet: event, level read, my rating, a few words for why, our group's points, and the class average. It is the paper record for the Day 5 group budget and a backup if a computer resets.
 
 ## Suggested pacing
 
