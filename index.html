@@ -1220,12 +1220,6 @@ Em junho de 1775, o Segundo Congresso Continental (<em>Second Continental Congre
   },
 };
 
-const RATIONALE_STARTERS = [
-  'I chose this rating because ...',
-  'This event pushed unrest higher when ...',
-  'Compared to other events, this felt ...',
-  'Colonists would have reacted by ... because ...'
-];
 
 // Per-event key vocabulary. `c` lists cognates (Spanish · Portuguese · French)
 // for the many multilingual learners who can bridge from their home language.
@@ -2323,14 +2317,42 @@ function modalContentFor(view){
 // and starters that open the student's own answer (never the answer with a
 // blank). Level 0 adds a word bank and a fuller frame; Level 3 adds a push
 // toward the level-4 criterion (weigh against what was already moving).
-const WORD_BANK_RATIONALE = ['angry','unfair','tax','soldiers','control','protest','boycott','Parliament','vote','punish','freedom','rights'];
-const RATIONALE_SUPPORT = {
-  l0:   { starters:['I gave it a ___ because colonists felt ___ when Britain ___.', 'Colonists were angry because ___.'], bank:true },
-  ss:   { starters:['I gave it a ___ because ___.', 'This made colonists angry because ___.', 'This was a big deal because ___.'] },
-  core: { starters: RATIONALE_STARTERS },
-  adv:  { starters:['Compared to ___ before it, this event ___ because ___.', 'A Loyalist might rate this lower because ___, but I think ___.', 'This mattered less than it looks because colonists were already ___.'],
-          push:'Going further: was this event a new cause of anger, or did it add to anger that was already moving?' }
+// Level 0 word banks, one per placard, drawn only from words in that placard's
+// Level 0 text, so students never get a word the reading didn't give them.
+const WORD_BANKS = {
+  A: ['Proclamation of 1763','king','west','mountains','land','farmland','Native American nations','control'],
+  B: ['Quartering Act','Parliament','soldiers','barracks','pay','trust','control','protect'],
+  C: ['Stamp Act','tax','Parliament','vote','taxation without representation','boycott','repeal'],
+  D: ['Townshend Acts','tax','hidden','ports','taxation without representation','boycott','tea'],
+  E: ['Boston Massacre','soldiers','crowd','died','trial','picture','blame'],
+  F: ['Tea Act','tea','tax','taxation without representation','Sons of Liberty','protest','Boston Harbor'],
+  G: ['Intolerable Acts','punish','port','closed','army general','town meetings','worried','minutemen'],
+  H: ['First Continental Congress','together','rights','king','boycott','complaints'],
+  I: ['Lexington','Concord','minutemen','soldiers','guns','gunpowder','Revolutionary War']
 };
+const BANK_CONNECTORS = ['angry','because','so'];
+// Short names for "Compared to the ___" starters.
+const shortTitle = ev => ev.title.replace(/\s*\(.*?\)\s*/,' ').trim();
+// Starters depend on where the placard falls: a comparison starter names the
+// placard the student read just before this one, and the first placard (which
+// has nothing before it) gets starters that don't ask for a comparison.
+function rationaleStarters(level, idx){
+  const prev = idx > 0 ? shortTitle(EVENTS[idx-1]) : null;
+  if(level==='l0') return ['I gave it a ___ because colonists felt ___ when Britain ___.', 'Colonists were angry because ___.'];
+  if(level==='ss') return ['I gave it a ___ because ___.', 'This made colonists angry because ___.',
+    prev ? `After the ${prev}, this event ___ because ___.` : 'This was a big deal because ___.'];
+  if(level==='adv') return prev
+    ? [`Compared to the ${prev}, this event ___ because ___.`, 'A Loyalist might rate this lower because ___, but I think ___.', `This added to anger that was already there from the ${prev} because ___.`]
+    : ['Britain saw this rule as ___, but colonists saw it as ___ because ___.', 'A Loyalist might rate this lower because ___, but I think ___.'];
+  return ['I chose this rating because ___.', 'This event pushed unrest higher when ___.',
+    prev ? `Compared to the ${prev}, this event ___ because ___.` : 'Colonists would have reacted by ___ because ___.'];
+}
+function rationalePush(level, idx){
+  if(level!=='adv') return null;
+  return idx===0
+    ? 'Going further: was this anger new, or did it come from something colonists already wanted?'
+    : 'Going further: was this event a new cause of anger, or did it add to anger that was already moving?';
+}
 const RATIONALE_LOOK = 'Look at: the part of the reading that tells how colonists reacted.';
 const REFLECTION_QS = {
   q3: { q:'Which event did you move the most points on, and what changed your mind?',
@@ -2384,12 +2406,13 @@ function elSupports({look, starters, bank, push}, input, onChange){
   return box;
 }
 function rationaleSupports(eventId, level, input, onChange){
-  const cfg = RATIONALE_SUPPORT[level] || RATIONALE_SUPPORT.core;
-  const terms = (GLOSSARY[eventId]||[]).map(t=>t.t).filter(t=>t.length<28);
-  return elSupports({ look:RATIONALE_LOOK, starters:cfg.starters, bank: cfg.bank ? [...terms, ...WORD_BANK_RATIONALE] : null, push:cfg.push }, input, onChange);
+  const idx = EVENTS.findIndex(ev => ev.id===eventId);
+  return elSupports({ look:RATIONALE_LOOK, starters:rationaleStarters(level, idx),
+    bank: level==='l0' ? [...(WORD_BANKS[eventId]||[]), ...BANK_CONNECTORS] : null,
+    push: rationalePush(level, idx) }, input, onChange);
 }
 
-function createStarterChips(onSelect, list=RATIONALE_STARTERS){
+function createStarterChips(onSelect, list){
   return h('div',{class:'starter-grid'}, list.map(text=>{
     const chip = h('button',{class:'starter-pill',type:'button'}, text);
     chip.addEventListener('click',()=>{
