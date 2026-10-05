@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Class Unrest Average</title>
+<!-- Teacher page for Day 5. Type each group's 36-point budget from their
+     trackers; the page averages them, charts how unrest added up from 1763 to
+     1775, and lists the events groups disagreed on most. Data stays in this
+     browser (one set per period). Nothing is sent anywhere. -->
+<link rel="stylesheet" href="fonts/atkinson.css">
+<style>
+  :root{
+    --bg:#f3efe6; --panel:#ffffff; --alt:#f7f4ee; --fg:#14110d; --muted:#4a4033; --rule:#d9d0bf; --edge:#74674f;
+    --accent:#8f1515; --on-accent:#ffffff; --gold:#8a6420; --mast:#14110d; --mast-ink:#fffaf0; --ok:#2c6b37; --warn:#7a4f00;
+    --grid:#e4dccb; --face:'Atkinson Hyperlegible Next','Atkinson Hyperlegible',Verdana,system-ui,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){ :root{
+    --bg:#15120e; --panel:#1e1a14; --alt:#262019; --fg:#f7f1e4; --muted:#d2c6ad; --rule:#3f372b; --edge:#a8987a;
+    --accent:#ff9a90; --on-accent:#1a0b09; --gold:#e0b866; --mast:#000; --mast-ink:#fffaf0; --ok:#6fbf78; --warn:#e0b866; --grid:#3a3229; } }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--face);font-size:17px;line-height:1.5}
+  header{background:var(--mast);color:var(--mast-ink);border-bottom:3px solid var(--gold)}
+  .wrap{max-width:1180px;margin:0 auto;padding-inline:16px}
+  header .wrap{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;padding-block:10px}
+  header h1{margin:0;font-size:20px;font-weight:800;flex:1 1 auto}
+  header label{font-weight:700;font-size:15px;display:flex;gap:8px;align-items:center}
+  select,input{font:inherit;color:var(--fg);background:var(--panel);border:1.5px solid var(--edge);border-radius:8px}
+  header select{padding:6px 8px}
+  .btn{font:inherit;font-weight:700;font-size:15px;border-radius:8px;padding:8px 14px;cursor:pointer;border:1.5px solid var(--edge);background:transparent;color:var(--fg)}
+  header .btn{color:var(--mast-ink);border-color:#b8ad97}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+  :focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+  main{padding-block:16px 40px;display:grid;gap:16px}
+  .card{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:16px 18px;min-width:0}
+  .card h2{margin:0 0 6px;font-size:20px}
+  .hint{color:var(--muted);font-size:15px;margin:4px 0 10px}
+  .eq{font-size:20px;font-weight:800;margin:0}
+  .eq-label{font-size:14px;font-weight:700;color:var(--muted);margin:0 0 2px}
+
+  /* entry table */
+  .table-wrap{overflow-x:auto}
+  table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+  th,td{padding:4px 4px;text-align:center;border-bottom:1px solid var(--rule)}
+  thead th{font-size:13px;font-weight:700;vertical-align:bottom;line-height:1.2}
+  thead th .yr{display:block;color:var(--muted);font-weight:600}
+  tbody th{text-align:left;font-size:15px;white-space:nowrap}
+  td input{width:3.1rem;padding:6px 4px;text-align:center;font-size:17px}
+  td input.bad{border-color:var(--accent);border-width:2px}
+  td.total{font-weight:800;white-space:nowrap}
+  td.total.ok{color:var(--ok)} td.total.off{color:var(--accent)}
+  tfoot th,tfoot td{font-weight:800;border-bottom:0;padding-top:8px}
+  .row-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .del{border:0;background:transparent;color:var(--muted);font-size:20px;cursor:pointer;padding:0 6px}
+
+  /* results */
+  .results{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;align-items:start}
+  .chart-box{position:relative}
+  svg{width:100%;height:auto;display:block}
+  .tip{position:absolute;pointer-events:none;background:var(--mast);color:var(--mast-ink);border-radius:8px;padding:6px 10px;font-size:14px;transform:translate(-50%,-115%);white-space:nowrap}
+  .facts{display:grid;gap:12px}
+  .fact h3{margin:0 0 4px;font-size:16px}
+  .fact ol{margin:0;padding-left:22px}
+  .fact li{margin:2px 0}
+  .muted{color:var(--muted)}
+  details.tbl summary{cursor:pointer;font-weight:700;margin-top:10px}
+  .avg-table td,.avg-table th{text-align:left}
+  .avg-table td.n{text-align:right}
+
+  body.present .entry, body.present .row-actions, body.present header .entry-only{display:none}
+  body.present main{max-width:1400px}
+  body.present .eq{font-size:30px}
+  body.present .fact{font-size:20px}
+  .empty{padding:24px;text-align:center;color:var(--muted)}
+  @media(max-width:900px){ .results{grid-template-columns:1fr} }
+  @media (prefers-reduced-motion:no-preference){ .pt{transition:r .15s ease} }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Class Unrest Average</h1>
+    <label>Period <select id="period"></select></label>
+    <button class="btn entry-only" id="example" type="button">Load example</button>
+    <button class="btn" id="present" type="button">Present</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card">
+    <p class="eq-label">Unit 2 essential question</p>
+    <p class="eq">How did loyal British subjects turn into revolutionaries in barely a decade?</p>
+  </section>
+
+  <section class="card entry">
+    <h2>Group budgets</h2>
+    <p class="hint">Type each group's points from the “Our group” column of their tracker. Each row should add up to 36. Saved in this browser, separately for each period.</p>
+    <div class="table-wrap"><table id="entry"></table></div>
+    <div class="row-actions">
+      <button class="btn" id="addRow" type="button">+ Add a group</button>
+      <button class="btn" id="copy" type="button">Copy results as text</button>
+      <button class="btn" id="clear" type="button">Clear this period</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>What our class decided</h2>
+    <p class="hint" id="basis"></p>
+    <div class="results">
+      <div>
+        <div class="chart-box" id="chartBox"></div>
+        <details class="tbl"><summary>Show the numbers as a table</summary><div id="avgTable"></div></details>
+      </div>
+      <div class="facts" id="facts"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function(){
+  'use strict';
+  var EVENTS = [
+    ['Proclamation of 1763','Proclamation',1763],['Quartering Act','Quartering',1765],['Stamp Act','Stamp Act',1765],
+    ['Townshend Acts','Townshend',1767],['Boston Massacre','Massacre',1770],['Boston Tea Party','Tea Party',1773],
+    ['Intolerable Acts','Intolerable',1774],['First Continental Congress','1st Congress',1774],['Lexington & Concord','Lexington',1775]
+  ];
+  var N = EVENTS.length;
+  var PERIODS = ['1','2','3','4','5','6','7'];
+  var KEY = 'unrest-class-v1';
+  var store = {};
+  try { store = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { store = {}; }
+  var period = store._period || '1';
+  function save(){ store._period = period; try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} }
+  function rows(){ if(!store[period]) store[period] = [blank(), blank(), blank(), blank(), blank(), blank()]; return store[period]; }
+  function blank(){ var r=[]; for(var i=0;i<N;i++) r.push(''); return r; }
+  function nums(r){ return r.map(function(v){ var n=parseInt(v,10); return isFinite(n)?n:null; }); }
+  function complete(r){ var n=nums(r); return n.every(function(v){ return v!==null && v>=1 && v<=8; }) && n.reduce(function(a,b){return a+b;},0)===36; }
+  function $(id){ return document.getElementById(id); }
+  function el(tag, attrs, kids){ var e=document.createElement(tag); for(var k in (attrs||{})){ if(k==='text') e.textContent=attrs[k]; else e.setAttribute(k,attrs[k]); } (kids||[]).forEach(function(c){ if(c) e.appendChild(typeof c==='string'?document.createTextNode(c):c); }); return e; }
+
+  // ---- period picker
+  PERIODS.forEach(function(p){ var o=el('option',{value:p,text:'Period '+p}); if(p===period) o.selected=true; $('period').appendChild(o); });
+  $('period').addEventListener('change', function(){ period=this.value; save(); drawEntry(); drawResults(); });
+
+  // ---- entry table
+  function drawEntry(){
+    var t=$('entry'); t.textContent='';
+    var head=el('tr',{},[el('th',{text:'Group'})]);
+    EVENTS.forEach(function(e,i){ head.appendChild(el('th',{scope:'col'},[ (i+1)+'. '+e[1], el('span',{class:'yr',text:String(e[2])}) ])); });
+    head.appendChild(el('th',{text:'Total'})); head.appendChild(el('th',{},[el('span',{class:'muted',text:''})]));
+    t.appendChild(el('thead',{},[head]));
+    var tb=el('tbody');
+    rows().forEach(function(r,ri){
+      var tr=el('tr'); tr.appendChild(el('th',{scope:'row',text:'Group '+(ri+1)}));
+      r.forEach(function(v,ci){
+        var inp=el('input',{type:'text',inputmode:'numeric',maxlength:'1',value:v,'aria-label':'Group '+(ri+1)+', '+EVENTS[ci][0]});
+        var n=parseInt(v,10); if(v!=='' && !(n>=1&&n<=8)) inp.classList.add('bad');
+        inp.addEventListener('input', function(){
+          this.value=this.value.replace(/[^0-9]/g,'').slice(0,1); r[ci]=this.value; save();
+          var n2=parseInt(this.value,10); this.classList.toggle('bad', this.value!=='' && !(n2>=1&&n2<=8));
+          updateTotal(tr, r); drawResults();
+          if(this.value && ci<N-1){ var next=tr.querySelectorAll('input')[ci+1]; if(next){ next.focus(); next.select(); } }
+        });
+        tr.appendChild(el('td',{},[inp]));
+      });
+      tr.appendChild(el('td',{class:'total'}));
+      var del=el('button',{class:'del',type:'button','aria-label':'Remove group '+(ri+1),title:'Remove this group',text:'×'});
+      del.addEventListener('click', function(){ rows().splice(ri,1); save(); drawEntry(); drawResults(); });
+      tr.appendChild(el('td',{},[del]));
+      updateTotal(tr, r);
+      tb.appendChild(tr);
+    });
+    t.appendChild(tb);
+  }
+  function updateTotal(tr, r){
+    var n=nums(r), filled=n.filter(function(v){return v!==null;}).length, sum=n.reduce(function(a,b){return a+(b||0);},0);
+    var td=tr.querySelector('td.total');
+    td.className='total'+(filled===N ? (sum===36?' ok':' off') : '');
+    td.textContent = filled===0 ? '' : (filled===N && sum===36 ? '36 ✓' : sum+' of 36');
+  }
+  $('addRow').addEventListener('click', function(){ rows().push(blank()); save(); drawEntry(); });
+  var clearArmed=false;
+  $('clear').addEventListener('click', function(){
+    if(!clearArmed){ clearArmed=true; this.textContent='Click again to clear Period '+period; var b=this; setTimeout(function(){ clearArmed=false; b.textContent='Clear this period'; },4000); return; }
+    clearArmed=false; this.textContent='Clear this period'; store[period]=null; save(); drawEntry(); drawResults();
+  });
+  $('example').addEventListener('click', function(){
+    store[period]=[[3,2,6,3,4,5,7,2,4],[2,2,5,4,5,6,6,2,4],[4,1,6,2,3,5,8,3,4],[2,3,5,3,6,4,7,2,4],[3,2,4,3,5,6,6,3,4],[2,2,6,2,4,6,7,2,5]].map(function(r){return r.map(String);});
+    save(); drawEntry(); drawResults();
+  });
+  $('present').addEventListener('click', function(){ var on=document.body.classList.toggle('present'); this.textContent=on?'Edit numbers':'Present'; drawResults(); });
+
+  // ---- results
+  function stats(){
+    var good=rows().filter(complete).map(function(r){ return nums(r); });
+    if(!good.length) return null;
+    var avg=[], min=[], max=[];
+    for(var i=0;i<N;i++){
+      var col=good.map(function(r){return r[i];});
+      avg.push(col.reduce(function(a,b){return a+b;},0)/col.length);
+      min.push(Math.min.apply(null,col)); max.push(Math.max.apply(null,col));
+    }
+    var run=[], t=0; avg.forEach(function(a){ t+=a; run.push(t); });
+    return {n:good.length, avg:avg, min:min, max:max, run:run};
+  }
+  var r1 = function(x){ return (Math.round(x*10)/10).toFixed(1); };
+
+  function drawResults(){
+    var s=stats(), box=$('chartBox'), facts=$('facts'), tbl=$('avgTable');
+    box.textContent=''; facts.textContent=''; tbl.textContent='';
+    var all=rows().filter(function(r){ return r.some(function(v){return v!=='';}); }).length;
+    if(!s){ $('basis').textContent=''; box.appendChild(el('p',{class:'empty',text:'Results appear here once at least one group’s row adds up to exactly 36.'})); return; }
+    $('basis').textContent = 'Based on '+s.n+' group'+(s.n>1?'s':'')+(all>s.n ? ' ('+(all-s.n)+' row'+(all-s.n>1?'s':'')+' not counted yet: '+(all-s.n>1?'they don’t':'it doesn’t')+' add up to 36)' : '')+'. Period '+period+'.';
+    box.appendChild(chart(s));
+    // facts
+    var order=s.avg.map(function(a,i){return i;}).sort(function(a,b){return s.avg[b]-s.avg[a];});
+    var debate=s.avg.map(function(a,i){return i;}).sort(function(a,b){return (s.max[b]-s.min[b])-(s.max[a]-s.min[a]);});
+    var jumps=order[0];
+    facts.appendChild(el('div',{class:'fact'},[el('h3',{text:'Most unrest (class average)'}), el('ol',{}, order.slice(0,3).map(function(i){ return el('li',{text:EVENTS[i][0]+' ('+EVENTS[i][2]+'): '+r1(s.avg[i])+' points'}); }))]));
+    facts.appendChild(el('div',{class:'fact'},[el('h3',{text:'Biggest jump in the line'}), el('p',{text:EVENTS[jumps][0]+' added the most: the line climbs '+r1(s.avg[jumps])+' points there.'})]));
+    if(s.n>1){
+      var top=debate.filter(function(i){ return s.max[i]-s.min[i]>=2; }).slice(0,2);
+      facts.appendChild(el('div',{class:'fact'},[el('h3',{text:'Groups disagreed most about'}),
+        top.length ? el('ol',{}, top.map(function(i){ return el('li',{text:EVENTS[i][0]+': from '+s.min[i]+' to '+s.max[i]+' points'}); })) : el('p',{text:'Groups mostly agreed: no event differed by 2 or more points.'})]));
+    }
+    // table view
+    var t=el('table',{class:'avg-table'}); t.appendChild(el('thead',{},[el('tr',{},[el('th',{text:'Event'}),el('th',{text:'Year'}),el('th',{text:'Average'}),el('th',{text:'Range'}),el('th',{text:'Running total'})])]));
+    var tb=el('tbody'); EVENTS.forEach(function(e,i){ tb.appendChild(el('tr',{},[el('td',{text:e[0]}),el('td',{text:String(e[2])}),el('td',{class:'n',text:r1(s.avg[i])}),el('td',{class:'n',text:s.min[i]+'–'+s.max[i]}),el('td',{class:'n',text:r1(s.run[i])})])); });
+    t.appendChild(tb); tbl.appendChild(t);
+  }
+
+  // Running total of the class average, 0 to 36 across the nine events.
+  function chart(s){
+    var NS='http://www.w3.org/2000/svg', W=760, H=380, L=48, R=20, T=20, B=78;
+    var css=getComputedStyle(document.documentElement);
+    var c=function(v){ return css.getPropertyValue(v).trim(); };
+    var svg=document.createElementNS(NS,'svg'); svg.setAttribute('viewBox','0 0 '+W+' '+H); svg.setAttribute('role','img');
+    svg.setAttribute('aria-label','Line chart: running total of the class average unrest points, from the Proclamation of 1763 to Lexington and Concord, reaching 36.');
+    function mk(tag,a){ var e=document.createElementNS(NS,tag); for(var k in a) e.setAttribute(k,a[k]); svg.appendChild(e); return e; }
+    var x=function(i){ return L + (W-L-R)*(i+0.5)/N; }, y=function(v){ return T + (H-T-B)*(1-v/36); };
+    [0,9,18,27,36].forEach(function(v){
+      mk('line',{x1:L,x2:W-R,y1:y(v),y2:y(v),stroke:c('--grid'),'stroke-width':1});
+      var t=mk('text',{x:L-8,y:y(v)+5,'text-anchor':'end','font-size':14,fill:c('--muted')}); t.textContent=v;
+    });
+    var yl=mk('text',{x:14,y:T+(H-T-B)/2,'font-size':14,fill:c('--muted'),transform:'rotate(-90 14 '+(T+(H-T-B)/2)+')','text-anchor':'middle'}); yl.textContent='Total unrest points';
+    // area + line
+    var pts=s.run.map(function(v,i){ return x(i)+','+y(v); });
+    mk('polygon',{points:x(0)+','+y(0)+' '+pts.join(' ')+' '+x(N-1)+','+y(0),fill:c('--accent'),'fill-opacity':0.08});
+    mk('polyline',{points:pts.join(' '),fill:'none',stroke:c('--accent'),'stroke-width':2.5,'stroke-linejoin':'round'});
+    // x labels
+    EVENTS.forEach(function(e,i){
+      var t=mk('text',{x:x(i),y:H-B+22,'text-anchor':'middle','font-size':12,fill:c('--fg'),'font-weight':700}); t.textContent=e[1];
+      var t2=mk('text',{x:x(i),y:H-B+40,'text-anchor':'middle','font-size':12,fill:c('--muted')}); t2.textContent=e[2];
+    });
+    // biggest jump label
+    var big=s.avg.indexOf(Math.max.apply(null,s.avg));
+    var lab=mk('text',{x:x(big),y:y(s.run[big])-14,'text-anchor':'middle','font-size':14,'font-weight':800,fill:c('--fg')}); lab.textContent='+'+r1(s.avg[big]);
+    // points with hover
+    var tip=document.createElement('div'); tip.className='tip'; tip.hidden=true;
+    s.run.forEach(function(v,i){
+      var p=mk('circle',{cx:x(i),cy:y(v),r:5.5,fill:c('--accent'),stroke:c('--panel'),'stroke-width':2,class:'pt'});
+      var hit=mk('circle',{cx:x(i),cy:y(v),r:18,fill:'transparent',tabindex:0});
+      var show=function(){ p.setAttribute('r',8); tip.hidden=false; tip.textContent=EVENTS[i][0]+': +'+r1(s.avg[i])+' (total '+r1(v)+')';
+        var bb=svg.getBoundingClientRect(); tip.style.left=(x(i)/W*bb.width)+'px'; tip.style.top=(y(v)/H*bb.height)+'px'; };
+      var hide=function(){ p.setAttribute('r',5.5); tip.hidden=true; };
+      hit.addEventListener('mouseenter',show); hit.addEventListener('mouseleave',hide); hit.addEventListener('focus',show); hit.addEventListener('blur',hide);
+    });
+    var wrap=document.createElement('div'); wrap.style.position='relative'; wrap.appendChild(svg); wrap.appendChild(tip);
+    return wrap;
+  }
+
+  $('copy').addEventListener('click', function(){
+    var s=stats(); if(!s){ this.textContent='No complete rows yet'; var b=this; setTimeout(function(){ b.textContent='Copy results as text'; },2000); return; }
+    var lines=['Class unrest average, Period '+period+' ('+s.n+' groups)'];
+    EVENTS.forEach(function(e,i){ lines.push(e[0]+' ('+e[2]+'): '+r1(s.avg[i])+' (groups gave '+s.min[i]+'–'+s.max[i]+'), running total '+r1(s.run[i])); });
+    var text=lines.join('\n'), b=this;
+    var done=function(ok){ b.textContent= ok?'Copied':'Copy failed: select the table instead'; setTimeout(function(){ b.textContent='Copy results as text'; },2200); };
+    if(navigator.clipboard) navigator.clipboard.writeText(text).then(function(){done(true);},function(){done(false);}); else done(false);
+  });
+
+  drawEntry(); drawResults();
+})();
+</script>
+</body>
+</html>

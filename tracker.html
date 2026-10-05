@@ -20,11 +20,11 @@
   .hd{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #000;padding-bottom:.04in;margin-bottom:.05in;gap:.2in}
   .hd h1{font-size:14pt;font-weight:800;margin:0;line-height:1.15}
   .who{font-size:10pt;font-weight:600;white-space:nowrap}
-  .who span{display:inline-block;border-bottom:1px solid #000;width:1.7in;margin:0 .12in 0 .05in}
-  .who span.short{width:.55in}
+  .who span{display:inline-block;border-bottom:1px solid #000;width:1.5in;margin:0 .1in 0 .05in}
+  .who span.short{width:.45in}
   .lead{font-size:9pt;color:var(--muted);margin:0 0 .05in}
   table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:11pt;line-height:1.15}
-  col.ev{width:2.55in} col.lv{width:1.25in} col.r{width:.85in} col.f{width:.85in}
+  col.ev{width:2.3in} col.lv{width:1.05in} col.r{width:.8in} col.w{width:1.3in} col.g{width:.85in} col.c{width:.85in}
   thead th{text-align:left;font-size:9pt;font-weight:600;border-bottom:1.5px solid #000;padding:.02in .05in;vertical-align:bottom}
   tbody td{border-bottom:.75px solid var(--rule);padding:0 .05in;height:.36in;vertical-align:middle}
   tbody td.box{border-left:.75px solid var(--rule)}
@@ -45,14 +45,14 @@
   <div class="sheet">
     <div class="hd">
       <h1>Unrest in the Colonies · Tracker</h1>
-      <div class="who">Name<span></span>Period<span class="short"></span></div>
+      <div class="who">Name<span></span>Period<span class="short"></span>Group<span class="short"></span></div>
     </div>
-    <p class="lead">Circle the level you read. Write your first rating (1–8). After all nine, spend exactly 36 points in the last column. One word for why.</p>
+    <p class="lead">As you read: circle your level, write your rating (1–8) and one word for why. Day 5: write your group’s points (they must add up to 36), then the class average.</p>
     <table>
-      <colgroup><col class="ev"><col class="lv"><col class="r"><col class="f"><col></colgroup>
-      <thead><tr><th>Event</th><th>Level I read</th><th>First rating (1–8)</th><th>Final points</th><th>Why, in one word</th></tr></thead>
+      <colgroup><col class="ev"><col class="lv"><col class="r"><col class="w"><col class="g"><col class="c"></colgroup>
+      <thead><tr><th>Event</th><th>Level I read</th><th>My rating<br>(1–8)</th><th>Why, in one word</th><th>Our group</th><th>Class average</th></tr></thead>
       <tbody></tbody>
-      <tfoot><tr><td colspan="3" style="text-align:right">Final points must add up to 36 »</td><td class="box"></td><td></td></tr></tfoot>
+      <tfoot><tr><td colspan="4" style="text-align:right">Our group’s points must add up to 36 »</td><td class="box"></td><td></td></tr></tfoot>
     </table>
     <div class="foot"><span>unrest.mrbsocialstudies.org</span><span>Keep this if your computer resets: it is your backup.</span></div>
   </div>
@@ -67,7 +67,7 @@
     EVENTS.forEach(function (e, i) {
       var tr = document.createElement('tr');
       tr.innerHTML = '<td>' + (i + 1) + '. ' + e[0] + ' <span class="yr">' + e[1] + '</span></td>' +
-        '<td class="lv">0 1 2 3</td><td class="box"></td><td class="box"></td><td class="box"></td>';
+        '<td class="lv">0 1 2 3</td><td class="box"></td><td class="box"></td><td class="box"></td><td class="box"></td>';
       tb.appendChild(tr);
     });
     document.body.appendChild(node);
