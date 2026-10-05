@@ -8,7 +8,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="fonts/atkinson.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Lexend:wght@300;400;500;600;700&display=swap">
 <style>
   :root {
     /* Liberty Press — "Evening Edition" dark broadside (toggle target) */
@@ -626,6 +625,204 @@
   .reread{margin:6px 0 10px;border:1px solid var(--border);border-radius:10px;padding:8px 12px;background:var(--surface)}
   .reread summary{cursor:pointer;font-weight:700;color:var(--accent)}
   .reread .event-reading{margin-top:8px;max-height:45vh;overflow:auto}
+
+  /* =====================================================================
+     FOCUS MODE (Oct 2026): one calm system on top of the older styles.
+     Atkinson Hyperlegible Next everywhere; every text pair 7:1 or better
+     (AAA) in both themes; control edges 3:1 or better; few borders.
+     ===================================================================== */
+  :root{
+    --bg:#15120e; --fg:#f7f1e4; --muted:#d2c6ad; --panel:#1e1a14; --border:#3f372b; --edge:#a8987a;
+    --accent:#ff9a90; --accent2:#ff9a90; --on-accent:#1a0b09; --gold:#e0b866; --tint:#43211c;
+    --surface:#1e1a14; --surface-alt:#262019; --callout-bg:#262019; --callout-border:#3f372b; --panel-soft:#262019;
+    --meter-empty:#262019; --mast:#000000; --mast-ink:#fffaf0; --mast-edge:#9b917f;
+    --chip-bg:#18233a; --chip-ink:#d6e2ff; --field:#120f0c; --ok:#6fbf78;
+    --face:'Atkinson Hyperlegible Next','Atkinson Hyperlegible',Verdana,system-ui,sans-serif;
+  }
+  body.light{
+    --bg:#f3efe6; --fg:#14110d; --muted:#4a4033; --panel:#ffffff; --border:#d9d0bf; --edge:#74674f;
+    --accent:#8f1515; --accent2:#8f1515; --on-accent:#ffffff; --gold:#8a6420; --tint:#fbe9e6;
+    --surface:#ffffff; --surface-alt:#f7f4ee; --callout-bg:#f7f4ee; --callout-border:#d9d0bf; --panel-soft:#f7f4ee;
+    --meter-empty:#f7f4ee; --mast:#14110d; --mast-ink:#fffaf0; --mast-edge:#b8ad97;
+    --chip-bg:#e8eefb; --chip-ink:#102a5c; --field:#ffffff; --ok:#2c6b37;
+  }
+  body, body.light, body.broadside, body.font-dyslexic{font-family:var(--face);letter-spacing:normal;font-size:17px;line-height:1.55}
+  h1,h2,h3,h4,.btn,.btn-ghost,.tab,.chip,button,input,select,textarea{font-family:var(--face) !important;letter-spacing:normal !important;text-transform:none !important}
+
+  /* Header: one slim bar */
+  header, body.light header{background:var(--mast) !important;border-bottom:3px solid var(--gold) !important;backdrop-filter:none !important;color:var(--mast-ink)}
+  header .bar, header .brand-mark, header .brand-title .sub, header .nameplate{display:none !important}
+  header .wrap.row{max-width:1180px;padding:8px 16px;gap:10px 16px;align-items:center;flex-wrap:wrap}
+  header .brand-block{flex-direction:row;align-items:center;gap:16px;flex:1 1 auto;min-width:0;flex-wrap:wrap}
+  header .brand{min-width:0}
+  header .brand-title strong{font-size:20px;font-weight:800;color:var(--mast-ink);white-space:nowrap;font-family:var(--face) !important;text-transform:none;letter-spacing:0}
+  .step-chips, body.light .step-chips, body:not(.light) .step-chips{display:flex;flex-wrap:wrap;gap:4px;margin:0;border:0 !important;background:transparent !important;border-radius:0;overflow:visible}
+  .step-chips .chip, body.light .step-chips .chip{background:transparent !important;border:0 !important;border-radius:6px !important;color:var(--mast-ink) !important;font-size:14px !important;font-weight:600;padding:6px 10px !important;min-height:34px;opacity:1}
+  .step-chips .chip .chip-icon{font-size:12px;color:var(--mast-ink) !important;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--mast-edge);display:inline-flex;align-items:center;justify-content:center}
+  .step-chips .chip.active, body.light .step-chips .chip.active{background:var(--mast-ink) !important;color:var(--mast) !important}
+  .step-chips .chip.active .chip-icon{color:var(--mast) !important;border-color:var(--mast)}
+  .step-chips .chip.done .chip-icon{background:var(--ok);border-color:var(--ok);color:#fff !important}
+  .step-chips .chip.chip-locked, body.light .step-chips .chip.chip-locked{color:var(--mast-edge) !important;cursor:default}
+  .step-chips .chip.chip-locked .chip-icon{color:var(--mast-edge) !important}
+  .header-actions{gap:8px;margin-left:auto}
+  header #rtools .rt-btn, .accessibility button.access-toggle, body.light .accessibility button.access-toggle{min-height:38px;padding:6px 14px;border-radius:8px;font-size:15px;font-weight:700;background:transparent;color:var(--mast-ink);border:2px solid var(--mast-edge)}
+  header #rtools .rt-btn.rt-primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+  .access-panel{background:var(--panel) !important;color:var(--fg) !important;border:1px solid var(--edge) !important;border-radius:12px !important;width:300px !important}
+  .access-panel h4{margin:0 0 6px;font-size:14px;color:var(--fg)}
+  .panel-row{display:flex;align-items:center;gap:10px}
+  .panel-actions{display:flex;flex-wrap:wrap;gap:6px}
+  .access-panel .translate-help{font-size:14px;color:var(--muted)}
+
+  /* Page */
+  main.wrap{max-width:1180px;padding-top:18px;padding-bottom:40px}
+  .fm-section{display:grid;gap:14px}
+  .fm-card,.fm-pane{background:var(--panel);border:1px solid var(--border);border-radius:14px;min-width:0}
+  .fm-card{padding:18px 20px}
+  .fm-card h2,.fm-pane h2{margin:0 0 8px;font-size:22px;font-weight:800;color:var(--fg)}
+  .fm-hint{font-size:15px;color:var(--muted);margin:8px 0}
+  .fm-label{font-size:15px;font-weight:700;margin:16px 0 4px;color:var(--fg)}
+  .fm-steps{margin:0;padding-left:20px;display:grid;gap:2px}
+  .fm-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-top:12px}
+  .fm-link{background:none;border:0;padding:6px 0;color:var(--accent);font-weight:700;text-decoration:underline;cursor:pointer;font-size:15px}
+  .field, body.light .field{background:var(--field);color:var(--fg);border:1.5px solid var(--edge);border-radius:8px;padding:10px 12px;font-size:17px}
+  .btn{background:var(--accent);color:var(--on-accent);border:0;border-radius:8px;padding:10px 16px;font-weight:700;font-size:16px;cursor:pointer}
+  .btn:disabled,.btn[disabled]{background:var(--surface-alt);color:var(--muted);cursor:not-allowed}
+  .btn-ghost, body.light .btn-ghost{background:transparent;color:var(--fg);border:1.5px solid var(--edge);border-radius:8px;padding:9px 14px;font-weight:700;cursor:pointer}
+  .btn.danger{background:#8f1515;color:#fff}
+  :focus-visible{outline:3px solid var(--gold) !important;outline-offset:2px}
+
+  /* Sign in */
+  .fm-welcome{display:grid;grid-template-columns:1fr 1.35fr;gap:16px;align-items:start}
+  .fm-signin{grid-template-columns:2fr 1fr 1fr !important;gap:10px}
+  .fm-signin label{display:flex;flex-direction:column;gap:4px;font-weight:700;font-size:15px;min-width:0}
+  .level-picker{border:0;padding:0;margin:0;background:transparent}
+  .level-picker legend{font-size:22px;font-weight:800;padding:0;margin-bottom:4px;color:var(--fg)}
+  .level-options{grid-template-columns:1fr 1fr;gap:10px}
+  .level-option{border:1px solid var(--border);background:var(--surface-alt);border-radius:10px;padding:12px}
+  .level-option:has(input:checked){border:2px solid var(--accent);background:var(--tint);padding:11px}
+  .level-option-text strong{font-size:17px}
+  .level-blurb{font-size:15px;color:var(--muted)}
+  .level-sample{display:block;margin-top:6px;font-size:16px;color:var(--fg)}
+
+  /* Placard */
+  .fm-progress{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .fm-count{font-weight:700;font-size:15px;color:var(--muted)}
+  .fm-dots{display:flex;flex-wrap:wrap;gap:6px}
+  .fm-dot{width:34px;height:34px;border-radius:50%;border:2px solid var(--heat);background:var(--panel);color:var(--fg);font-weight:700;font-size:14px;cursor:pointer;padding:0;font-variant-numeric:tabular-nums}
+  .fm-dot.done{background:var(--heat);color:#fff;border-color:var(--heat)}
+  .fm-dot.now{outline:3px solid var(--fg);outline-offset:2px}
+  .fm-backup{margin-left:auto;font-size:14px;padding:6px 12px}
+  .fm-goals{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px 14px}
+  .fm-goals summary{cursor:pointer;font-weight:700}
+  .fm-work{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;align-items:start}
+  .fm-pane-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 16px 10px;border-bottom:1px solid var(--border)}
+  .fm-pane-h h2{margin:0;flex:1 1 auto}
+  .fm-year{font-weight:600;color:var(--muted);font-size:17px}
+  .fm-levels{display:flex;border:1.5px solid var(--edge);border-radius:8px;overflow:hidden}
+  .fm-levels button{background:transparent;border:0;border-left:1px solid var(--edge);color:var(--fg);padding:6px 10px;font-weight:700;font-size:14px;cursor:pointer}
+  .fm-levels button:first-child{border-left:0}
+  .fm-levels button.on{background:var(--accent);color:var(--on-accent)}
+  .fm-read .lang-picker{padding:10px 16px 0;margin:0}
+  .fm-reading{padding:12px 16px;font-size:18px;line-height:1.65;color:var(--fg);background:transparent !important;border:0 !important}
+  .fm-reading .event-text{margin:0 0 12px;max-width:68ch;color:var(--fg)}
+  .fm-reading a{color:var(--accent);font-weight:600}
+  .fm-figure{float:right;width:40%;margin:4px 0 10px 16px !important}
+  .fm-figure .image-frame{border-radius:8px;border:1px solid var(--border)}
+  .fm-figure figcaption{font-size:13px !important;color:var(--muted) !important;line-height:1.4;margin-top:4px}
+  .fm-read .key-terms{margin:0 16px 14px;clear:both;background:var(--surface-alt);border:0;border-radius:10px}
+  .fm-read .english-version{margin:0 0 8px}
+  .fm-turn{position:sticky;top:76px}
+  .fm-turn-body{padding:8px 16px}
+  .fm-step{padding:10px 0 14px}
+  .fm-step + .fm-step{border-top:1px solid var(--border)}
+  .fm-step h3{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 8px;font-size:17px}
+  .fm-num{display:inline-flex;width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--on-accent);font-size:13px;align-items:center;justify-content:center;flex:none}
+  .fm-step.locked .fm-num{background:var(--muted);color:var(--panel)}
+  .fm-pill{margin-left:auto;font-size:14px;font-weight:700;color:var(--fg);background:var(--surface-alt);border-radius:999px;padding:2px 10px}
+  .fm-q{font-weight:700}
+  .fm-turn .fm-actions{padding:0 16px 16px}
+  .meter-cell, body.light .meter-cell{padding-top:0 !important;height:44px;border-radius:8px;border:1.5px solid var(--edge) !important;background:var(--surface-alt) !important;color:var(--fg);font-weight:800;font-size:16px;transform:none !important}
+  .meter-cell::after{display:none !important}
+  .meter-num{position:relative;z-index:1}
+  .meter-cell.filled{background:#7a4f00 !important;border-color:transparent !important;color:#fff}
+  .meter-cell.filled:nth-child(2){background:#7f4300 !important}.meter-cell.filled:nth-child(3){background:#853800 !important}
+  .meter-cell.filled:nth-child(4){background:#8a2d00 !important}.meter-cell.filled:nth-child(5){background:#8c2200 !important}
+  .meter-cell.filled:nth-child(6){background:#8a170b !important}.meter-cell.filled:nth-child(7){background:#7f0f0f !important}
+  .meter-cell.filled:nth-child(8){background:#660a0a !important}
+  .meter.unrated .meter-cell{background:var(--surface-alt) !important;border-color:var(--edge) !important;color:var(--fg)}
+  .meter-labels span{font-size:13px;color:var(--muted)}
+  .supports{margin:0 0 8px}
+  .support-look{font-weight:700;color:var(--fg);font-size:15px}
+  .support-label{font-size:14px;color:var(--muted)}
+  .starter-pill, body.light .starter-pill{background:var(--chip-bg) !important;color:var(--chip-ink) !important;border:0 !important;border-radius:999px;padding:6px 12px;font-size:14px;text-align:left}
+  .bank-word{border:0 !important;background:var(--tint) !important;color:var(--fg) !important;font-size:14px}
+  .support-push{border:0 !important;background:var(--surface-alt) !important;color:var(--fg)}
+  .event-rationale textarea, #rationale-input{min-height:110px}
+  .field-error{color:var(--accent);font-weight:700}
+
+  /* Dialog */
+  .fm-dialog{border:0;border-radius:14px;padding:20px 22px;max-width:min(460px,92vw);background:var(--panel);color:var(--fg);box-shadow:0 20px 50px rgba(0,0,0,.4)}
+  .fm-dialog::backdrop{background:rgba(0,0,0,.55)}
+  .fm-dialog h2{margin:0 0 8px;font-size:20px}
+  .fm-dialog label{display:flex;flex-direction:column;gap:4px;font-weight:700;margin-top:8px}
+
+  /* Other screens: quieter chrome */
+  .activity-badge{display:none !important}
+  .step-card{background:transparent !important;border:0 !important;box-shadow:none !important;padding:0 !important}
+  .step-intro h2{font-size:26px;margin:0 0 6px;color:var(--fg) !important}
+  .section-lead{font-size:17px;color:var(--fg);max-width:70ch}
+  .section-lead::first-letter{all:unset}
+  .card{background:var(--panel) !important;border:1px solid var(--border) !important;border-radius:14px !important;box-shadow:none !important;color:var(--fg)}
+  .note,.sub,.help{color:var(--muted) !important}
+
+  @media(max-width:900px){
+    .fm-welcome,.fm-work{grid-template-columns:1fr}
+    .fm-turn{position:static}
+    .fm-figure{float:none;width:100%;margin:0 0 12px !important}
+    .fm-signin{grid-template-columns:1fr 1fr !important}
+    .fm-signin label:first-child{grid-column:1 / -1}
+    .level-options{grid-template-columns:1fr}
+    header .brand-title strong{font-size:18px}
+  }
+
+  /* Focus Mode fixes from the screen audit */
+  .fm-reading{display:block !important}
+  .fm-reading .fm-figure{float:right;display:block;width:38%;margin:4px 0 10px 18px !important}
+  .fm-reading .fm-figure .image-frame{min-height:0;aspect-ratio:auto;background:transparent}
+  .fm-reading .fm-figure figcaption{text-align:left}
+  body .meter-cell.filled, body.light .meter-cell.filled{color:#ffffff !important}
+  .fm-card h2,.fm-pane h2,.fm-pane-h h2,.level-picker legend{color:var(--fg) !important}
+  .btn:disabled,.btn[disabled]{opacity:1 !important}
+  main.wrap{padding-top:16px !important}
+  .flow-section{margin:0 !important;padding:0 !important;min-height:0 !important}
+  footer, body.light footer{color:var(--muted) !important;padding:24px 16px;font-size:14px}
+  footer a{color:var(--muted)}
+  @media(max-width:900px){ .fm-reading .fm-figure{float:none;width:100%;margin:0 0 12px !important} }
+
+  .skip-link{position:absolute !important;left:-9999px !important;top:8px}
+  .skip-link:focus{left:16px !important;z-index:100;background:var(--panel);color:var(--fg);padding:8px 12px;border-radius:8px}
+
+  .meter-cell.filled:nth-child(1){background:#7a4f00 !important}
+  .fm-group-row{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:end;margin:6px 0}
+  .fm-group-row label{display:flex;flex-direction:column;gap:4px;font-weight:700;font-size:15px}
+  .fm-group-input{width:8rem}
+  .summary-item, body.light .summary-item{background:var(--panel) !important;border:1px solid var(--border) !important;border-radius:12px !important;padding:12px 16px !important;gap:8px !important}
+  .summary-title strong{font-size:17px;color:var(--fg) !important}
+  .summary-toggle, body.light .summary-toggle{background:transparent !important;border:1.5px solid var(--edge) !important;color:var(--fg) !important;border-radius:8px !important;padding:6px 12px !important;font-weight:700}
+  .summary-item .pill, body.light .summary-item .pill{background:var(--surface-alt) !important;color:var(--fg) !important;border:0 !important;font-weight:700}
+  .summary-meter .meter-cell{height:38px}
+  .summary-footer, body.light .summary-footer{background:var(--panel) !important;border:1px solid var(--edge) !important;box-shadow:0 -6px 18px rgba(0,0,0,.12) !important;color:var(--fg)}
+  .budget-hint,.budget-cta-hint,.budget-nudge{color:var(--fg) !important;font-weight:600}
+  .summary-levels{border:1.5px solid var(--edge) !important;border-radius:8px !important}
+  .summary-levels button{color:var(--fg) !important;font-weight:700}
+  .summary-levels button.active{background:var(--accent) !important;color:var(--on-accent) !important}
+
+  .section-lead, body.light .section-lead{color:var(--fg) !important}
+  .comparison-header, body.light .comparison-header{text-transform:none !important;letter-spacing:0 !important;font-size:14px !important;color:var(--fg) !important;background:var(--surface-alt) !important}
+  .comparison-after, body.light .comparison-after{color:var(--fg) !important;font-weight:700}
+  .comparison-change.positive{color:var(--ok) !important}.comparison-change.negative{color:var(--accent) !important}
+  .card-h h3{color:var(--fg) !important}
+  .card-h{border-bottom:1px solid var(--border) !important}
 </style>
 </head>
 <body>
@@ -653,9 +850,12 @@
     </div>
       <div class="right header-actions">
         <div id="rtools" role="group" aria-label="Listen and font"></div>
-        <button id="overviewBtn" class="btn-ghost hidden" type="button">Overview</button>
-        <button id="resetBtn" class="btn-ghost" type="button">Reset</button>
-        <button id="themeToggle" class="theme-toggle" type="button" aria-label="Toggle color theme" data-theme="dark">
+        <div class="accessibility">
+          <button class="access-toggle" id="accessToggle" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="accessPanel">Settings</button>
+          <div class="access-panel hidden" id="accessPanel">
+            <div class="panel-group">
+              <h4>Light or dark</h4>
+              <div class="panel-row"><button id="themeToggle" class="theme-toggle" type="button" aria-label="Toggle color theme" data-theme="dark">
           <span class="toggle-thumb"></span>
           <span class="toggle-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M12 4.5a1 1 0 0 1 1 1V7a1 1 0 1 1-2 0V5.5a1 1 0 0 1 1-1Zm0 11a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Zm7-2.5h-1.5a1 1 0 1 1 0-2H19a1 1 0 1 1 0 2Zm-12 0H5a1 1 0 1 1 0-2h1.5a1 1 0 1 1 0 2Zm9.95-6.45a1 1 0 0 1 0-1.41l1.06-1.06a1 1 0 1 1 1.42 1.41l-1.07 1.06a1 1 0 0 1-1.41 0ZM5.57 17.36a1 1 0 1 1 1.42-1.41l1.06 1.06a1 1 0 0 1-1.41 1.42l-1.07-1.07Zm12.78 1.41a1 1 0 0 1-1.42 0l-1.06-1.06a1 1 0 1 1 1.41-1.42l1.07 1.07a1 1 0 0 1 0 1.41ZM8.05 6.55a1 1 0 0 1-1.41 0L5.57 5.5A1 1 0 1 1 7 4.09l1.06 1.06a1 1 0 0 1 0 1.41ZM12 20a1 1 0 0 1-1-1v-1.5a1 1 0 1 1 2 0V19a1 1 0 0 1-1 1Z"/></svg>
@@ -663,20 +863,7 @@
           <span class="toggle-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M17.75 15.5a7.25 7.25 0 0 1-9.25-9.25 1 1 0 0 0-1.32-1.24 9.25 9.25 0 1 0 11.81 11.81 1 1 0 0 0-1.24-1.32Z"/></svg>
           </span>
-        </button>
-        <div class="accessibility">
-          <button class="access-toggle" id="accessToggle" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="accessPanel">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c.9 0 1.7.3 2.4.9.3.2.4.7.2 1-.2.4-.7.5-1 .2-.4-.3-.9-.4-1.4-.4-.5 0-1 .1-1.4.4-.4.3-.5.8-.2 1.2.2.3.5.4.8.4h6.5c.6 0 1 .4 1 1s-.4 1-1 1h-3.6l1.4 13.1c.1.5-.3 1-.8 1.1h-.1c-.5 0-.9-.4-1-.9L12 14.8l-2.4 6.2c-.2.5-.7.8-1.2.7-.5-.1-.9-.6-.8-1.1L9 8h-3c-.6 0-1-.4-1-1s.4-1 1-1h2.5c.3 0 .6-.2.8-.4.3-.4.2-1-.2-1.2C8.4 4 7.9 3.9 7.4 3.9c-.5 0-1 .1-1.4.4-.3.3-.8.2-1-.2-.2-.3-.1-.8.2-1C6 2.3 6.9 2 7.8 2H12z"/></svg>
-            Accessibility
-          </button>
-          <div class="access-panel hidden" id="accessPanel">
-            <div class="panel-group">
-              <h4>Reading</h4>
-              <p class="translate-help">Font, text size, and spacing are in the <strong>Font</strong> button under the title. <strong>Listen</strong> reads the screen aloud.</p>
-              <label class="toggle-pill" for="broadsideToggle">
-                <input type="checkbox" id="broadsideToggle" />
-                <span>Broadside style (decorative newspaper look)</span>
-              </label>
+        </button><span>Switch light and dark</span></div>
             </div>
             <div class="panel-group">
               <h4>Writing</h4>
@@ -699,6 +886,14 @@
               <div class="panel-actions">
                 <button class="btn-ghost" id="translateGo" type="button" disabled>Open in Google Translate</button>
               </div>
+            </div>
+            <div class="panel-group">
+              <h4>Backup</h4>
+              <div class="panel-actions"><button id="backupBtn" class="btn-ghost" type="button">Save a backup</button><button id="restoreBtn" class="btn-ghost" type="button">Load a backup</button></div>
+            </div>
+            <div class="panel-group">
+              <h4>Start over</h4>
+              <button id="resetBtn" class="btn-ghost" type="button">Erase my work and start over</button>
             </div>
           </div>
         </div>
@@ -820,10 +1015,10 @@ const STEPS = [
 // Reading levels, matching the course's Level 0-3 readings. Blurbs describe the
 // text, never the reader.
 const LEVELS = [
-  {key:'l0',   label:'Level 0', blurb:'Short sentences. Key words explained right in the text. Can be read in Spanish, Portuguese, Russian, or Chinese.'},
-  {key:'ss',   label:'Level 1', blurb:'Short paragraphs in plain words.'},
-  {key:'core', label:'Level 2', blurb:'Grade-level reading with some analysis.'},
-  {key:'adv',  label:'Level 3', blurb:'Longer reading with primary sources and different points of view.'}
+  {key:'l0',   label:'Level 0', blurb:'Short sentences. Also in Español, Português, Русский, 中文.'},
+  {key:'ss',   label:'Level 1', blurb:'Short paragraphs. Plain words.'},
+  {key:'core', label:'Level 2', blurb:'Grade-level reading.'},
+  {key:'adv',  label:'Level 3', blurb:'Longer reading with real quotes from the time.'}
 ];
 const LEVEL_KEYS = LEVELS.map(l => l.key);
 const levelLabel = key => (LEVELS.find(l => l.key===key) || LEVELS[2]).label;
@@ -836,16 +1031,16 @@ function syncName(ans){
   const last = (ans.last||'').trim().charAt(0).toUpperCase();
   ans.name = first ? (last ? `${first} ${last}.` : first) : '';
 }
-const emptyRow = (level) => ({ rating: 1, rationale: '', level: level || 'core' });
+const emptyRow = (level) => ({ rating: 1, rated: false, rationale: '', level: level || 'core' });
 function defaultState(){
   const rows = {}; EVENTS.forEach(e => rows[e.id] = emptyRow());
   return {
-    phase: 'intro', // intro -> splash -> cards -> summary -> questions
+    phase: 'splash', // splash -> cards -> summary -> questions (the old warm-up 'intro' is retired)
     maxStep: 0,     // furthest step index reached (gates forward chip nav)
     current: 0,
     rows,
     firstPicks: null,
-    answers: { first:'', last:'', name:'', period:'', q3:'', q4:'', q5:'' },  // name = "First L.", built from first + last initial
+    answers: { first:'', last:'', name:'', period:'', group:'', q3:'', q4:'', q5:'' },  // name = "First L.", built from first + last initial
     theme: 'light',
     font: 'default',
     broadside: false,
@@ -869,10 +1064,11 @@ function load(){
     for(const e of EVENTS){
       const r = Object.assign({ rating:1, rationale:'', level: st.readLevel||'core' }, st.rows[e.id]||{});
       if(r.level==='simple') r.level = 'l0';   // the retired star tier
+      if(typeof r.rated!=='boolean') r.rated = Boolean((r.rationale||'').trim());
       if(!LEVEL_KEYS.includes(r.level)) r.level = st.readLevel || 'core';
       st.rows[e.id] = r;
     }
-    st.phase = ['intro','splash','cards','summary','questions'].includes(st.phase)?st.phase:'intro';
+    st.phase = ['splash','cards','summary','questions'].includes(st.phase)?st.phase:'splash';
     st.current = Number.isInteger(st.current)?st.current:0;
     st.answers = Object.assign(def.answers, st.answers||{});
     if(!st.answers.first && st.answers.name){ const parts = st.answers.name.trim().split(/\s+/); st.answers.first = parts[0]||''; st.answers.last = (parts[1]||'').charAt(0); }
@@ -1389,9 +1585,9 @@ function buildWorkText(){
   const lvl = state.readLevel ? levelLabel(state.readLevel) : 'not chosen';
   const lang = state.readLevel==='l0' && state.l0lang!=='en' ? ` (${(L0_LANGS.find(([k])=>k===state.l0lang)||[])[1]})` : '';
   L.push('UNREST IN THE COLONIES');
-  L.push(`${A.name||'(no name)'} · Period ${A.period||'?'} · Starting reading level: ${lvl}${lang}`);
+  L.push(`${A.name||'(no name)'} · Period ${A.period||'?'}${A.group ? ' · Group '+A.group : ''} · Starting reading level: ${lvl}${lang}`);
   L.push('');
-  L.push('MY RATINGS AND REASONS (first rating → final points)');
+  L.push(`MY RATINGS AND REASONS (my first rating → ${A.group ? 'our group\'s' : 'final'} points)`);
   EVENTS.forEach((ev,i)=>{
     const r = state.rows[ev.id];
     const first = state.firstPicks ? state.firstPicks[ev.id] : r.rating;
@@ -1424,7 +1620,7 @@ function render(){
   document.body.classList.toggle('light', state.theme==='light');
   document.body.classList.remove('font-dyslexic');  // superseded by the Font menu (reader-tools.js)
   if(window.READER_TOOLS) READER_TOOLS.reset();       // stop reading aloud when the screen changes
-  document.body.classList.toggle('broadside', state.broadside===true);
+  document.body.classList.remove('broadside');  // decorative newspaper skin retired for readability
   const fontToggle = $('#fontToggle');
   if(fontToggle) fontToggle.checked = state.font==='dyslexic';
   const broadsideToggle = $('#broadsideToggle');
@@ -1449,7 +1645,8 @@ function render(){
 
   const root = $('#app');
   root.innerHTML = '';
-  if(state.phase==='intro'){
+  if(state.phase==='intro') state.phase = 'splash';
+  if(false){
     if(state.introStep < 0){
       root.appendChild(renderIntroHero());
     }else{
@@ -1484,10 +1681,17 @@ function render(){
 
 // Overview: the student picks a starting level once. It sets every placard's
 // level (they can still switch on any placard) and the writing supports.
+// The same fact from placard 1 at each level, so students pick by reading.
+const LEVEL_SAMPLES = {
+  l0:'The rule said colonists could not settle west of the mountains.',
+  ss:'It said colonists could not settle west of the Appalachian Mountains.',
+  core:'Colonists were forbidden to settle in that area.',
+  adv:'To many colonists, it felt like a betrayal.'
+};
 function elLevelPicker(onPick){
   const fs = h('fieldset',{class:'level-picker'});
   fs.appendChild(h('legend',{},'Pick your reading level'));
-  fs.appendChild(p('Every level tells the same story. Pick the one you can read comfortably. You can switch on any placard.', 'note'));
+  fs.appendChild(p('Read the sentence on each card. Pick the one that is easy for you to read. You can change it later.', 'fm-hint'));
   const grid = h('div',{class:'level-options'});
   LEVELS.forEach(({key,label,blurb})=>{
     const input = h('input',{type:'radio', name:'read-level', value:key});
@@ -1499,7 +1703,8 @@ function elLevelPicker(onPick){
       langSlot.replaceChildren(key==='l0' ? elLangPicker(()=>{}) : '');
       onPick && onPick();
     });
-    grid.appendChild(h('label',{class:'level-option'}, input, h('span',{class:'level-option-text'}, strong(label), span(blurb,'level-blurb'))));
+    grid.appendChild(h('label',{class:'level-option'}, input,
+      h('span',{class:'level-option-text'}, strong(label), span(blurb,'level-blurb'), span(`“${LEVEL_SAMPLES[key]}”`,'level-sample'))));
   });
   const langSlot = h('div',{class:'level-lang-slot'});
   if(state.readLevel==='l0') langSlot.appendChild(elLangPicker(()=>{}));
@@ -1507,135 +1712,140 @@ function elLevelPicker(onPick){
   return fs;
 }
 
-function renderSplashSection(){
-  const section = h('section',{class:'flow-section',id:'section-overview'});
-  const card = h('div',{class:'step-card'});
-  const intro = h('div',{class:'step-intro'},
-    span('Activity 0 • Get Ready','activity-badge'),
-    h('h2',{},'Preview the Mission'),
-    p('Here’s the goal before you jump in. (New words like “unrest” and “placard” are explained on the “What is unrest?” card below.)', 'section-lead'),
-    // Outcomes quoted verbatim from Canvas (ams-planning docs/outcomes-grade8.md):
-    // the WALT, level 3 (the I-can) and level 4. Do not paraphrase.
-    h('div',{class:'objectives'},
-      h('h3',{class:'objectives-head'},'What we are learning'),
-      h('div',{class:'walt'},
-        h('p',{class:'walt-name'}, strong('H2.6-8.5 · Analyzing how people and movements changed history')),
-        h('p',{}, span('Proficient (3): ','walt-lvl'), 'You explain and analyze how an individual or a movement shaped U.S. history.'),
-        h('p',{}, span('Exemplary (4): ','walt-lvl'), 'You analyze how a person or a movement changed history, and weigh how much they changed against what was already moving.')
-      ),
-      h('div',{class:'walt'},
-        h('p',{class:'walt-name'}, strong('H1.6-8.6 · Explaining what makes an era an era')),
-        h('p',{}, span('Proficient (3): ','walt-lvl'), 'You explain how themes and events define an era in U.S. history between 1763 and 1877.'),
-        h('p',{}, span('Exemplary (4): ','walt-lvl'), 'You explain what defines an era, and show where one era bleeds into the next.')
-      ),
-      h('h3',{class:'objectives-head'},'What you will do'),
-      h('ul',{class:'objectives-list'},
-        h('li',{}, 'Read nine events from 1763 to 1775 and rate how much unrest each one caused.'),
-        h('li',{}, 'Spend a budget of 36 unrest points to show which events mattered most.'),
-        h('li',{}, 'Explain your choices with evidence and cause-and-effect words like because and so.')
-      )
-    ),
-    p('You’ll write a short reason for each rating. After the ninth placard, you’ll unlock the budget and rebalance everything.', 'section-lead')
+  // Outcomes quoted verbatim from Canvas (ams-planning docs/outcomes-grade8.md):
+  // the WALT, level 3 (the I-can) and level 4. Do not paraphrase.
+function elGoals(){
+  return h('details',{class:'fm-goals'},
+    h('summary',{},'What we are learning'),
+    h('div',{class:'walt'},
+      h('p',{class:'walt-name'}, strong('H2.6-8.5 · Analyzing how people and movements changed history')),
+      h('p',{}, span('Proficient (3): ','walt-lvl'), 'You explain and analyze how an individual or a movement shaped U.S. history.'),
+      h('p',{}, span('Exemplary (4): ','walt-lvl'), 'You analyze how a person or a movement changed history, and weigh how much they changed against what was already moving.')),
+    h('div',{class:'walt'},
+      h('p',{class:'walt-name'}, strong('H1.6-8.6 · Explaining what makes an era an era')),
+      h('p',{}, span('Proficient (3): ','walt-lvl'), 'You explain how themes and events define an era in U.S. history between 1763 and 1877.'),
+      h('p',{}, span('Exemplary (4): ','walt-lvl'), 'You explain what defines an era, and show where one era bleeds into the next.'))
   );
-  card.append(intro);
-  const container = h('div',{class:'splash-wrapper'});
-  let beginBtn;
-  let scrollBtn;
+}
 
+// ----- Backups -----
+// Work lives in this browser only, so students can download a backup file and
+// load it on any computer. The page asks before closing if there is work that
+// has not been backed up, and starting over takes two deliberate steps.
+function workSignature(){ return JSON.stringify([state.rows, state.answers, state.firstPicks]); }
+function hasWork(){ return EVENTS.some(ev => { const r = state.rows[ev.id]; return r.rated || (r.rationale||'').trim(); }); }
+function needsBackup(){ return hasWork() && workSignature() !== state.backupSig; }
+function backupFileName(){
+  const clean = t => String(t||'').replace(/[^A-Za-z0-9]+/g,'').slice(0,20);
+  const who = [clean(state.answers.first), clean(state.answers.last)].filter(Boolean).join('-') || 'student';
+  return `unrest-backup-${who}${state.answers.period ? '-P'+clean(state.answers.period) : ''}.json`;
+}
+function downloadBackup(){
+  const data = { app:'colonial-unrest', version:1, savedAt:new Date().toISOString(), state };
+  const blob = new Blob([JSON.stringify(data, null, 1)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = backupFileName();
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+  state.backupSig = workSignature(); state.backupAt = Date.now(); save();
+  toast('Backup saved. Look in your Downloads folder.', 2600);
+  render();
+}
+function chooseBackupFile(){
+  const input = h('input',{type:'file', accept:'.json,application/json'});
+  input.addEventListener('change', ()=>{
+    const f = input.files && input.files[0]; if(!f) return;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      let data = null;
+      try{ data = JSON.parse(reader.result); }catch{}
+      if(!data || data.app!=='colonial-unrest' || !data.state || !data.state.rows){
+        toast('That file is not a backup from this activity.', 2600); return;
+      }
+      const when = data.savedAt ? new Date(data.savedAt).toLocaleString([], {weekday:'short', hour:'numeric', minute:'2-digit'}) : 'earlier';
+      const apply = ()=>{
+        try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(data.state)); }catch{}
+        state = load(); state.backupSig = workSignature(); save(); render();
+        toast('Your backup is loaded.', 2400);
+      };
+      if(!hasWork()) { apply(); return; }
+      openDialog('Load this backup?', [
+        p(`This replaces the work on this computer with the backup from ${when}.`)
+      ], [ ['Cancel', null, 'ghost'], ['Load the backup', apply] ]);
+    };
+    reader.readAsText(f);
+  });
+  input.click();
+}
+function elBackupButton(){
+  const b = btnGhost(needsBackup() ? 'Save a backup' : 'Backup saved ✓', downloadBackup);
+  b.classList.add('fm-backup');
+  b.title = 'Download a file with all your work, in case this computer loses it.';
+  return b;
+}
+function elRestoreLink(){
+  return h('button',{type:'button', class:'fm-link', onclick:chooseBackupFile}, 'Load a backup');
+}
+// Small in-page dialog (native <dialog>), used instead of confirm().
+function openDialog(title, bodyNodes, actions){
+  const dlg = h('dialog',{class:'fm-dialog'});
+  dlg.setAttribute('aria-label', title);
+  const row = h('div',{class:'fm-actions'});
+  actions.forEach(([label, fn, kind])=>{
+    const b = (kind==='ghost' ? btnGhost : btn)(label, ()=>{ dlg.close(); dlg.remove(); if(fn) fn(); });
+    if(kind==='danger') b.classList.add('danger');
+    row.appendChild(b);
+  });
+  dlg.append(h('h2',{}, title), ...bodyNodes, row);
+  dlg.addEventListener('cancel', ()=>dlg.remove());
+  document.body.appendChild(dlg);
+  dlg.showModal();
+  return dlg;
+}
+window.addEventListener('beforeunload', e=>{ if(needsBackup()){ e.preventDefault(); e.returnValue = ''; } });
+
+function renderSplashSection(){
+  const section = h('section',{class:'flow-section fm-section',id:'section-overview'});
+  let beginBtn;
   const toggleBegin = ()=>{
     const name = (state.answers.first||'').trim() && (state.answers.last||'').trim();
     const period = (state.answers.period||'').trim();
     const ready = Boolean(name && period && state.readLevel);
     if(beginBtn){
-      if(ready){ beginBtn.removeAttribute('disabled'); beginBtn.textContent = 'Begin →'; }
-      else { beginBtn.setAttribute('disabled',''); beginBtn.textContent = !(name && period) ? 'Enter your name to begin' : 'Pick a reading level to begin'; }
-    }
-    if(scrollBtn){
-      if(state.phase==='splash' && !ready){ scrollBtn.setAttribute('disabled',''); }
-      else scrollBtn.removeAttribute('disabled');
+      if(ready){ beginBtn.removeAttribute('disabled'); beginBtn.textContent = 'Start →'; }
+      else { beginBtn.setAttribute('disabled',''); beginBtn.textContent = !(name && period) ? 'Add your name and period' : 'Pick a reading level'; }
     }
     return ready;
   };
-
   const nameInput = inp('first', state.answers.first, v=>{ state.answers.first=v; syncName(state.answers); save(); toggleBegin(); });
-  nameInput.setAttribute('placeholder','First name');
-  nameInput.setAttribute('autocomplete','given-name');
+  nameInput.id = 'first-name'; nameInput.setAttribute('autocomplete','given-name');
   const lastInput = inp('last', state.answers.last, v=>{ state.answers.last=v.slice(0,1); lastInput.value=state.answers.last; syncName(state.answers); save(); toggleBegin(); });
-  lastInput.setAttribute('placeholder','e.g. R');
-  lastInput.setAttribute('maxlength','1');
-  lastInput.setAttribute('autocomplete','off');
-  lastInput.classList.add('initial-field');
-
+  lastInput.id = 'last-initial'; lastInput.setAttribute('maxlength','1'); lastInput.setAttribute('autocomplete','off');
   const periodInput = inp('period', state.answers.period, v=>{ state.answers.period=v; save(); toggleBegin(); });
-  periodInput.setAttribute('placeholder','e.g. Period 4');
-  periodInput.setAttribute('autocomplete','section');
-
-  beginBtn = btn('Begin →', ()=>{
-    if(!toggleBegin()){
-      toast(state.readLevel ? 'Add your name and period to begin.' : 'Pick a reading level to begin.');
-      return;
-    }
+  periodInput.id = 'period'; periodInput.setAttribute('autocomplete','off');
+  beginBtn = btn('Start →', ()=>{
+    if(!toggleBegin()){ toast(state.readLevel ? 'Add your name and period to start.' : 'Pick a reading level to start.'); return; }
     setPhase('cards');
-    scrollToSection('section-placards');
   });
   beginBtn.classList.add('btn-large');
-  toggleBegin();
 
-  const hero = h('div',{class:'splash-hero'},
-    h('div',{class:'card splash-card'},
-      h('div',{class:'splash-eyebrow'},'Interactive mini-unit'),
-      h('h1',{class:'splash-title'},'Understanding Unrest'),
-      p('Track how pressure rose in the colonies and what finally burst into revolution.', 'splash-subhead'),
-      h('div',{class:'callout-grid'},
-        h('button',{class:'callout callout-card',type:'button',onclick:()=>showIntroModal('overview')},
-          span('01','callout-badge'),
-          h('div',{},
-            h('div',{class:'callout-title'},'What is unrest?'),
-            p('Tap to review the key ideas in 60 seconds.', 'callout-text')
-          )
-        ),
-        h('button',{class:'callout callout-card',type:'button',onclick:()=>showIntroModal('flow')},
-          span('02','callout-badge'),
-          h('div',{},
-            h('div',{class:'callout-title'},'How this works'),
-            p('See the four steps before you start.', 'callout-text')
-          )
-        ),
-        h('button',{class:'callout callout-card',type:'button',onclick:()=>showIntroModal('tips')},
-          span('03','callout-badge'),
-          h('div',{},
-            h('div',{class:'callout-title'},'Quick tips'),
-            p('Get advice on choosing levels and writing your reasons.', 'callout-text')
-          )
-        )
-      )
-    ),
-    h('aside',{class:'card splash-card secondary'},
-      h('div',{class:'steps-header'},'Ready to begin?'),
-      h('p',{},'After this screen you will dive straight into the timeline. Keep your ratings honest and explain your thinking—your adjustments come later.'),
-      h('p',{},'When you’re ready, fill in your name and period, pick a reading level, then press Begin.')
-    )
-  );
-
-  const formCard = h('div',{class:'card splash-form'},
-    h('div',{}, h('h3',{},'Before you begin')),
-    h('div',{class:'form-grid'},
+  const left = h('div',{class:'fm-card'},
+    h('h2',{},'Welcome'),
+    h('div',{class:'form-grid fm-signin'},
       h('label',{},'First name', nameInput),
       h('label',{},'Last initial', lastInput),
-      h('label',{},'Period', periodInput)
-    ),
-    elLevelPicker(()=>toggleBegin()),
-    span('Your progress saves on this browser only — use the same device to continue. Switching computers will start you over, so the work you turn in on Canvas at the end is your final record.', 'splash-note'),
-    h('div',{class:'splash-btn-row'},
-      span('Name, period, and a reading level unlock the lesson.', 'splash-note'),
-      beginBtn
-    )
+      h('label',{},'Period', periodInput)),
+    h('h3',{class:'fm-label'},'Today you will'),
+    h('ul',{class:'fm-steps'},
+      h('li',{}, 'Read about 9 events.'),
+      h('li',{}, 'Rate each one from 1 to 8.'),
+      h('li',{}, 'Write why.')),
+    p('Your work saves on this computer. Use the same computer each day, or save a backup.', 'fm-hint'),
+    h('div',{class:'fm-actions'}, elRestoreLink(), beginBtn)
   );
-
-  container.append(formCard, hero);
+  const right = h('div',{class:'fm-card'}, elLevelPicker(()=>toggleBegin()));
   toggleBegin();
-  card.append(container);
-  section.append(card);
+  section.append(h('div',{class:'fm-welcome'}, left, right));
   return section;
 }
 
@@ -1668,199 +1878,122 @@ function elTimeline(){
   return nav;
 }
 
+// One placard per screen: the reading on the left, rate-and-explain on the
+// right, so the evidence stays in view while students write.
+function elProgressDots(){
+  const nav = h('nav',{class:'fm-dots','aria-label':'Placards'});
+  EVENTS.forEach((ev,i)=>{
+    const r = state.rows[ev.id];
+    const done = validateRow(r) && r.rated;
+    const b = h('button',{type:'button', class:'fm-dot'+(i===state.current?' now':'')+(done?' done':''), onclick:()=>{ state.current=i; save(); render(); }}, String(i+1));
+    b.style.setProperty('--heat', heatColor(i));
+    b.setAttribute('aria-label', `${i+1}. ${ev.title} (${ev.year})${done?', done':''}`);
+    if(i===state.current) b.setAttribute('aria-current','step');
+    b.title = `${ev.title} (${ev.year})`;
+    nav.appendChild(b);
+  });
+  return nav;
+}
 function renderPlacardsSection(){
-  const locked = state.phase==='splash';
-  const section = h('section',{class:'flow-section'+(locked?' locked':''),id:'section-placards'});
-  const card = h('div',{class:'step-card'});
-  const intro = h('div',{class:'step-intro'},
-    span('Activity 1 • Explore Placards','activity-badge'),
-    h('h2',{},'Rate the Unrest'),
-    p('Open each placard, read it at your level (you can switch levels any time), and decide how much unrest that moment added on a 1–8 scale.', 'section-lead'),
-    p('Use the timeline buttons to jump around. When you have a rating and a reason, save and move forward.', 'section-lead'),
-    p('Ready for more? Try Level 3 on at least one event — it shows how historians question the sources and stories behind the events.', 'note')
-  );
-  card.append(intro);
-  if(locked){
-    card.append(h('div',{class:'lock-overlay',role:'status','aria-live':'polite'},'Finish the overview step to unlock the placards.'));
-    section.append(card);
-    return section;
-  }
-
+  const section = h('section',{class:'flow-section fm-section',id:'section-placards'});
   const e = EVENTS[state.current];
   const row = state.rows[e.id];
-
-  // progress
-  const prog = h('div',{},
-    h('div',{class:'progress',style:'margin:8px 0 14px'}, h('div',{style:`width:${Math.round(((state.current+1)/EVENTS.length)*100)}%`})),
-    h('div',{class:'sub',style:'font-size:13px'}, `Placard ${state.current+1} of ${EVENTS.length}`));
-
-  // placard content
-  const eventCard = h('article',{class:'card event-card'});
-  const eventHeat = heatColor(state.current);
-  eventCard.style.borderTop = `4px solid ${eventHeat}`;
-  const titleDot = h('span',{class:'event-heat-dot'});
-  titleDot.style.background = eventHeat;
-  const sub = (state.sub === 'rate' || state.sub === 'explain') ? state.sub : 'read';
   const isLast = state.current === EVENTS.length - 1;
-  const goPlacard = (idx)=>{ state.current = Math.max(0, Math.min(EVENTS.length-1, idx)); state.sub='read'; save(); render(); };
 
-  // sub-step indicator (Read → Rate → Explain)
-  const subOrder = ['read','rate','explain'];
-  const subLabels = { read:'Read', rate:'Rate', explain:'Explain' };
-  const subIdx = subOrder.indexOf(sub);
-  const stepNav = h('div',{class:'substeps', role:'list', 'aria-label':'Steps for this placard'});
-  subOrder.forEach((key,i)=>{
-    const item = h('div',{class:'substep'+(key===sub?' active':'')+(i<subIdx?' done':''), role:'listitem'},
-      span(i<subIdx ? '✓' : String(i+1),'substep-dot'), span(subLabels[key],'substep-label'));
-    if(key===sub) item.setAttribute('aria-current','step');
-    stepNav.append(item);
-    if(i < subOrder.length-1) stepNav.append(span('→','substep-arrow'));
+  // level tabs
+  const tabs = h('div',{class:'fm-levels',role:'group','aria-label':'Reading level'});
+  LEVELS.forEach(({label,key})=>{
+    const b = h('button',{type:'button', class: row.level===key?'on':'', onclick:()=>{ row.level=key; save(); render(); }}, label);
+    b.setAttribute('aria-pressed', row.level===key ? 'true':'false');
+    tabs.appendChild(b);
   });
 
-  // --- builders for each piece ---
-  const buildTabs = ()=>{
-    const tabs = h('div',{class:'tabs level-tabs'});
-    tabs.setAttribute('role','tablist');
-    tabs.setAttribute('aria-label','Reading level');
-    LEVELS.forEach(({label,key})=>{
-      const b = h('button',{class:'tab '+(row.level===key?'active':''), onclick:()=>{row.level=key; save(); render();}}, label);
-      b.setAttribute('role','tab');
-      b.setAttribute('aria-selected', row.level===key ? 'true' : 'false');
-      b.setAttribute('aria-controls','reading-panel');
-      tabs.appendChild(b);
-    });
-    return tabs;
-  };
-  const buildReading = ()=>{
-    const reading = h('div',{class:'event-reading'});
-    reading.id = 'reading-panel';
-    reading.setAttribute('role','tabpanel');
-    reading.setAttribute('aria-label','Reading');
-    reading.setAttribute('tabindex','0');
-    fillReading(reading, e, row.level);
-    if(row.level==='l0') return h('div',{}, elLangPicker(), reading);
-    return reading;
-  };
-  const buildMeter = ()=>{
-    const valueLabel = span(`${row.rating} / 8`, 'pill');
-    const meter = unrestMeter(row.rating, (val)=>{
-      const clamped = clamp1to8(val);
-      if(row.rating === clamped) return;
-      row.rating = clamped;
-      valueLabel.textContent = `${clamped} / 8`;
-      save();
-    });
-    return h('div',{class:'event-slider'},
-      h('label',{}, 'Unrest‑o‑meter', valueLabel),
-      meter,
-      h('div',{class:'meter-labels'}, span('Calm','sub'), span('Rising','sub'), span('Boiling','sub'), span('Explosive','sub')),
-      span('Tap a box (or use the arrow keys) to set how much unrest this event added.', 'note')
-    );
-  };
-  const buildRationale = ()=> h('div',{class:'event-rationale'},
-    (()=>{
-      const input = textarea(row.rationale, v=>{ row.rationale=v; const er=document.getElementById('rationale-error'); if(er && rationaleProblem(row)===null){ er.textContent=''; er.classList.add('hidden'); input.removeAttribute('aria-invalid'); } });
-      input.id = 'rationale-input';
-      input.setAttribute('aria-describedby','rationale-error');
-      const label = h('label',{}, `Why did this event cause that much unrest? (You gave it ${row.rating} out of 8.)`);
-      label.setAttribute('for','rationale-input');
-      const starters = rationaleSupports(e.id, row.level, input, v=>{ row.rationale = v; }, LOOK_HINT_PLACARD);
-      const errEl = h('p',{class:'field-error hidden',id:'rationale-error'},'');
-      errEl.setAttribute('role','alert');
-      const helpText = (state.relaxRationale || row.level==='l0')
-        ? 'Use a starter or the word bank, or write a few words in your own way.'
-        : 'Use a starter above or write your own complete sentence ending with punctuation.';
-      return [label, starters, input, errEl, span(helpText,'note')];
-    })()
+  // reading column
+  const reading = h('div',{class:'event-reading fm-reading', id:'reading-panel', tabindex:'0'});
+  reading.setAttribute('aria-label', `Reading: ${e.title}`);
+  const fig = elEventFigure(e);
+  fig.classList.add('fm-figure');
+  reading.appendChild(fig);
+  fillReading(reading, e, row.level);
+  const readCol = h('article',{class:'fm-pane fm-read'},
+    h('div',{class:'fm-pane-h'}, h('h2',{}, e.title, ' ', span(String(e.year),'fm-year')), tabs),
+    row.level==='l0' ? elLangPicker() : null,
+    reading,
+    elKeyTerms(e.id, row.level)
   );
+
+  // your turn: 1) rate, 2) explain (opens once a number is picked)
+  const rated = !!row.rated;
+  const valueLabel = span(rated ? `${row.rating} of 8` : 'Pick a number', 'fm-pill');
+  const meter = unrestMeter(row.rating, (val, opts)=>{
+    if(!opts || !opts.source) return;   // the meter's own first draw, not a student's pick
+    const clamped = clamp1to8(val);
+    const first = !row.rated;
+    row.rating = clamped; row.rated = true; save();
+    valueLabel.textContent = `${clamped} of 8`;
+    const q = document.getElementById('why-q'); if(q) q.textContent = `Why did this event cause ${clamped} out of 8 unrest?`;
+    if(first) render();
+  });
+  if(!rated) meter.classList.add('unrated');
+  const step1 = h('div',{class:'fm-step'},
+    h('h3',{}, span('1','fm-num'), 'How much unrest did this cause?', valueLabel),
+    meter,
+    h('div',{class:'meter-labels'}, span('1 Calm','sub'), span('Rising','sub'), span('Boiling','sub'), span('8 Explosive','sub'))
+  );
+
+  const input = textarea(row.rationale, v=>{ row.rationale=v; const er=document.getElementById('rationale-error'); if(er && rationaleProblem(row)===null){ er.textContent=''; er.classList.add('hidden'); input.removeAttribute('aria-invalid'); } });
+  input.id = 'rationale-input';
+  input.setAttribute('aria-describedby','rationale-error');
+  input.setAttribute('placeholder','Write your reason here.');
+  const errEl = h('p',{class:'field-error hidden',id:'rationale-error',role:'alert'},'');
+  const qLabel = h('label',{id:'why-q', class:'fm-q'}, rated ? `Why did this event cause ${row.rating} out of 8 unrest?` : 'Why did this event cause that much unrest?');
+  qLabel.setAttribute('for','rationale-input');
+  const step2 = h('div',{class:'fm-step'+(rated?'':' locked')},
+    h('h3',{}, span('2','fm-num'), qLabel),
+    rated ? rationaleSupports(e.id, row.level, input, v=>{ row.rationale = v; }) : p('Pick a number first. Then this part opens.', 'fm-hint'),
+    rated ? input : null,
+    errEl
+  );
+
   const saveAndContinue = ()=>{
+    if(!row.rated){ toast('Pick a number from 1 to 8 first.'); return; }
     const problem = rationaleProblem(row);
     if(problem){
-      const er=document.getElementById('rationale-error');
-      const inputEl=document.getElementById('rationale-input');
-      if(er){ er.textContent=problem; er.classList.remove('hidden'); }
-      if(inputEl){ inputEl.setAttribute('aria-invalid','true'); inputEl.focus(); }
-      toast(problem);
-      return;
+      errEl.textContent = problem; errEl.classList.remove('hidden');
+      input.setAttribute('aria-invalid','true'); input.focus(); toast(problem); return;
     }
     if(!isLast){
-      state.current++; state.sub='read'; save(); render();
-      const half = Math.ceil(EVENTS.length/2);
-      if(state.current === half){ toast(`Halfway there — ${EVENTS.length - state.current} placards to go!`); }
-      else { toast('Saved! Next placard unlocked.'); }
-    } else {
-      const incomplete = EVENTS.filter(ev => !validateRow(state.rows[ev.id]));
-      if(incomplete.length){
-        state.current = EVENTS.findIndex(ev => ev.id===incomplete[0].id); state.sub='read';
-        save(); render();
-        toast(`${incomplete.length} placard${incomplete.length>1?'s':''} still need a reason — starting with ${incomplete[0].title}.`);
-        return;
-      }
-      const snap = {}; EVENTS.forEach(ev => snap[ev.id] = clamp1to8(state.rows[ev.id].rating||1));
-      state.firstPicks = snap;
-      setPhase('summary'); scrollToSection('section-summary');
-      toast('Great work! Time to spend your 36 points.');
+      state.current++; save(); render();
+      window.scrollTo({top:0, behavior: prefersReducedMotion()?'auto':'smooth'});
+      toast(state.current === Math.ceil(EVENTS.length/2) ? `Halfway there. ${EVENTS.length - state.current} placards to go.` : 'Saved.');
+      return;
     }
+    const incomplete = EVENTS.filter(ev => !validateRow(state.rows[ev.id]) || !state.rows[ev.id].rated);
+    if(incomplete.length){
+      state.current = EVENTS.findIndex(ev => ev.id===incomplete[0].id);
+      save(); render();
+      toast(`${incomplete.length} placard${incomplete.length>1?'s':''} still need a rating and a reason. Starting with ${incomplete[0].title}.`);
+      return;
+    }
+    const snap = {}; EVENTS.forEach(ev => snap[ev.id] = clamp1to8(state.rows[ev.id].rating||1));
+    state.firstPicks = snap;
+    setPhase('summary');
+    toast('All nine done. Time to spend your 36 points.');
   };
 
-  // --- current sub-step panel (one task on screen at a time) ---
-  let panel;
-  if(sub==='read'){
-    panel = h('div',{class:'substep-panel'},
-      buildTabs(), buildReading(),
-      h('div',{class:'event-link'}, a(e.wiki,'Read more on Wikipedia →','link')),
-      elKeyTerms(e.id, row.level),
-      h('div',{class:'event-controls'},
-        btnGhost('← Previous placard', ()=>goPlacard(state.current-1), state.current===0),
-        btn('Next: Rate the unrest →', ()=>{ state.sub='rate'; save(); render(); })
-      )
-    );
-  } else if(sub==='rate'){
-    panel = h('div',{class:'substep-panel'},
-      buildMeter(),
-      h('div',{class:'event-controls'},
-        btnGhost('← Back to reading', ()=>{ state.sub='read'; save(); render(); }),
-        btn('Next: Explain why →', ()=>{ state.sub='explain'; save(); render(); })
-      )
-    );
-  } else {
-    panel = h('div',{class:'substep-panel'},
-      buildRationale(),
-      (()=>{ // the reading stays one tap away while writing
-        const det = h('details',{class:'reread'});
-        det.appendChild(h('summary',{},'Show the reading again'));
-        const box = h('div',{class:'event-reading'});
-        fillReading(box, e, row.level);
-        det.appendChild(box);
-        return det;
-      })(),
-      h('div',{class:'event-controls'},
-        btnGhost('← Back to rating', ()=>{ state.sub='rate'; save(); render(); }),
-        btn(isLast ? 'Spend Your 36 Points →' : 'Save & Continue →', saveAndContinue)
-      )
-    );
-  }
-
-  const layoutKids = [ h('div',{class:'event-body'}, stepNav, panel) ];
-  if(sub==='read') layoutKids.push(elEventFigure(e));
-
-  eventCard.append(
-    h('div',{class:'card-h'},
-      h('div',{class:'event-title-wrap'},
-        h('div',{class:'event-title-line'}, titleDot, h('strong',{}, e.title)),
-        span(String(e.year), 'sub')
-      )
-    ),
-    h('div',{class:'event-content'},
-      h('div',{class:'event-layout'}, ...layoutKids)
-    )
+  const turnCol = h('section',{class:'fm-pane fm-turn','aria-label':'Your turn'},
+    h('div',{class:'fm-pane-h'}, h('h2',{},'Your turn')),
+    h('div',{class:'fm-turn-body'}, step1, step2),
+    h('div',{class:'fm-actions'},
+      btnGhost('← Back', ()=>{ if(state.current>0){ state.current--; save(); render(); } }, state.current===0),
+      btn(isLast ? 'Spend your 36 points →' : 'Save & next →', saveAndContinue))
   );
-  card.append(
-    elTimeline(),
-    prog,
-    eventCard
+
+  section.append(
+    h('div',{class:'fm-progress'}, span(`Placard ${state.current+1} of ${EVENTS.length}`,'fm-count'), elProgressDots(), elBackupButton()),
+    state.current===0 ? elGoals() : null,
+    h('div',{class:'fm-work'}, readCol, turnCol)
   );
-  section.append(card);
   return section;
 }
 
@@ -1870,15 +2003,17 @@ function renderSummarySection(){
   const locked = currentIdx < summaryIdx;
   const section = h('section',{class:'flow-section'+(locked?' locked':''),id:'section-summary'});
   const card = h('div',{class:'step-card'});
+  const groupInput = inp('group', state.answers.group||'', v=>{ state.answers.group=v; save(); });
+  groupInput.id = 'group-number'; groupInput.classList.add('fm-group-input'); groupInput.setAttribute('autocomplete','off');
+  // Day 5: groups agree on one 36-point budget (on their trackers), and each
+  // student enters it here. The class average is built on class.html.
   const intro = h('div',{class:'step-intro'},
-    span('Activity 2 • Weigh the Events','activity-badge'),
-    h('h2',{},'Spend Your 36 Points'),
-    h('div',{class:'budget-disclaimer'},
-      strong('This is a thinking game, not a measurement.'),
-      p('Real historians don’t give events a fixed number of points, and more than one event can be hugely important. The 36-point limit (9 events × 4 points on average) just forces a useful challenge: you can’t rate everything an 8, so you have to decide which events mattered most — and be ready to defend your choices.', 'budget-disclaimer-text')
-    ),
-    p('Giving more points to one event means giving fewer to another. As you rebalance, ask yourself: which events truly pushed the colonies toward revolution, and which were smaller steps along the way? Click any event to revisit its description, switch reading levels, or revise your reason.', 'section-lead'),
-    p('Tip: each rating stays between 1 and 8, so the lowest any event can go is 1. To free up points for a big event, lower several smaller ones.', 'note')
+    h('h2',{},'Spend 36 points with your group'),
+    p('With your group, agree on how many points each event gets. The points must add up to exactly 36, so you cannot give every event an 8. Decide which events mattered most.', 'section-lead'),
+    h('div',{class:'fm-group-row'},
+      h('label',{}, 'Group number', groupInput),
+      p('Write the same numbers in the “Our group” column on your tracker.', 'fm-hint')),
+    p('Each event needs at least 1 point. To give a big event more, take points from smaller ones.', 'fm-hint')
   );
   card.append(intro);
   if(locked){
@@ -1909,17 +2044,16 @@ function renderSummarySection(){
         save();
         render();
       }
-    }, open?'Hide details':'Show details');
+    }, open?'Hide reading':'Show reading');
     toggleBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
     toggleBtn.setAttribute('aria-controls', bodyId);
 
     const header = h('div',{class:'summary-header'},
       h('div',{class:'summary-title'},
-        h('strong',{}, `${idx+1}. ${event.title}`),
-        span(`Year: ${event.year}`,'sub')
+        h('strong',{}, `${idx+1}. ${event.title} `, span(`(${event.year})`,'fm-year'))
       ),
       h('div',{class:'summary-actions'},
-        h('div',{class:'summary-rating'}, span('Rating','sub'), ratingPill),
+        h('div',{class:'summary-rating'}, ratingPill),
         toggleBtn
       )
     );
@@ -1978,14 +2112,12 @@ function renderSummarySection(){
       return container;
     })() : null;
 
-    const meta = h('div',{class:'summary-meter'},
-      h('label',{}, 'Adjust rating', span('Target total 36','sub')),
-      meter
-    );
+    meter.setAttribute('aria-label', `Points for ${event.title}`);
+    const meta = h('div',{class:'summary-meter'}, meter);
 
     item.append(header, meta);
     if(typeof initial === 'number' && initial !== row.rating){
-      item.append(p(`First pick was ${initial}. You have adjusted this event by ${row.rating-initial >=0 ? '+' : ''}${row.rating-initial}.`,'note'));
+      item.append(p(`Your first rating was ${initial}.`,'fm-hint'));
     }
     if(body) item.append(body);
     summaryList.appendChild(item);
@@ -2021,7 +2153,7 @@ function renderSummarySection(){
       )
     ),
     h('section',{class:'card summary-chart'},
-      h('div',{class:'card-h'}, h('h3',{},'Your unrest points so far')),
+      h('div',{class:'card-h'}, h('h3',{},'How unrest added up, 1763 to 1775')),
       h('div',{class:'card-b'}, elChart(state.rows))
     )
   );
@@ -2037,9 +2169,8 @@ function renderQuestionsSection(){
   const section = h('section',{class:'flow-section'+(locked?' locked':''),id:'section-questions'});
   const card = h('div',{class:'step-card'});
   const intro = h('div',{class:'step-intro'},
-    span('Activity 3 • Reflect & Share','activity-badge'),
-    h('h2',{},'Write Your Takeaways'),
-    p('Answer three questions about how your thinking changed, then turn in your work on Canvas.', 'section-lead')
+    h('h2',{},'Reflect and turn in'),
+    p('Answer three questions. Then copy your work into Canvas.', 'section-lead')
   );
   card.append(intro);
   if(locked){
@@ -2050,8 +2181,8 @@ function renderQuestionsSection(){
 
   // Think-deeper prompt (for class discussion — not submitted to the form)
   card.append(
-    h('div',{class:'think-deeper'},
-      h('h3',{class:'think-deeper-head'},'Think deeper (for class discussion)'),
+    h('details',{class:'think-deeper fm-goals'},
+      h('summary',{},'Think deeper (for class discussion)'),
       h('p',{class:'think-deeper-lead'},'This activity follows the colonists who pushed toward revolution — but they were not the only people living through these years. Talk through:'),
       h('ul',{class:'think-deeper-list'},
         h('li',{}, 'Not everyone wanted to break away. How might a ', strong('Loyalist'), ' — a colonist loyal to Britain — have rated these same events?'),
@@ -2072,8 +2203,8 @@ function renderQuestionsSection(){
     const headerRow = h('div',{class:'comparison-row comparison-header'});
     headerRow.append(
       h('div',{class:'comparison-event'},'Event'),
-      h('div',{class:'comparison-before'},'Initial Rating'),
-      h('div',{class:'comparison-after'},'Final Rating'),
+      h('div',{class:'comparison-before'},'My first rating'),
+      h('div',{class:'comparison-after'}, state.answers.group ? 'Group points' : 'Final points'),
       h('div',{class:'comparison-change'},'Change')
     );
     comparisonTable.appendChild(headerRow);
@@ -2099,7 +2230,7 @@ function renderQuestionsSection(){
     comparisonBody.appendChild(comparisonTable);
     comparisonCard.append(
       h('div',{class:'card-h'},
-        h('h3',{},'How Your Ratings Changed'),
+        h('h3',{},'How your ratings changed'),
         p('Compare your initial gut reactions to your final budget-constrained choices.', 'sub')
       ),
       comparisonBody
@@ -2203,7 +2334,7 @@ function updateStepChips(){
     if(!reached){ chip.classList.add('chip-locked'); chip.disabled = true; }
     chip.setAttribute('aria-label', `${reached?'Go to':'Locked:'} ${step.label}${idx===currentIdx ? ' (current step)' : ''}`);
     if(idx===currentIdx) chip.setAttribute('aria-current','step');
-    const iconText = idx < currentIdx ? '✓' : (reached ? String(idx+1) : '🔒');
+    const iconText = idx < currentIdx ? '✓' : String(idx+1);
     chip.append(span(iconText,'chip-icon'), span(step.label));
     if(reached) chip.addEventListener('click', ()=> navStep(idx));
     wrap.appendChild(chip);
@@ -2389,7 +2520,7 @@ const LOOK_HINT_PLACARD = ' Open “Show the reading again” below if you need 
 const LOOK_HINT_SUMMARY = ' The reading is just above.';
 const REFLECTION_QS = {
   q3: { q:'Which event did you move the most points on, and what changed your mind?',
-        look:'Look at: the “How Your Ratings Changed” table above.',
+        look:'Look at: the “How your ratings changed” table above.',
         l0:['I changed ___ from ___ to ___. I changed it because ___.'], bank:['more','less','important','angry','first','later','because'],
         ss:['I moved ___ from ___ to ___ points because ___.', 'At first I gave ___ more points, but then ___.'],
         core:['I moved ___ from ___ to ___ points because ___.', 'I decided ___ mattered more than I first thought because earlier events like ___ had already ___.'],
@@ -2401,12 +2532,15 @@ const REFLECTION_QS = {
         core:['___ changed what happened next the most because it led to ___.', 'In the long run, ___ mattered more than ___ because ___.'],
         adv:['___ caused the most anger in the moment, but ___ mattered more in the long run because ___.', '___ changed history, but it worked because ___ was already moving.'],
         push:'Going further: the event that caused the most anger at the time may not be the one with the biggest effect later. Which is yours?' },
-  q5: { q:'If these nine events had been spread over 24 years instead of 12, would the colonies still have gone to war? Why or why not?',
-        look:'Look at: the years in the table above. How close together were the events?',
-        l0:['With more time, colonists would feel ___ because ___.'], bank:['calm','angry','time','forget','again','faster','slower'],
-        ss:['If the events were spread out, I think ___ because ___.', 'Events close together made colonists ___.'],
-        core:['If the events stretched over 24 years, I think ___ because ___.', 'Even with more time, colonists would still ___ because ___.'],
-        adv:['Twelve years mattered because ___; with twice as long, colonists might ___, but ___.', 'The pace mattered less than ___, because ___.'] }
+  // Unit 2 supporting essential question, verbatim from the Unit 2 Content Brief.
+  // Evidence: the class unrest chart built on Day 5 (class.html) and the tracker.
+  q5: { q:'How did loyal British subjects turn into revolutionaries in barely a decade?',
+        look:'Look at: the class unrest chart. Where does the line climb fastest? Which events did your class give the most points?',
+        l0:['Colonists turned against Britain because ___. The biggest jump was ___.'], bank:['loyal','angry','tax','punish','together','fight','because','so'],
+        ss:['Colonists went from loyal to rebels because ___.', 'The class chart shows the biggest jump at ___, because ___.'],
+        core:['Loyal colonists became revolutionaries because ___.', 'Our class gave the most points to ___, which shows ___.'],
+        adv:['The change came from ___, not just one event: the class chart shows ___.', 'Some colonists stayed loyal because ___, but most ___ because ___.'],
+        push:'Going further: was there one turning point, or did anger build step by step? Use the shape of the class chart.' }
 };
 function supportLevel(){ return state.readLevel || 'core'; }
 // Insert a word at the cursor of a textarea (word bank chips).
@@ -2457,12 +2591,33 @@ function createStarterChips(onSelect, list){
 }
 
 function resetExperience(){
-  if(!confirm('Reset all progress and start over?')) return;
-  localStorage.removeItem(STORAGE_KEY);
-  state = defaultState();
-  save();
-  render();
+  closeAccessPanelSafe();
+  const eraseAll = ()=>{
+    try{ localStorage.removeItem(STORAGE_KEY); }catch{}
+    state = defaultState(); save(); render();
+    toast('Your work was erased.');
+  };
+  const stepTwo = ()=>{
+    const field = h('input',{class:'field', id:'restart-confirm', autocomplete:'off'});
+    const dlg = openDialog('Type RESTART to erase your work', [
+      p('This cannot be undone. Your ratings, reasons and answers on this computer will be gone.'),
+      h('label',{}, 'Type RESTART', field)
+    ], [ ['Cancel', null, 'ghost'], ['Erase everything', eraseAll, 'danger'] ]);
+    const go = dlg.querySelector('.danger');
+    go.disabled = true;
+    field.addEventListener('input', ()=>{ go.disabled = field.value.trim().toUpperCase() !== 'RESTART'; });
+    field.focus();
+  };
+  openDialog('Start over?', [
+    p('Starting over erases all your ratings and reasons on this computer.'),
+    hasWork() ? p('Save a backup first so you can get your work back.') : null
+  ].filter(Boolean), [
+    ['Cancel', null, 'ghost'],
+    ...(hasWork() ? [['Save a backup', downloadBackup, 'ghost']] : []),
+    ['Keep going', stepTwo, 'danger']
+  ]);
 }
+function closeAccessPanelSafe(){ const ap=$('#accessPanel'); if(ap){ ap.classList.add('hidden'); const t=$('#accessToggle'); if(t) t.setAttribute('aria-expanded','false'); } }
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 let svgIdCounter = 0;
@@ -2925,7 +3080,7 @@ function unrestMeter(value, onChange){
   };
 
   for(let i=1;i<=8;i++){
-    const cell = h('button',{class:'meter-cell',type:'button'});
+    const cell = h('button',{class:'meter-cell',type:'button'}, h('span',{class:'meter-num'}, String(i)));
     cell.dataset.value = String(i);
     cell.setAttribute('role','radio');
     cell.setAttribute('aria-label',`Set unrest level to ${i} out of 8`);
@@ -3186,6 +3341,8 @@ function attachHeaderListeners() {
     resetBtn.addEventListener('click', resetExperience); 
   }
   
+  const backupBtn = $('#backupBtn'); if(backupBtn) backupBtn.addEventListener('click', ()=>{ closeAccessPanelSafe(); downloadBackup(); });
+  const restoreBtn = $('#restoreBtn'); if(restoreBtn) restoreBtn.addEventListener('click', ()=>{ closeAccessPanelSafe(); chooseBackupFile(); });
   const overviewBtn = $('#overviewBtn');
   if(overviewBtn){
     overviewBtn.addEventListener('click', ()=> navStep(0));

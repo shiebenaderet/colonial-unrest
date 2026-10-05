@@ -121,7 +121,7 @@
     "@font-face{font-family:'OpenDyslexic';font-weight:400;font-style:italic;font-display:swap;src:url('fonts/OpenDyslexic-Italic.woff2') format('woff2');}",
     /* The chosen face goes on the page body, not the sticky menu: OpenDyslexic is
        wide enough to wrap the level switcher onto two lines. */
-    'html[data-rt-font] .wrap{font-family:var(--rt-font);}',
+    'html[data-rt-font] main.wrap{font-family:var(--rt-font);}', /* ADAPTED: reading area only, never the header */
     /* The pages are built at 18px; sizes 1 and 2 are screen only. */
     /* ADAPTED (4): this activity is styled in px, so size zooms it instead. */
     '@media screen{html[data-rt-size="1"] main.wrap{zoom:1.12;}html[data-rt-size="2"] main.wrap{zoom:1.25;}}',
