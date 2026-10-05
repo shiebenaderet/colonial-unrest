@@ -1,0 +1,8 @@
+/* Atkinson Hyperlegible Next, served from this folder rather than Google Fonts, so a
+   printed or PDF'd page never silently falls back to another face when the network
+   is slow, blocked or absent. Variable font: every weight from 200 to 800.
+   Braille Institute; SIL Open Font License 1.1 (AtkinsonHyperlegibleNext-OFL.txt). */
+@font-face{font-family:'Atkinson Hyperlegible Next';font-style:normal;font-weight:200 800;font-display:swap;
+  src:url('AtkinsonHyperlegibleNext-Variable.woff2') format('woff2');}
+@font-face{font-family:'Atkinson Hyperlegible Next';font-style:italic;font-weight:200 800;font-display:swap;
+  src:url('AtkinsonHyperlegibleNext-Variable-Italic.woff2') format('woff2');}

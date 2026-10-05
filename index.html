@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="fonts/atkinson.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Lexend:wght@300;400;500;600;700&display=swap">
 <style>
   :root {
@@ -576,6 +577,32 @@
   .english-version{margin-top:8px;border-top:1px dashed var(--border);padding-top:6px}
   .english-version summary{cursor:pointer;font-weight:600;color:var(--accent)}
   .english-version .event-text{color:var(--muted)}
+
+  /* ---- Listen / Font bar (reader-tools.js) ---- */
+  header #rtools{position:relative;margin:0;flex-wrap:nowrap}
+  header #rtools .rt-btn{min-height:40px;padding:.35rem .8rem}
+  header .rt-panel{position:absolute;top:calc(100% + 8px);right:0;width:min(360px,90vw);z-index:30;box-shadow:0 10px 30px rgba(0,0,0,.3);color:var(--fg)}
+  #rtools,.rt-player{--card:var(--panel);--ink:var(--fg);--band:var(--surface-alt);--rule:var(--border)}
+
+  /* Header on narrow screens: wrap the actions under the title instead of
+     pushing the page sideways. */
+  header .wrap.row{flex-wrap:wrap}
+  .header-actions{flex-wrap:wrap;justify-content:flex-end}
+  @media(max-width:720px){
+    header .wrap.row{gap:8px}
+    .brand-block{min-width:0;flex-basis:100%}
+    .header-actions{margin-left:0;justify-content:flex-start}
+    .step-chips{max-width:100%}
+    .step-chips .chip{font-size:12px;padding:6px 8px}
+    header .rt-panel{left:0;right:auto}
+  }
+  html,body{overflow-x:hidden}
+
+  .walt{border-left:4px solid var(--accent);padding:4px 0 4px 12px;margin:8px 0 12px}
+  .walt p{margin:2px 0;line-height:1.45}
+  .walt-name{font-size:1rem}
+  .walt-lvl{font-weight:700;color:var(--muted)}
+  .unit-word{display:inline-block;font-size:.75rem;font-weight:700;padding:1px 8px;border-radius:999px;background:var(--surface-alt);border:1px solid var(--accent);color:var(--accent);vertical-align:middle}
 </style>
 </head>
 <body>
@@ -602,6 +629,7 @@
       <div class="step-chips" id="stepChips"></div>
     </div>
       <div class="right header-actions">
+        <div id="rtools" role="group" aria-label="Listen and font"></div>
         <button id="overviewBtn" class="btn-ghost hidden" type="button">Overview</button>
         <button id="resetBtn" class="btn-ghost" type="button">Reset</button>
         <button id="themeToggle" class="theme-toggle" type="button" aria-label="Toggle color theme" data-theme="dark">
@@ -621,10 +649,7 @@
           <div class="access-panel hidden" id="accessPanel">
             <div class="panel-group">
               <h4>Reading</h4>
-              <label class="toggle-pill" for="fontToggle">
-                <input type="checkbox" id="fontToggle" />
-                <span>Use readable font (Lexend)</span>
-              </label>
+              <p class="translate-help">Font, text size, and spacing are in the <strong>Font</strong> button under the title. <strong>Listen</strong> reads the screen aloud.</p>
               <label class="toggle-pill" for="broadsideToggle">
                 <input type="checkbox" id="broadsideToggle" />
                 <span>Broadside style (decorative newspaper look)</span>
@@ -658,7 +683,7 @@
     </div>
   </header>
 
-  <main class="wrap" id="app"></main>
+  <main class="wrap" id="app" data-listen></main>
   <div id="toast" class="toast hidden" role="status" aria-live="assertive" aria-atomic="true"></div>
   <div id="srStatus" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
 
@@ -1208,6 +1233,7 @@ const RATIONALE_STARTERS = [
 // for the many multilingual learners who can bridge from their home language.
 const GLOSSARY = {
   A: [
+    {t:'Proclamation of 1763', d:'A British order banning colonial settlement west of the Appalachian Mountains after the French and Indian War.', u:true},
     {t:'proclamation', d:'an official public order from the government', c:'proclamación · proclamação · proclamation'},
     {t:'frontier', d:'the edge of settled land, where colonists met Native nations', c:'frontera · fronteira · frontière'},
     {t:'boundary', d:'a line that marks a limit you are not supposed to cross'}
@@ -1219,8 +1245,9 @@ const GLOSSARY = {
   ],
   C: [
     {t:'tax', d:'money people are required to pay to the government'},
-    {t:'boycott', d:'refusing to buy something as a form of protest', c:'boicot · boicote · boycott'},
-    {t:'repeal', d:'to cancel or undo a law'},
+    {t:'Taxation without Representation', d:'Being taxed by a government in which you have no elected voice.', u:true},
+    {t:'Boycott', d:'An organized refusal to buy certain goods as a form of protest.', c:'boicot · boicote · boycott', u:true},
+    {t:'Repeal', d:'To officially cancel a law.', u:true},
     {t:'Sons of Liberty', d:'a group of colonists who organized protests against British taxes'}
   ],
   D: [
@@ -1239,6 +1266,7 @@ const GLOSSARY = {
     {t:'protest', d:'an action that shows strong public disagreement', c:'protesta · protesto · protestation'}
   ],
   G: [
+    {t:'Intolerable Acts', d:'The 1774 laws punishing Massachusetts for the Boston Tea Party, which Britain called the Coercive Acts.', u:true},
     {t:'coercive', d:'using force or threats to make people obey', c:'coercitivo · coercitivo · coercitif'},
     {t:'charter', d:'a document that grants rights or self-government'},
     {t:'blockade', d:'closing a port so ships cannot enter or leave', c:'bloqueo · bloqueio · blocus'},
@@ -1262,8 +1290,9 @@ function elKeyTerms(eventId){
   const details = h('details',{class:'key-terms'});
   details.appendChild(h('summary',{}, 'Key terms'));
   const list = h('ul',{class:'key-terms-list'});
-  terms.forEach(({t,d,c})=>{
+  terms.forEach(({t,d,c,u})=>{
     const li = h('li',{}, strong(t), ` — ${d}`);
+    if(u) li.append(' ', h('span',{class:'unit-word'}, 'On your vocab card'));
     if(c) li.append(h('span',{class:'cognate'}, `Similar word in Spanish · Portuguese · French: ${c}`));
     list.appendChild(li);
   });
@@ -1402,7 +1431,8 @@ function render(){
   document.documentElement.style.background = state.theme==='light' ? '#efe9da' : '#16130f';
   document.body.style.color = state.theme==='light' ? '#1a1410' : '#ece3d0';
   document.body.classList.toggle('light', state.theme==='light');
-  document.body.classList.toggle('font-dyslexic', state.font==='dyslexic');
+  document.body.classList.remove('font-dyslexic');  // superseded by the Font menu (reader-tools.js)
+  if(window.READER_TOOLS) READER_TOOLS.reset();       // stop reading aloud when the screen changes
   document.body.classList.toggle('broadside', state.broadside===true);
   const fontToggle = $('#fontToggle');
   if(fontToggle) fontToggle.checked = state.font==='dyslexic';
@@ -1493,12 +1523,25 @@ function renderSplashSection(){
     span('Activity 0 • Get Ready','activity-badge'),
     h('h2',{},'Preview the Mission'),
     p('Here’s the goal before you jump in. (New words like “unrest” and “placard” are explained in the Key Vocabulary button up top whenever you need them.)', 'section-lead'),
+    // Outcomes quoted verbatim from Canvas (ams-planning docs/outcomes-grade8.md):
+    // the WALT, level 3 (the I-can) and level 4. Do not paraphrase.
     h('div',{class:'objectives'},
-      h('h3',{class:'objectives-head'},'By the end, you will be able to:'),
+      h('h3',{class:'objectives-head'},'What we are learning'),
+      h('div',{class:'walt'},
+        h('p',{class:'walt-name'}, strong('H2.6-8.5 · Analyzing how people and movements changed history')),
+        h('p',{}, span('Proficient (3): ','walt-lvl'), 'You explain and analyze how an individual or a movement shaped U.S. history.'),
+        h('p',{}, span('Exemplary (4): ','walt-lvl'), 'You analyze how a person or a movement changed history, and weigh how much they changed against what was already moving.')
+      ),
+      h('div',{class:'walt'},
+        h('p',{class:'walt-name'}, strong('H1.6-8.6 · Explaining what makes an era an era')),
+        h('p',{}, span('Proficient (3): ','walt-lvl'), 'You explain how themes and events define an era in U.S. history between 1763 and 1877.'),
+        h('p',{}, span('Exemplary (4): ','walt-lvl'), 'You explain what defines an era, and show where one era bleeds into the next.')
+      ),
+      h('h3',{class:'objectives-head'},'What you will do'),
       h('ul',{class:'objectives-list'},
-        h('li',{}, 'Explain how British actions between 1763 and 1775 pushed the colonies from grumbling toward open revolution.'),
-        h('li',{}, 'Weigh which events mattered most by spending a limited budget of unrest points — and defend your choices.'),
-        h('li',{}, 'Support each rating with evidence from the event, using cause-and-effect language.')
+        h('li',{}, 'Read nine events from 1763 to 1775 and rate how much unrest each one caused.'),
+        h('li',{}, 'Spend a budget of 36 unrest points to show which events mattered most.'),
+        h('li',{}, 'Explain your choices with evidence and cause-and-effect words like because and so.')
       )
     ),
     p('You’ll write a short reason for each rating. After the ninth placard, you’ll unlock the budget and rebalance everything.', 'section-lead')
@@ -2249,6 +2292,7 @@ function elLangPicker(onChange){
   sel.addEventListener('change', ()=>{ state.l0lang = sel.value; save(); onChange ? onChange() : render(); });
   const lab = h('label',{class:'lang-picker'}, span('Read in:','lang-picker-label'), sel);
   lab.setAttribute('translate','no');
+  lab.setAttribute('data-no-listen','');
   return lab;
 }
 // Paragraphs for a placard's reading, tagged with their language so the
@@ -2258,7 +2302,7 @@ function fillReading(container, e, level){
   container.setAttribute('lang', LANG_TAG[lang] || 'en');
   if(lang!=='en') container.setAttribute('translate','no'); else container.removeAttribute('translate');
   textFor(e, level).split(/\n\s*\n/).filter(Boolean).forEach(par=>{
-    const pEl=document.createElement('p'); pEl.className='event-text'; pEl.setAttribute('data-listen',''); pEl.innerHTML=par; container.appendChild(pEl);
+    const pEl=document.createElement('p'); pEl.className='event-text'; pEl.innerHTML=par; container.appendChild(pEl);
   });
   if(lang!=='en'){
     const det = h('details',{class:'english-version'});
@@ -3124,5 +3168,6 @@ if(translateSelEl && translateGoEl){
 attachHeaderListeners();
 render();
 </script>
+<script src="reader-tools.js"></script>
 </body>
 </html>
