@@ -1907,13 +1907,39 @@ const SCALE = [
   {n:7, band:'Explosive', name:'Defiance',       desc:'Colonies work together to openly defy Britain.'},
   {n:8, band:'Explosive', name:'Ready to fight', desc:'Colonists arm themselves, and fighting breaks out.'}
 ];
-function elScaleKey(open){
+// The scale in the Level 0 languages, shown when a student reads Level 0 in
+// that language. Each name keeps the English word beside it for class talk.
+const SCALE_I18N = {
+  es:{summary:'¿Qué significan los números?', prompt:'Imagina que vives en las colonias. ¿Cómo reaccionaría la gente ante este suceso? Elige el número que corresponde.', means:'significa',
+      items:[['Casi nadie lo nota','La mayoría de los colonos no le da importancia.'],['Quejas','Algunos colonos se quejan entre ellos.'],['Molestia','La gente discute sobre esto en el pueblo y en los periódicos.'],['Enojo','Los colonos envían quejas y peticiones a Gran Bretaña.'],['Protesta','Los colonos hacen boicots, marchan o se niegan a obedecer la ley.'],['Furia','Las multitudes se vuelven violentas y la protesta se extiende a otras colonias.'],['Desafío','Las colonias trabajan juntas para desafiar abiertamente a Gran Bretaña.'],['Listos para pelear','Los colonos se arman y empiezan los combates.']]},
+  pt:{summary:'O que os números significam?', prompt:'Imagine que você mora nas colônias. Como as pessoas reagiriam a este acontecimento? Escolha o número que combina.', means:'significa',
+      items:[['Quase ninguém nota','A maioria dos colonos não dá importância.'],['Reclamações','Alguns colonos reclamam entre si.'],['Incômodo','As pessoas discutem sobre isso na cidade e nos jornais.'],['Raiva','Os colonos mandam queixas e petições para a Grã-Bretanha.'],['Protesto','Os colonos fazem boicotes, marcham ou se recusam a obedecer à lei.'],['Fúria','As multidões ficam violentas e o protesto se espalha para outras colônias.'],['Desafio','As colônias trabalham juntas para desafiar abertamente a Grã-Bretanha.'],['Prontos para lutar','Os colonos se armam e começam os combates.']]},
+  ru:{summary:'Что означают числа?', prompt:'Представь, что ты живёшь в колониях. Как бы люди отреагировали на это событие? Выбери подходящее число.', means:'означает',
+      items:[['Почти не заметили','Большинство колонистов не обращают внимания.'],['Ворчание','Некоторые колонисты жалуются друг другу.'],['Недовольство','Люди спорят об этом в городе и в газетах.'],['Гнев','Колонисты отправляют жалобы и петиции в Британию.'],['Протест','Колонисты объявляют бойкот, выходят на марши или отказываются подчиняться закону.'],['Ярость','Толпы становятся агрессивными, и протест распространяется на другие колонии.'],['Неповиновение','Колонии вместе открыто бросают вызов Британии.'],['Готовы сражаться','Колонисты берутся за оружие, и начинаются бои.']]},
+  zh:{summary:'这些数字是什么意思？', prompt:'想象你住在殖民地。人们会对这件事有什么反应？选出最符合的数字。', means:'的意思是',
+      items:[['几乎没人注意','大多数殖民者不在乎。'],['发牢骚','一些殖民者互相抱怨。'],['不满','人们在城镇里和报纸上争论这件事。'],['愤怒','殖民者向英国寄去抱怨信和请愿书。'],['抗议','殖民者进行抵制、游行，或者拒绝遵守法律。'],['暴怒','人群变得粗暴，抗议扩散到其他殖民地。'],['公然反抗','各殖民地联合起来，公开反抗英国。'],['准备战斗','殖民者拿起武器，战斗爆发了。']]}
+};
+// Name and meaning of number n in a language ('en' or a Level 0 language).
+function scaleText(n, lang){
+  const en = SCALE[n-1], t = SCALE_I18N[lang];
+  if(!t) return { name:en.name, desc:en.desc, label:en.name };
+  const [name, desc] = t.items[n-1];
+  return { name, desc, label:`${name} (${en.name})` };
+}
+function scaleMeaning(n, lang){
+  const st = scaleText(n, lang), t = SCALE_I18N[lang];
+  if(lang==='zh') return `${n}${t.means}：${st.label}。${st.desc}`;
+  return `${n} ${t ? t.means : 'means'}: ${st.label}. ${st.desc}`;
+}
+function elScaleKey(open, lang='en'){
+  const t = SCALE_I18N[lang];
   const det = h('details',{class:'fm-scale'});
   if(open) det.open = true;
-  det.appendChild(h('summary',{}, 'What do the numbers mean?'));
-  det.appendChild(p('Imagine you live in the colonies. How would people react to this event? Pick the number that matches.', 'fm-hint'));
+  if(t){ det.setAttribute('lang', LANG_TAG[lang]); det.setAttribute('translate','no'); }
+  det.appendChild(h('summary',{}, t ? t.summary : 'What do the numbers mean?'));
+  det.appendChild(p(t ? t.prompt : 'Imagine you live in the colonies. How would people react to this event? Pick the number that matches.', 'fm-hint'));
   const list = h('ol',{class:'fm-scale-list'});
-  SCALE.forEach(s=> list.appendChild(h('li',{}, span(String(s.n),'fm-scale-n'), h('span',{}, strong(s.name), ` — ${s.desc}`))));
+  SCALE.forEach(sc=>{ const st = scaleText(sc.n, lang); list.appendChild(h('li',{}, span(String(sc.n),'fm-scale-n'), h('span',{}, strong(st.label), ` — ${st.desc}`))); });
   det.appendChild(list);
   return det;
 }
@@ -1964,9 +1990,11 @@ function renderPlacardsSection(){
 
   // your turn: 1) rate, 2) explain (opens once a number is picked)
   const rated = !!row.rated;
-  const scaleName = n => (SCALE[n-1]||{}).name || '';
+  const scaleLang = (row.level==='l0' && SCALE_I18N[state.l0lang]) ? state.l0lang : 'en';
+  const scaleName = n => scaleText(n, scaleLang).name;
   const valueLabel = span(rated ? `${row.rating} · ${scaleName(row.rating)}` : 'Pick a number', 'fm-pill');
-  const meaning = p(rated ? `${row.rating} means: ${SCALE[row.rating-1].name}. ${SCALE[row.rating-1].desc}` : '', 'fm-meaning');
+  const meaning = p(rated ? scaleMeaning(row.rating, scaleLang) : '', 'fm-meaning');
+  if(scaleLang!=='en'){ meaning.setAttribute('lang', LANG_TAG[scaleLang]); meaning.setAttribute('translate','no'); }
   meaning.setAttribute('aria-live','polite');
   const meter = unrestMeter(row.rating, (val, opts)=>{
     if(!opts || !opts.source) return;   // the meter's own first draw, not a student's pick
@@ -1974,18 +2002,18 @@ function renderPlacardsSection(){
     const first = !row.rated;
     row.rating = clamped; row.rated = true; save();
     valueLabel.textContent = `${clamped} · ${scaleName(clamped)}`;
-    meaning.textContent = `${clamped} means: ${SCALE[clamped-1].name}. ${SCALE[clamped-1].desc}`;
+    meaning.textContent = scaleMeaning(clamped, scaleLang);
     const q = document.getElementById('why-q'); if(q) q.textContent = `Why did this event cause ${clamped} out of 8 unrest?`;
     if(first) render();
   });
   if(!rated) meter.classList.add('unrated');
   meter.querySelectorAll('.meter-cell').forEach((cell,i)=>{
-    const sc = SCALE[i]; cell.title = `${sc.n} · ${sc.name}: ${sc.desc}`;
-    cell.setAttribute('aria-label', `${sc.n} out of 8, ${sc.name}: ${sc.desc}`);
+    const st = scaleText(i+1, scaleLang); cell.title = `${i+1} · ${st.label}: ${st.desc}`;
+    cell.setAttribute('aria-label', `${i+1} out of 8, ${st.label}: ${st.desc}`);
   });
   const step1 = h('div',{class:'fm-step'},
     h('h3',{}, span('1','fm-num'), 'How much unrest did this cause?', valueLabel),
-    elScaleKey(state.current===0 && !rated),
+    elScaleKey(state.current===0 && !rated, scaleLang),
     meter,
     h('div',{class:'meter-labels'}, span('1 Calm','sub'), span('Rising','sub'), span('Boiling','sub'), span('8 Explosive','sub')),
     meaning
