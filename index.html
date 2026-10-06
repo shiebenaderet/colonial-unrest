@@ -839,6 +839,10 @@
   .fm-meaning:empty{display:none}
 
   .meter.unrated .meter-cell.filled, body.light .meter.unrated .meter-cell.filled{background:var(--surface-alt) !important;border-color:var(--edge) !important;color:var(--fg) !important}
+
+  .fm-reading .fm-figure.fm-figure-wide{float:none;width:100%;margin:0 0 14px !important}
+  .fm-reading .fm-figure.fm-figure-wide img{width:100%;height:auto;object-fit:contain}
+  .fm-reading .fm-figure img{height:auto !important;object-fit:contain !important}
 </style>
 </head>
 <body>
@@ -3203,7 +3207,7 @@ const IMAGE_INFO = {
   C: '“The Repeal,” a 1766 cartoon showing a mock funeral for the Stamp Act.',
   D: 'Portrait of Charles Townshend, the British official who planned the Townshend Acts.',
   E: 'A later illustration of the Boston Massacre, made long after 1770 (not Paul Revere\'s engraving).',
-  F: '“The Destruction of Tea at Boston Harbor,” a print made in 1846 (top half shown).',
+  F: '“The Destruction of Tea at Boston Harbor,” a print made in 1846.',
   G: '“The Able Doctor,” a 1774 cartoon: British officials force tea down the throat of a woman who stands for America.',
   H: 'A later painting of the First Continental Congress opening with a prayer in Philadelphia, 1774.',
   I: 'A later painting of the fight on Lexington Green, April 19, 1775.'
@@ -3287,7 +3291,12 @@ function elEventFigure(event){
       frame.classList.remove('image-error');
       stopLoading();
       frame.replaceChildren(img);
-      caption.textContent = (IMAGE_INFO[event.id] ? IMAGE_INFO[event.id] + ' ' : '') + 'Click for a larger view.';
+      // Wide, short pictures get the full reading width instead of the side column.
+      if(img.naturalWidth / Math.max(1, img.naturalHeight) > 1.8) fig.classList.add('fm-figure-wide');
+      // The repo's Tea Party file was damaged and is trimmed to its top part;
+      // say so only while the trimmed file is the one in place.
+      const partial = event.id==='F' && img.naturalWidth / Math.max(1, img.naturalHeight) > 3 ? ' (Top part shown.)' : '';
+      caption.textContent = (IMAGE_INFO[event.id] ? IMAGE_INFO[event.id] + partial + ' ' : '') + 'Click for a larger view.';
       setInteractive(true);
     });
 
