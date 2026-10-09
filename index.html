@@ -718,6 +718,18 @@
   .fm-pane-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 16px 10px;border-bottom:1px solid var(--border)}
   .fm-pane-h h2{margin:0;flex:1 1 auto}
   .fm-year{font-weight:600;color:var(--muted);font-size:17px}
+  /* Who-acted tag: text carries the meaning; colour is a second cue. Tints
+     clear 7:1 on the dark theme and 5:1 on the light one. */
+  .side-tag{display:inline-block;vertical-align:middle;font-size:13px;font-weight:700;letter-spacing:.02em;line-height:1.3;border-radius:999px;padding:2px 9px;border:1.5px solid currentColor;white-space:nowrap}
+  .side-british{color:#ffb4a8} .side-colonial{color:#8fe0a8} .side-clash{color:#f3c76b}
+  body.light .side-british{color:#9f1d12} body.light .side-colonial{color:#145a30} body.light .side-clash{color:#6b4400}
+  .summary-title .side-tag{font-size:12px;padding:1px 8px}
+  nav.timeline .side-tag{display:block;width:max-content;margin-top:4px;font-size:11px;padding:0 7px}
+  nav.timeline li button.active .side-tag{color:#fff}
+  /* Reflection 2: pick the event and what it led to; the starters fill in the names. */
+  .link-pickers{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:flex-end;margin:6px 0 10px}
+  .link-pickers label{display:flex;flex-direction:column;gap:4px;flex:1 1 200px;font-size:14px;font-weight:700;color:var(--muted)}
+  .link-pickers select{font-size:15px;padding:8px 10px}
   .fm-levels{display:flex;border:1.5px solid var(--edge);border-radius:8px;overflow:hidden}
   .fm-levels button{background:transparent;border:0;border-left:1px solid var(--edge);color:var(--fg);padding:6px 10px;font-weight:700;font-size:14px;cursor:pointer}
   .fm-levels button:first-child{border-left:0}
@@ -931,7 +943,7 @@
 // ----- Config -----
 const STORAGE_KEY = 'unrest-simple-v1';
 const EVENTS = [
-  {id:'A', title:'Proclamation of 1763', year:1763, img:'images/proclamation-1763.jpg',
+  {id:'A', title:'Proclamation of 1763', year:1763, side:'british', img:'images/proclamation-1763.jpg',
    wiki:'https://en.wikipedia.org/wiki/Royal_Proclamation_of_1763',
    core:`A "proclamation" is a formal announcement. In the Proclamation of 1763, the British announced that the land won during the French and Indian War—the land west of the Appalachian Mountains—would be reserved for Native Americans. Colonists were forbidden to settle in that area.
 
@@ -943,7 +955,7 @@ The colonists were frustrated by the Proclamation of 1763. Not only were they no
 Letters from veterans and land speculators show deep frustration. George Washington privately called the measure "a temporary expedient to quiet the minds of the Indians," one he expected "must fall of course in a few years." (<a href="https://www.mountvernon.org/library/digitalhistory/digital-encyclopedia/article/proclamation-line-of-1763" target="_blank" rel="noopener noreferrer">Mount Vernon Historical Library</a>) Native nations, meanwhile, saw it as a rare British acknowledgment of Native land rights — a promise often ignored in practice.
 
 The Proclamation exposed a growing divide in motive: Britain sought control and balance, while settlers sought autonomy and opportunity. What looked to London like peacekeeping looked to the colonies like an early act of oppression — a boundary line that started to wear down colonial trust in Britain.`},
-  {id:'B', title:'Quartering Act', year:1765, img:'images/quartering-act.png', wiki:'https://en.wikipedia.org/wiki/Quartering_Acts',
+  {id:'B', title:'Quartering Act', year:1765, side:'british', img:'images/quartering-act.png', wiki:'https://en.wikipedia.org/wiki/Quartering_Acts',
    core:`"To quarter" means to give soldiers a place to stay. The Quartering Act required the colonies to house British soldiers in barracks, inns, and unoccupied buildings. In addition, colonists had to provide fuel, candles, beer and transportation for the troops.
 
 The Quartering Act angered the colonists. They were suspicious of troops. They believed that they had been sent to America not to protect colonists but to control them. The colonists also felt that the British should have asked for their approval before passing an act that affected their personal lives and their pocketbooks.`,
@@ -952,7 +964,7 @@ The Quartering Act angered the colonists. They were suspicious of troops. They b
 Critics accused Parliament of keeping a standing army in the colonies in time of peace. In New York, the assembly refused to pay for soldiers' supplies until Parliament passed a law threatening to suspend it. (<a href="https://www.britannica.com/event/Quartering-Act" target="_blank" rel="noopener noreferrer">Britannica</a>) To British eyes, that was rebellion. To colonists, it was defense of principle.
 
 The act's real power was psychological. It turned distant government into daily intrusion — a soldier on your street, a cost on your table. Many colonists began to wonder: if Britain could make colonies pay to house its soldiers without their consent, what liberty could it not touch?`},
-  {id:'C', title:'Stamp Act', year:1765, img:'images/stamp-act.jpg', wiki:'https://en.wikipedia.org/wiki/Stamp_Act_1765',
+  {id:'C', title:'Stamp Act', year:1765, side:'british', img:'images/stamp-act.jpg', wiki:'https://en.wikipedia.org/wiki/Stamp_Act_1765',
    core:`The British were in debt after the French and Indian War. They felt that the colonists should help pay for some of the expenses involved in defending the colonies from the French. The Stamp Act, passed in 1765, required the colonists to pay a tax on most printed materials, such as newspapers, pamphlets, marriage licenses, and playing cards. A colonist had to purchase a stamp and place it on any printed document to prove they had paid the tax.
 
 The colonists were very angered by the Stamp Act. They weren't upset about just having to pay the tax. They felt that their freedom had been threatened because they had no say in the making of the law. The colonists resented being taxed without their consent, and they called it "taxation without representation."
@@ -963,7 +975,7 @@ Throughout the colonies, people responded in a number of ways. The Sons of Liber
 Pamphlets cried, "No taxation without representation!" — a slogan that echoed from Virginia to Massachusetts. James Otis, an early protest leader, is often credited with the idea that taxation without representation was a form of tyranny — a phrase that became a rallying cry, though his exact words for that slogan were never recorded. (<a href="https://www.masshist.org/revolution/stamp.php" target="_blank" rel="noopener noreferrer">Massachusetts Historical Society</a>) Boycotts spread, uniting merchants, printers, and farmers in a common cause. Even Benjamin Franklin, still loyal to Britain, testified in 1766 before Parliament that the colonists deeply resented the tax and would resist paying it. (<a href="https://www.parliament.uk/about/living-heritage/evolutionofparliament/legislativescrutiny/parliament-and-empire/parliament-and-the-american-colonies-before-1765/the-stamp-act-and-the-american-colonies-1763-67/" target="_blank" rel="noopener noreferrer">UK Parliament Archives</a>)
 
 By repealing the law in 1766, Britain admitted defeat — but too late. The Stamp Act taught colonists that shared resistance could work, and that liberty was not just an idea but a practice. Each meeting, boycott, and petition gave colonists practice at organized resistance.`},
-  {id:'D', title:'Townshend Acts', year:1767, img:'images/townshend-acts.jpg', wiki:'https://en.wikipedia.org/wiki/Townshend_Acts',
+  {id:'D', title:'Townshend Acts', year:1767, side:'british', img:'images/townshend-acts.jpg', wiki:'https://en.wikipedia.org/wiki/Townshend_Acts',
    core:`Charles Townshend, a powerful British official in charge of the treasury (the Chancellor of the Exchequer), planned a small indirect tax on lead, glass, paper, paint and tea, and Parliament passed it in 1767. The tax was "indirect" because it was collected at the sea ports before the items reached colonial stores. Since the tax was built into the price the colonists paid at the stores—rather than added on visibly like the Stamp Act—Townshend hoped colonists would object to it less. (They did not: the duties were openly known and quickly resisted.)
 
 The colonists, however, recognized the indirect tax. They saw it as an unjust form of TAXATION WITHOUT REPRESENTATION, since they had no representatives in Parliament from the colonies to vote on these taxes. As under the Stamp Act, they organized a boycott of British goods. In 1770, Parliament repealed all of the Townshend duties except the tax on tea.`,
@@ -972,7 +984,7 @@ The colonists, however, recognized the indirect tax. They saw it as an unjust fo
 Merchants felt both economic pain and moral outrage. Years earlier, in 1764, James Otis Jr., a lawyer and politician from Massachusetts, had written, "…the very act of taxing, exercised over those who are not represented, appears to me to be depriving them of one of their most essential rights, as freemen; and if continued, seems to be in effect an entire disfranchisement of every civil right" (<a href="https://www.americanrevolution.org/no-taxation-without-representation/?utm_source=chatgpt.com#:~:text=%E2%80%A6the%20very%20act%20of%20taxing%2C%20exercised%20over%20those%20who%20are%20not%20represented%2C%20appears%20to%20me%20to%20be%20depriving%20them%20of%20one%20of%20their%20most%20essential%20rights%2C%20as%20freemen%3B%20and%20if%20continued%2C%20seems%20to%20be%20in%20effect%20an%20entire%20disfranchisement%20of%20every%20civil%20right" target="_blank" rel="noopener noreferrer">AmericanRevolution.org</a>) Women joined in too; spinning bees became acts of protest, replacing imported fabric with homespun cloth. These "Daughters of Liberty" gave rebellion a domestic voice.
 
 The acts blurred everyday life and empire. To the British, taxation was administration; to colonists, it was alienation. Every boycott, every homespun dress, turned politics into practice — and deepened the habit of resistance.`},
-  {id:'E', title:'Boston Massacre', year:1770, img:'images/boston-massacre.jpg', wiki:'https://en.wikipedia.org/wiki/Boston_Massacre',
+  {id:'E', title:'Boston Massacre', year:1770, side:'clash', img:'images/boston-massacre.jpg', wiki:'https://en.wikipedia.org/wiki/Boston_Massacre',
    core:`On March 5, 1770, a crowd of colonists in Boston began to harass British troops, taunting them and throwing snowballs. The situation soon got out of hand, and finally the troops opened fire. Five colonists died. Colonists soon called it the Boston Massacre.
 
 Most colonists believed that the British soldiers were completely at fault. The enraged citizens of Boston called a town meeting to demand the removal of the British troops and to argue for the trial of the British soldiers for murder. The acting governor agreed: the troops moved to an island fort in the harbor, and the soldiers were later tried in a local court.
@@ -983,7 +995,7 @@ Paul Revere made a famous engraving of the event (not the picture on this placar
 Within weeks, Revere's image spread across the colonies, stoking outrage. Yet another voice emerged — John Adams — who risked his reputation to defend the soldiers, reminding Bostonians that "facts are stubborn things." (<a href="https://founders.archives.gov/documents/Adams/05-03-02-0001-0004-0016#:~:text=I%20will%20enlarge%20no%20more%20on%20the%20evidence%2C%20but%20submit%20it%20to%20you.%E2%80%94Facts%20are%20stubborn%20things%3B%20and%20whatever%20may%20be%20our%20wishes%2C%20our%20inclinations%2C%20or%20the%20dictates%20of%20our%20passions%2C%20they%20cannot%20alter%20the%20state%20of%20facts%20and%20evidence" target="_blank" rel="noopener noreferrer">Founders.gov</a>)
 
 The event showed how images could shape truth. Revere had actually copied his engraving from one by Henry Pelham, who accused him of stealing the design — an irony inside a story about truth and propaganda. Revere's engraving reminds us that propaganda (information meant to influence opinion) became a revolutionary tool. The massacre's legacy wasn't just five deaths — it was the realization that perception could unite a movement faster than armies could suppress it.`},
-  {id:'F', title:'Boston Tea Party', year:1773, img:'images/boston-tea-party.jpg', wiki:'https://en.wikipedia.org/wiki/Boston_Tea_Party',
+  {id:'F', title:'Boston Tea Party', year:1773, side:'colonial', img:'images/boston-tea-party.jpg', wiki:'https://en.wikipedia.org/wiki/Boston_Tea_Party',
    core:`In 1773 Parliament passed the Tea Act, which gave the British East India Company a major advantage in the American tea business—letting it sell tea so cheaply that it undercut colonial merchants and smuggled Dutch tea.
 
 Despite the fact that this act actually lowered the price of tea, the colonists still opposed it. They viewed the Tea Act as merely another example of England making a decision that concerned the colonists without consulting them—and the tea still carried the Townshend tax.
@@ -994,14 +1006,14 @@ To protest the Tea Act, the Sons of Liberty organized the Boston Tea Party. Dres
 British lawmakers thought colonists would accept the bargain — cheaper tea through a special advantage critics called a monopoly. Instead, they underestimated pride. Boston town meetings argued that buying the taxed tea would mean admitting Parliament's right to tax the colonies. (<a href="https://www.masshist.org/revolution/teaparty.php" target="_blank" rel="noopener noreferrer">Massachusetts Historical Society</a>) The protestors' disguises symbolized freedom and identity — colonists rejecting Britishness and adopting American defiance.
 
 To the British, this was criminal destruction of property; to the colonists, it was moral purification. The print freezes that moment — unity, disguise, rebellion. News of the protest spread quickly through the colonies and back to Britain. Within months, Britain would strike back with punishment so severe it erased any illusion of reconciliation.`},
-  {id:'G', title:'Intolerable (Coercive) Acts', year:1774, img:'images/intolerable-acts.jpg', wiki:'https://en.wikipedia.org/wiki/Intolerable_Acts',
+  {id:'G', title:'Intolerable (Coercive) Acts', year:1774, side:'british', img:'images/intolerable-acts.jpg', wiki:'https://en.wikipedia.org/wiki/Intolerable_Acts',
    core:`"To coerce" means to force someone to do something. The British passed the Coercive Acts in reaction to the Boston Tea Party. They hoped to force colonists to pay for the tea lost and to obey British rule. The Coercive Acts closed the port of Boston and imposed military rule on all of Massachusetts. The Massachusetts legislature and town meetings were sharply restricted.
 
 Samuel Adams helped to stir up colonial response to these acts. The colonists called the acts the "Intolerable Acts" because they did not feel that they could tolerate them. The taxes they had been battling were nothing in comparison to this harsh British crackdown on colonial rights.
 
 Although the acts applied only to Massachusetts, the other colonies rallied to protest them. The colonists feared that if such British actions were to continue, the rest of the colonies were in danger of losing their liberties as well. On the day the acts went into effect, flags throughout the colonies were flown at half-mast. Meanwhile, in the towns surrounding Boston, "minutemen" began to store arms and to train for possible battle "at a minute's notice".`,
    adv:`The cartoon with this placard, "The Able Doctor" (1774), shows British officials forcing tea down the throat of a woman who stands for America — punishment in picture form. The Intolerable Acts (called the Coercive Acts in Britain) shut down the port, replaced local leaders, and stationed troops inside the city. To Parliament, this was discipline; to colonists, it was collective suffering. Merchants went bankrupt, workers lost their jobs and went hungry, and neighbors from as far away as Virginia sent food to the blockaded city. In a 1774 letter from George Washington to George William Fairfax:<blockquote style="margin: 16px 0; padding: 12px 16px; border-left: 4px solid var(--accent); background: var(--callout-bg); font-style: italic;">"In short the Ministry may rely on it … that Americans will never be tax'd without their own consent; that the cause of Boston, the despotick measures in respect to it, I mean now is and ever will be consider'd as the cause of America…" (<a href="https://www.mountvernon.org/library/digitalhistory/past-projects/quotes/article/in-short-the-ministry-may-rely-on-it-that-americans-will-never-be-taxd-without-their-own-consent-that-the-cause-of-boston-the-despotick-measures-in-respect-to-it-i-mean-now-is-and-ever-will-be-considerd-as-the-cause-of-america-not-that-we-approve-their-co" target="_blank" rel="noopener noreferrer">MountVernon.org</a>)</blockquote>What London intended as isolation instead created unity. The cartoon captures how it felt to be punished by a government you had no voice in. Across the colonies, people who had once felt distant now shared a common outrage. The Intolerable Acts didn't just close Boston — they opened the road to revolution.`},
-  {id:'H', title:'First Continental Congress', year:1774, img:'images/continental-congress.jpg', wiki:'https://en.wikipedia.org/wiki/First_Continental_Congress',
+  {id:'H', title:'First Continental Congress', year:1774, side:'colonial', img:'images/continental-congress.jpg', wiki:'https://en.wikipedia.org/wiki/First_Continental_Congress',
    core:`As a result of the Coercive Acts, the colonies put aside their individual differences and agreed to work together more closely than ever before to protect their collective rights. They felt they needed to present their complaints to the British as a unified group.
 
 Representatives from 12 of the 13 colonies met and formed the First Continental Congress. They met in Carpenters' Hall in Philadelphia. Men such as Samuel Adams, John Adams, George Washington and Patrick Henry attended.
@@ -1012,7 +1024,7 @@ After seven weeks, the Congress drew up the Declaration of Rights, as well as ap
 Inside Carpenters' Hall, voices clashed. Some delegates, like Joseph Galloway, urged patience and a plan to stay united with Britain; others, like Patrick Henry, reportedly declared, "I am not a Virginian, but an American!" (<a href="https://www.colonialwilliamsburg.org/discover/18th-century-people/nation-builders/patrick-henry/#:~:text=Distinctions%20between%20Virginians%2C%20Pennsylvanians%2C%20New%20Yorkers%2C%20and%20New%20Englanders%2C%20are%20no%20more.%20I%20am%20not%20a%20Virginian%2C%20but%20an%20American." target="_blank" rel="noopener noreferrer">Colonial Williamsburg</a>) John Adams recorded the line in his notes of the debates, though as a summary rather than Henry's exact words. The Congress agreed on boycotts and began organizing local committees to enforce them.
 
 The scene reminds us how the colonies transformed from scattered provinces into a united movement. This was the first rehearsal for self-government — with argument, compromise, and vision. Though still loyal to the king, the delegates had crossed a threshold: they were now speaking as Americans.`},
-  {id:'I', title:'Lexington & Concord', year:1775, img:'images/lexington-concord.jpg', wiki:'https://en.wikipedia.org/wiki/Battles_of_Lexington_and_Concord',
+  {id:'I', title:'Lexington & Concord', year:1775, side:'clash', img:'images/lexington-concord.jpg', wiki:'https://en.wikipedia.org/wiki/Battles_of_Lexington_and_Concord',
    core:`The King and Parliament rejected the demands of the First Continental Congress. In April 1775, British troops left Boston and marched to nearby Lexington and Concord. They planned to seize stores of colonial gunpowder and arms —and, colonists feared, to capture the "rebel" leaders Samuel Adams and John Hancock.
 
 At Lexington, colonial minutemen—colonists who had joined the militia—met the British soldiers. No one knows who fired first, but when the smoke cleared, eight colonists were dead and ten were wounded. The "Redcoats" pushed on to Concord, where they were met by more minutemen. Then, while the British retreated back to Boston, minutemen fired on them from behind trees and fences. At day's end, the British suffered 273 casualties, while the colonists suffered less than one hundred.
@@ -1044,6 +1056,20 @@ const LEVEL_KEYS = LEVELS.map(l => l.key);
 const levelLabel = key => (LEVELS.find(l => l.key===key) || LEVELS[2]).label;
 const L0_LANGS = [['en','English'],['es','Español'],['pt','Português'],['ru','Русский'],['zh','中文（简体）']];
 const LANG_TAG = {en:'en', es:'es', pt:'pt-BR', ru:'ru', zh:'zh-Hans'};
+// Who acted. Every placard carries one of three tags so the back-and-forth
+// that built unrest stays visible: Britain acts, colonists respond, and twice
+// the two sides collide. Translated for the Level 0 languages, like the scale.
+const SIDE = {
+  british:  {en:'British action',    es:'Acción británica',      pt:'Ação britânica',        ru:'Действие Британии',   zh:'英国的行动'},
+  colonial: {en:'Colonial response', es:'Respuesta colonial',    pt:'Resposta colonial',     ru:'Ответ колонистов',    zh:'殖民地的回应'},
+  clash:    {en:'Both sides clash',  es:'Choque de ambos lados', pt:'Choque dos dois lados', ru:'Столкновение сторон', zh:'双方冲突'}
+};
+function sideLabel(ev, lang='en'){ const t = SIDE[ev.side]; return t ? (t[lang] || t.en) : ''; }
+function elSideTag(ev, lang='en'){
+  const tag = span(sideLabel(ev, lang), 'side-tag side-'+ev.side);
+  if(lang!=='en'){ tag.setAttribute('lang', LANG_TAG[lang]); tag.setAttribute('translate','no'); }
+  return tag;
+}
 
 // ----- State helpers -----
 function syncName(ans){
@@ -1060,7 +1086,7 @@ function defaultState(){
     current: 0,
     rows,
     firstPicks: null,
-    answers: { first:'', last:'', name:'', period:'', group:'', q3:'', q4:'', q5:'' },  // name = "First L.", built from first + last initial
+    answers: { first:'', last:'', name:'', period:'', group:'', q3:'', q4:'', q4a:'', q4b:'', q5:'' },  // name = "First L.", built from first + last initial
     theme: 'light',
     font: 'default',
     broadside: false,
@@ -1531,7 +1557,7 @@ function elKeyTerms(eventId, level){
 // Shorter sentence frames shown when "Shorter answers OK" is on.
 const REFLECTION_STARTERS_SIMPLE = {
   q3: ['I changed ___ because ___.', 'I gave ___ more points because ___.', 'I gave ___ fewer points because ___.'],
-  q4: ['The most important event was ___.', '___ changed the most because ___.', '___ mattered most because ___.'],
+  q4: ['The most important event was {A}.', '{A} led to {B} because ___.', '{A} mattered most because ___.'],
   q5: ['With more time, ___ because ___.', 'Slower change would ___.', 'It would still matter because ___.']
 };
 
@@ -1611,7 +1637,7 @@ function buildWorkText(){
   EVENTS.forEach((ev,i)=>{
     const r = state.rows[ev.id];
     const first = state.firstPicks ? state.firstPicks[ev.id] : r.rating;
-    L.push(`${i+1}. ${ev.title} (${ev.year}): ${first} → ${r.rating}  [read at ${levelLabel(r.level)}]`);
+    L.push(`${i+1}. ${ev.title} (${ev.year}, ${sideLabel(ev)}): ${first} → ${r.rating}  [read at ${levelLabel(r.level)}]`);
     L.push(`   Why: ${(r.rationale||'').trim() || '(no reason written)'}`);
   });
   L.push(`Total points: ${sumRatings()} of 36`);
@@ -1620,6 +1646,7 @@ function buildWorkText(){
   ['q3','q4','q5'].forEach((k,i)=>{
     L.push(`${i+1}) ${REFLECTION_QS[k].q}`);
     L.push(`   ${(A[k]||'').trim() || '(not answered)'}`);
+    if(k==='q4' && linkPick('q4a')){ const a = linkPick('q4a'), b = linkPick('q4b'); L.push(`   Events linked: ${a.title} (${a.year}) → ${b ? `${b.title} (${b.year})` : '(second event not picked)'}`); }
   });
   return L.join('\n');
 }
@@ -1891,10 +1918,10 @@ function elTimeline(){
     if(active){ const deep = heatColor(i, EVENTS.length, 42); button.style.background = deep; button.style.borderColor = deep; button.style.color = '#fff'; button.setAttribute('aria-current','location'); }
     const dot = h('span',{class:'timeline-dot'});
     dot.style.background = heat;
-    button.append(h('span',{class:'timeline-year-row'}, dot, span(String(e.year),'timeline-year')), span(e.title,'timeline-title'));
+    button.append(h('span',{class:'timeline-year-row'}, dot, span(String(e.year),'timeline-year')), span(e.title,'timeline-title'), elSideTag(e));
     nav.querySelector('ul').appendChild(h('li',{}, button));
   });
-  nav.appendChild(h('p',{class:'timeline-legend'}, 'Colour shows rising unrest: cooler blue (1763) → hotter red (1775).'));
+  nav.appendChild(h('p',{class:'timeline-legend'}, 'Colour shows rising unrest: cooler blue (1763) → hotter red (1775). The tag shows who acted.'));
   return nav;
 }
 
@@ -1979,6 +2006,7 @@ function renderPlacardsSection(){
   });
 
   // reading column
+  const tagLang = (row.level==='l0' && SIDE.british[state.l0lang]) ? state.l0lang : 'en';
   const reading = h('div',{class:'event-reading fm-reading', id:'reading-panel', tabindex:'0'});
   reading.setAttribute('aria-label', `Reading: ${e.title}`);
   const fig = elEventFigure(e);
@@ -1986,7 +2014,7 @@ function renderPlacardsSection(){
   reading.appendChild(fig);
   fillReading(reading, e, row.level);
   const readCol = h('article',{class:'fm-pane fm-read'},
-    h('div',{class:'fm-pane-h'}, h('h2',{}, e.title, ' ', span(String(e.year),'fm-year')), tabs),
+    h('div',{class:'fm-pane-h'}, h('h2',{}, e.title, ' ', span(String(e.year),'fm-year'), ' ', elSideTag(e, tagLang)), tabs),
     row.level==='l0' ? elLangPicker() : null,
     reading,
     elKeyTerms(e.id, row.level)
@@ -2132,7 +2160,7 @@ function renderSummarySection(){
 
     const header = h('div',{class:'summary-header'},
       h('div',{class:'summary-title'},
-        h('strong',{}, `${idx+1}. ${event.title} `, span(`(${event.year})`,'fm-year'))
+        h('strong',{}, `${idx+1}. ${event.title} `, span(`(${event.year})`,'fm-year')), ' ', elSideTag(event)
       ),
       h('div',{class:'summary-actions'},
         h('div',{class:'summary-rating'}, ratingPill),
@@ -2269,6 +2297,7 @@ function renderQuestionsSection(){
       h('ul',{class:'think-deeper-list'},
         h('li',{}, 'Not everyone wanted to break away. How might a ', strong('Loyalist'), ' — a colonist loyal to Britain — have rated these same events?'),
         h('li',{}, 'Whose experiences are left out of this story? Consider ', strong('Native nations'), ', ', strong('enslaved people'), ', and ', strong('women'), ', whose lives these events also changed.'),
+        h('li',{}, 'Follow the tags. After each ', strong('British action'), ', what did colonists do, and how did Britain answer? Where does the back-and-forth speed up?'),
         h('li',{}, 'Revolution was not guaranteed. Looking at the table below, ', strong('where could this chain of events have stopped'), ' short of war?')
       )
     )
@@ -2335,8 +2364,10 @@ function renderQuestionsSection(){
     const starters = state.relaxRationale && lvl!=='l0' ? REFLECTION_STARTERS_SIMPLE[key] : cfg[lvl];
     const label = h('label',{}, `${i+1}) ${cfg.q}`);
     label.setAttribute('for', input.id);
-    const supports = elSupports({ look:cfg.look, starters, bank: lvl==='l0' ? cfg.bank : null, push: lvl==='adv' ? cfg.push : null }, input, v=>{ state.answers[key]=v; updateMissing(); });
-    return h('div',{class:'reflection-q'}, label, supports, input);
+    const mkSupports = ()=> elSupports({ look:cfg.look, starters:(starters||[]).map(fillLinkTokens), bank: lvl==='l0' ? cfg.bank : null, push: lvl==='adv' ? cfg.push : null }, input, v=>{ state.answers[key]=v; updateMissing(); });
+    let supports = mkSupports();
+    const pickers = cfg.pick ? elLinkPickers(()=>{ const fresh = mkSupports(); supports.replaceWith(fresh); supports = fresh; }) : null;
+    return h('div',{class:'reflection-q'}, label, pickers, supports, input);
   });
 
   // Turn in: copy everything (ratings, every reason, reflections) as plain text
@@ -2580,16 +2611,17 @@ const shortTitle = ev => ev.title.replace(/\s*\(.*?\)\s*/,' ').trim();
 // has nothing before it) gets starters that don't ask for a comparison.
 function rationaleStarters(level, idx){
   const prev = idx > 0 ? shortTitle(EVENTS[idx-1]) : null;
-  if(level==='l0') return EVENTS[idx] && EVENTS[idx].id==='H'
+  const side = sideStarter(level, idx);
+  if(level==='l0') return (EVENTS[idx] && EVENTS[idx].id==='H'
     ? ['I gave it a ___ because the colonies decided to ___.', 'The colonies worked together because ___.']
-    : ['I gave it a ___ because colonists felt ___ when Britain ___.', 'Colonists were angry because ___.'];
-  if(level==='ss') return ['I gave it a ___ because ___.', 'This made colonists angry because ___.',
-    prev ? `After the ${prev}, this event ___ because ___.` : 'This was a big deal because ___.'];
-  if(level==='adv') return prev
-    ? [`Compared to the ${prev}, this event ___ because ___.`, 'A Loyalist (a colonist loyal to Britain) might rate this lower because ___, but I think ___.', 'This added to anger that had been building since ___ because ___.']
-    : ['Britain saw this rule as ___, but colonists saw it as ___ because ___.', 'A Loyalist (a colonist loyal to Britain) might rate this lower because ___, but I think ___.'];
-  return ['I chose this rating because ___.', 'This event pushed unrest higher when ___.',
-    prev ? `Compared to the ${prev}, this event ___ because ___.` : 'Colonists would have reacted by ___ because ___.'];
+    : ['I gave it a ___ because colonists felt ___ when Britain ___.', 'Colonists were angry because ___.']).concat(side ? [side] : []);
+  if(level==='ss') return ['I gave it a ___ because ___.', 'This made colonists angry because ___.', side,
+    prev ? `After the ${prev}, this event ___ because ___.` : 'This was a big deal because ___.'].filter(Boolean);
+  if(level==='adv') return (prev
+    ? [`Compared to the ${prev}, this event ___ because ___.`, side, 'A Loyalist (a colonist loyal to Britain) might rate this lower because ___, but I think ___.', 'This added to anger that had been building since ___ because ___.']
+    : [side, 'A Loyalist (a colonist loyal to Britain) might rate this lower because ___, but I think ___.']).filter(Boolean);
+  return ['I chose this rating because ___.', side, 'This event pushed unrest higher when ___.',
+    prev ? `Compared to the ${prev}, this event ___ because ___.` : 'Colonists would have reacted by ___ because ___.'].filter(Boolean);
 }
 function rationalePush(level, idx){
   if(level!=='adv') return null;
@@ -2597,6 +2629,24 @@ function rationalePush(level, idx){
     ? 'Going further: was this anger new, or did it come from something colonists already wanted?'
     : 'Going further: was this event a new cause of anger, or did it add to anger that was already moving?';
 }
+// Britain's side, on every placard at every level. The starter follows who
+// acted: for a British action it asks what Britain hoped for; for a colonial
+// response, how Britain read it; for a clash, how each side saw it.
+const SIDE_STARTERS = {
+  l0:  { british:'Britain did this to ___. Colonists felt ___.',
+         colonial:'Colonists did this because ___. Britain was ___.',
+         clash:'Britain said ___. Colonists said ___.' },
+  ss:  { british:'Britain wanted ___, but colonists felt ___.',
+         colonial:'Colonists did this because ___, so Britain ___.',
+         clash:'Britain saw it as ___, but colonists saw it as ___.' },
+  core:{ british:'Britain thought this would ___, but colonists saw it as ___ because ___.',
+         colonial:'Colonists did this because ___, and Britain saw it as ___.',
+         clash:'Britain saw this as ___, but colonists saw it as ___ because ___.' },
+  adv: { british:'From London this looked like ___; from the colonies it looked like ___ because ___.',
+         colonial:'Colonists meant this as ___, but Parliament read it as ___, which ___.',
+         clash:'Each side blamed the other: Britain said ___, colonists said ___, and I think ___.' }
+};
+function sideStarter(level, idx){ const ev = EVENTS[idx]; const t = SIDE_STARTERS[level] || SIDE_STARTERS.core; return ev && t[ev.side] ? t[ev.side] : null; }
 const RATIONALE_LOOK = 'Look at: the part of the reading that tells how colonists reacted.';
 const LOOK_HINT_PLACARD = ' Open “Show the reading again” below if you need it.';
 const LOOK_HINT_SUMMARY = ' The reading is just above.';
@@ -2607,12 +2657,15 @@ const REFLECTION_QS = {
         ss:['I moved ___ from ___ to ___ points because ___.', 'At first I gave ___ more points, but then ___.'],
         core:['I moved ___ from ___ to ___ points because ___.', 'I decided ___ mattered more than I first thought because earlier events like ___ had already ___.'],
         adv:['At first I thought ___, but after comparing it with ___, I decided ___ because ___.', 'Looking at the whole chain of events, ___ changed my mind because ___.'] },
+  // {A} and {B} are filled from the two event pickers (the event, and what it
+  // led to); until a student picks, they show as blanks.
   q4: { q:'Which event changed what happened next the most, and how?',
         look:'Look at: your two highest-rated events in the table above, and which events came right after them.',
-        l0:['The most important event was ___. After it, ___ happened.'], bank:['led to','after','so','because','war','protest','punish'],
-        ss:['___ changed what happened next because it led to ___.', 'After ___, colonists ___.'],
-        core:['___ changed what happened next the most because it led to ___.', 'In the long run, ___ mattered more than ___ because ___.'],
-        adv:['___ caused the most anger in the moment, but ___ mattered more in the long run because ___.', '___ changed history, but it worked because ___ was already moving.'],
+        pick:true,
+        l0:['The most important event was {A}. After it, {B} happened.'], bank:['led to','after','so','because','war','protest','punish'],
+        ss:['{A} changed what happened next: it led to {B} because ___.', 'After {A}, colonists ___.'],
+        core:['{A} changed what happened next the most: it led to {B} because ___.', 'In the long run, {A} mattered more than ___ because ___.'],
+        adv:['{A} changed what happened next the most: it led to {B}, and without it ___.', '___ caused the most anger in the moment, but {A} mattered more in the long run because ___.', '{A} changed history, but it worked because ___ was already moving.'],
         push:'Going further: the event that caused the most anger at the time may not be the one with the biggest effect later. Which is yours?' },
   // Unit 2 supporting essential question, verbatim from the Unit 2 Content Brief.
   // Evidence: the class unrest chart built on Day 5 (class.html) and the tracker.
@@ -2634,6 +2687,42 @@ function insertAtCursor(input, word, onChange){
   const pos = (before + pad + word + ' ').length;
   input.focus(); input.setSelectionRange(pos, pos);
   onChange(input.value); debouncedSave();
+}
+// Reflection 2 pickers: the event, then what it led to (only later events are
+// offered). Picks live in answers.q4a / q4b and fill {A} / {B} in the starters.
+function linkPick(k){ return EVENTS.find(ev => ev.id === state.answers[k]) || null; }
+const linkName = ev => ev.id==='I' ? ev.title : 'the ' + shortTitle(ev);
+function fillLinkTokens(text){
+  const A = linkPick('q4a'), B = linkPick('q4b');
+  const out = text.replace(/\{A\}/g, A ? linkName(A) : '___').replace(/\{B\}/g, B ? linkName(B) : '___');
+  return out.charAt(0).toUpperCase() + out.slice(1);
+}
+function elLinkPickers(onChange){
+  const opt = (value, text) => { const o = h('option',{value}, text); return o; };
+  const selA = h('select',{class:'field link-select', id:'q4-pick-a'});
+  const selB = h('select',{class:'field link-select', id:'q4-pick-b'});
+  const fill = ()=>{
+    const aId = state.answers.q4a || '', bId = state.answers.q4b || '';
+    const aIdx = EVENTS.findIndex(ev => ev.id === aId);
+    selA.replaceChildren(opt('', 'Pick an event…'), ...EVENTS.map(ev => opt(ev.id, `${ev.title} (${ev.year})`)));
+    selA.value = aId;
+    const later = aIdx >= 0 ? EVENTS.slice(aIdx+1) : [];
+    selB.replaceChildren(opt('', aIdx >= 0 ? 'Pick what came after…' : 'Pick the first event first'), ...later.map(ev => opt(ev.id, `${ev.title} (${ev.year})`)));
+    selB.disabled = aIdx < 0;
+    selB.value = later.some(ev => ev.id === bId) ? bId : '';
+  };
+  selA.addEventListener('change', ()=>{
+    state.answers.q4a = selA.value;
+    const aIdx = EVENTS.findIndex(ev => ev.id === selA.value);
+    const bIdx = EVENTS.findIndex(ev => ev.id === state.answers.q4b);
+    if(bIdx <= aIdx) state.answers.q4b = '';
+    save(); fill(); onChange();
+  });
+  selB.addEventListener('change', ()=>{ state.answers.q4b = selB.value; save(); onChange(); });
+  fill();
+  const la = h('label',{}, 'This event…', selA); la.setAttribute('for','q4-pick-a');
+  const lb = h('label',{}, '…led to', selB); lb.setAttribute('for','q4-pick-b');
+  return h('div',{class:'link-pickers'}, la, lb);
 }
 // Builds the support block for one question: Look at, starters, (word bank), (push).
 function elSupports({look, starters, bank, push}, input, onChange){

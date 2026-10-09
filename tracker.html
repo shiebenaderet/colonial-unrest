@@ -29,6 +29,7 @@
   tbody td{border-bottom:.75px solid var(--rule);padding:0 .05in;height:.36in;vertical-align:middle}
   tbody td.box{border-left:.75px solid var(--rule)}
   td .yr{font-size:9pt;color:var(--muted)}
+  td .side{display:block;font-size:8pt;color:var(--muted);font-style:italic;line-height:1.1}
   td.lv{font-size:10pt;letter-spacing:.14em;border-left:.75px solid var(--rule)}
   tfoot td{padding:.04in .05in;font-size:10pt;font-weight:700;height:.33in}
   tfoot td.box{border:1.5px solid #000}
@@ -48,7 +49,7 @@
       <h1>Unrest in the Colonies · Tracker</h1>
       <div class="who">Name<span></span>Period<span class="short"></span>Group<span class="short"></span></div>
     </div>
-    <p class="lead">As you read: circle your level, write your rating (1–8) and a few words for why. Day 5: write your group’s points (they must add up to 36), then the class average.</p>
+    <p class="lead">As you read: circle your level, write your rating (1–8) and a few words for why. Under each event is who acted: Britain, the colonists, or both. Day 5: write your group’s points (they must add up to 36), then the class average.</p>
     <table>
       <colgroup><col class="ev"><col class="lv"><col class="r"><col class="w"><col class="g"><col class="c"></colgroup>
       <thead><tr><th>Event</th><th>Level I read</th><th>My rating<br>(1–8)</th><th>Why, in a few words</th><th>Our group</th><th>Class average</th></tr></thead>
@@ -60,15 +61,17 @@
   </div>
 </template>
 <script>
-  var EVENTS = [['Proclamation of 1763',1763],['Quartering Act',1765],['Stamp Act',1765],['Townshend Acts',1767],
-    ['Boston Massacre',1770],['Boston Tea Party',1773],['Intolerable Acts',1774],['First Continental Congress',1774],['Lexington & Concord',1775]];
+  // [title, year, who acted]: the same tags the placards carry on screen.
+  var EVENTS = [['Proclamation of 1763',1763,'British action'],['Quartering Act',1765,'British action'],['Stamp Act',1765,'British action'],
+    ['Townshend Acts',1767,'British action'],['Boston Massacre',1770,'Both sides clash'],['Boston Tea Party',1773,'Colonial response'],
+    ['Intolerable Acts',1774,'British action'],['First Continental Congress',1774,'Colonial response'],['Lexington & Concord',1775,'Both sides clash']];
   var tpl = document.getElementById('half');
   for (var c = 0; c < 2; c++) {
     var node = tpl.content.cloneNode(true);
     var tb = node.querySelector('tbody');
     EVENTS.forEach(function (e, i) {
       var tr = document.createElement('tr');
-      tr.innerHTML = '<td>' + (i + 1) + '. ' + e[0] + ' <span class="yr">' + e[1] + '</span></td>' +
+      tr.innerHTML = '<td>' + (i + 1) + '. ' + e[0] + ' <span class="yr">' + e[1] + '</span><span class="side">' + e[2] + '</span></td>' +
         '<td class="lv">0 1 2 3</td><td class="box"></td><td class="box"></td><td class="box"></td><td class="box"></td>';
       tb.appendChild(tr);
     });
