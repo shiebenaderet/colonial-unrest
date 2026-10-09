@@ -731,27 +731,6 @@
   .fm-figure figcaption{font-size:13px !important;color:var(--muted) !important;line-height:1.4;margin-top:4px}
   .fm-read .key-terms{margin:0 16px 14px;clear:both;background:var(--surface-alt);border:0;border-radius:10px}
   .fm-read .english-version{margin:0 0 8px}
-  /* Optional PBS LearningMedia videos (Level 3 by default) */
-  .pbs-videos{margin:0 16px 14px;clear:both;background:var(--surface-alt);border:1px solid var(--callout-border);border-radius:10px;padding:0}
-  .pbs-videos > summary{cursor:pointer;font-weight:700;padding:10px 14px;list-style:none;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-  .pbs-videos > summary::-webkit-details-marker{display:none}
-  .pbs-videos > summary::before{content:'▸';color:var(--accent);font-size:14px}
-  .pbs-videos[open] > summary::before{content:'▾'}
-  .pbs-videos > summary .sub{font-weight:600;font-size:13px}
-  .pbs-videos-body{padding:0 14px 12px;font-size:15px;line-height:1.5}
-  .pbs-videos-note{margin:0 0 10px;font-size:14px;color:var(--muted)}
-  .pbs-video{padding:10px 0;border-top:1px dashed var(--border)}
-  .pbs-video-h{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:0 0 2px}
-  .pbs-video-h strong{font-size:16px}
-  .pbs-video-why{margin:0 0 8px;color:var(--fg)}
-  .pbs-video-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 6px}
-  .pbs-video-actions .btn-ghost{font-size:14px;padding:6px 12px}
-  .pbs-frame{position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:8px;overflow:hidden;border:1px solid var(--border);margin:4px 0 8px}
-  .pbs-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
-  .pbs-cite{margin:0;font-size:12.5px;color:var(--muted);line-height:1.45;overflow-wrap:anywhere}
-  .pbs-cite a{color:var(--muted)}
-  .pbs-videos-credit{margin:10px 0 0;padding-top:8px;border-top:1px solid var(--border);font-size:12.5px;color:var(--muted);line-height:1.45}
-  .summary-body .pbs-videos{margin:10px 0 4px}
   .fm-turn{position:sticky;top:76px}
   .fm-turn-body{padding:8px 16px}
   .fm-step{padding:10px 0 14px}
@@ -914,13 +893,6 @@
               </label>
             </div>
             <div class="panel-group">
-              <h4>Videos</h4>
-              <label class="toggle-pill" for="videosToggle">
-                <input type="checkbox" id="videosToggle" />
-                <span>Show the optional PBS videos at every reading level (normally Level 3 only)</span>
-              </label>
-            </div>
-            <div class="panel-group">
               <h4>Translate</h4>
               <p class="translate-help">Pick your language, then open the activity in a new tab, translated. Your typed answers won’t be translated back, and this needs the page to be online.</p>
               <select id="translateSel" class="translate-select">
@@ -1053,48 +1025,6 @@ At dawn in Lexington, nervous farmers faced the king's army. Captain John Parker
 To British commanders, these colonists were criminals. To the militia, they were defenders of natural rights. The scene captures not just battle but identity — ordinary people standing as citizens. Lexington and Concord transformed protest into revolution and revolution into a nation's beginning.`}
 ];
 
-// Optional videos from PBS LearningMedia's collection "The Shot Heard 'Round the
-// World" (Witnessing History Education Foundation, Inc.; grades 9-12). Excerpts
-// from the documentary "The Shot Heard 'Round the World": The Coming of the
-// American Revolution (2023, presented by KET). They are made for high school,
-// so they show at Level 3 by default; Settings can turn them on for every level.
-// Each resource embeds through PBS LearningMedia's Focus View (student=true&focus=true).
-const PBS_COLLECTION_URL = 'https://www.pbslearningmedia.org/collection/the-shot-heard-round-the-world/';
-const PBS_VIDEOS = {
-  fiw:     {slug:'french-and-indian-war-video',                  title:'The French and Indian War',                     mins:'6:46'},
-  proc:    {slug:'proclamation-of-1763-video',                   title:'The Proclamation of 1763',                      mins:'6:08'},
-  stamp1:  {slug:'stamp-act-part-one-video',                     title:'The Stamp Act, Part 1',                         mins:'5:57'},
-  stamp2:  {slug:'stamp-act-part-two-video',                     title:'The Stamp Act, Part 2',                         mins:'9:23'},
-  towns:   {slug:'townshend-acts-video',                         title:'The Townshend Acts',                            mins:'9:32'},
-  turmoil: {slug:'boston-in-turmoil-video',                      title:'Boston in Turmoil, 1768–1770',                  mins:'8:51'},
-  massacre:{slug:'boston-massacre-video',                        title:'The Boston Massacre',                           mins:'4:34'},
-  tea:     {slug:'boston-tea-party-video',                       title:'The Boston Tea Party',                          mins:'4:27'},
-  intol:   {slug:'intolerable-acts-video',                       title:'The Intolerable Acts',                          mins:'5:29'},
-  warren:  {slug:'mercy-otis-warren-video',                      title:'Mercy Otis Warren',                             mins:'2:54'},
-  frontier:{slug:'the-frontier-fort-gower-fincastle-video',      title:'The Frontier: Fort Gower and Fincastle',        mins:'5:02'},
-  lex1:    {slug:'battles-of-lexington-and-concord-part-1-video', title:'The Battles of Lexington and Concord, Part 1', mins:'7:48'},
-  lex2:    {slug:'battles-of-lexington-and-concord-part-2-video', title:'The Battles of Lexington and Concord, Part 2', mins:'8:49'}
-};
-// Which videos go with which placard, and one plain line on why to watch.
-const EVENT_VIDEOS = {
-  A: [ {v:'proc',     why:'Why Britain drew the line, and why its war debts shaped the decision.'},
-       {v:'fiw',      why:'Background: the war that put Britain in debt and handed it the western land.'} ],
-  B: [ {v:'turmoil',  why:'What it looked like when British troops actually arrived to live in Boston in 1768.'} ],
-  C: [ {v:'stamp1',   why:'The first direct tax, and why “taxation without representation” caught on.'},
-       {v:'stamp2',   why:'Colonial leaders meet without Britain’s permission, the Sons of Liberty, and the repeal.'} ],
-  D: [ {v:'towns',    why:'The new taxes the year after the Stamp Act was repealed, and how the boycott spread.'} ],
-  E: [ {v:'massacre', why:'The night of March 5, 1770, and what it changed in the long run.'},
-       {v:'turmoil',  why:'The two years of troops, seized ships, and street fights that led up to it.'} ],
-  F: [ {v:'tea',      why:'The Tea Act of May 1773 and the night the tea went into the harbor.'} ],
-  G: [ {v:'intol',    why:'Boston Harbor is closed, and power starts shifting away from Parliament.'},
-       {v:'warren',   why:'A writer who fought British policy with poems and anonymous letters while Boston was blockaded.'} ],
-  H: [ {v:'frontier', why:'Support for the rebellion from the far frontier: Virginians far from Philadelphia take a stand.'} ],
-  I: [ {v:'lex1',     why:'The British plan to seize gunpowder, and the alarm that went out across the countryside.'},
-       {v:'lex2',     why:'April 19, 1775: the fighting at Lexington, at Concord, and on the road back to Boston.'} ]
-};
-function pbsPageUrl(v){ return `https://www.pbslearningmedia.org/resource/${v.slug}/shot-heard-round-the-world/`; }
-function pbsEmbedUrl(v){ return pbsPageUrl(v) + '?student=true&focus=true'; }
-
 const STEPS = [
   {id:'splash', label:'Overview', anchor:'section-overview'},
   {id:'cards', label:'Placards', anchor:'section-placards'},
@@ -1135,7 +1065,6 @@ function defaultState(){
     font: 'default',
     broadside: false,
     relaxRationale: false,
-    showVideosAll: false,  // PBS videos show at Level 3 only unless this is on
     readLevel: null,  // chosen on the Overview; sets every placard's starting level and the writing supports
     l0lang: 'en',     // language for Level 0 text
     submitted: false,
@@ -1167,7 +1096,6 @@ function load(){
     st.theme = (st.theme==='light')?'light':'dark';
     st.font = (st.font==='dyslexic')?'dyslexic':'default';
     st.relaxRationale = Boolean(st.relaxRationale);
-    st.showVideosAll = Boolean(st.showVideosAll);
     st.submitted = Boolean(st.submitted);
     st.summaryOpen = st.summaryOpen && typeof st.summaryOpen==='object' ? st.summaryOpen : {};
     EVENTS.forEach(ev=>{ st.summaryOpen[ev.id] = Boolean(st.summaryOpen[ev.id]); });
@@ -1581,58 +1509,6 @@ function termInText(term, text){
   const t = term.toLowerCase().replace(/^to /,'');
   const stem = t.length > 6 ? t.slice(0, Math.max(6, t.length-3)) : t;
   return new RegExp('\\b' + stem.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).test(text.toLowerCase());
-}
-// Collapsed "Go deeper" panel with the PBS LearningMedia videos for one placard.
-// Videos load only when a student presses Play, so the page stays light and
-// nothing plays on its own. Skipped by Listen (data-no-listen).
-function elPbsVideos(eventId, level){
-  const list = EVENT_VIDEOS[eventId];
-  if(!list || !list.length) return null;
-  if(level!=='adv' && !state.showVideosAll) return null;
-  const det = h('details',{class:'pbs-videos'});
-  det.setAttribute('data-no-listen','');
-  det.setAttribute('translate','no');
-  const count = list.length;
-  det.appendChild(h('summary',{},
-    `Go deeper: watch the PBS video${count>1?'s':''}`,
-    span(count>1 ? `optional · ${count} videos` : `optional · ${PBS_VIDEOS[list[0].v].mins}`, 'sub')
-  ));
-  const body = h('div',{class:'pbs-videos-body'});
-  body.appendChild(p('These clips were made for high school (grades 9–12). Nothing here is required: watch if you want more of the story, then come back to your rating.', 'pbs-videos-note'));
-  list.forEach(({v, why})=>{
-    const vid = PBS_VIDEOS[v];
-    const item = h('div',{class:'pbs-video'});
-    item.appendChild(h('p',{class:'pbs-video-h'}, strong(vid.title), span(vid.mins,'sub')));
-    item.appendChild(h('p',{class:'pbs-video-why'}, why));
-    const actions = h('div',{class:'pbs-video-actions'});
-    const openLink = a(pbsPageUrl(vid), 'Open on PBS LearningMedia ↗', 'link');
-    const playBtn = btnGhost('▶ Play here', ()=>{
-      const frame = h('div',{class:'pbs-frame'});
-      const ifr = document.createElement('iframe');
-      ifr.src = pbsEmbedUrl(vid);
-      ifr.title = `${vid.title} (PBS LearningMedia video)`;
-      ifr.setAttribute('allow','fullscreen; encrypted-media; picture-in-picture');
-      ifr.setAttribute('allowfullscreen','');
-      ifr.setAttribute('loading','lazy');
-      ifr.setAttribute('referrerpolicy','strict-origin-when-cross-origin');
-      frame.appendChild(ifr);
-      item.insertBefore(frame, actions);
-      playBtn.remove();
-      actions.prepend(span('If the video does not appear, use the link to watch it on PBS.', 'note'));
-      announce(`${vid.title} loaded. Press play in the video player.`);
-    });
-    actions.append(playBtn, openLink);
-    item.appendChild(actions);
-    const cite = h('p',{class:'pbs-cite'});
-    cite.append('Cite it: Witnessing History Education Foundation. “', vid.title, '.” ', h('em',{},'The Shot Heard ’Round the World'), ', PBS LearningMedia, ', a(pbsPageUrl(vid), pbsPageUrl(vid).replace('https://',''), 'link'), '.');
-    item.appendChild(cite);
-    body.appendChild(item);
-  });
-  const credit = h('p',{class:'pbs-videos-credit'});
-  credit.append('Videos are from the PBS LearningMedia collection ', a(PBS_COLLECTION_URL, 'The Shot Heard ’Round the World', 'link'), ', produced by Witnessing History Education Foundation, Inc. and excerpted from the documentary ', h('em',{},'“The Shot Heard ’Round the World”: The Coming of the American Revolution'), ' (2023, presented by KET). They play through PBS LearningMedia and belong to their producer.');
-  body.appendChild(credit);
-  det.appendChild(body);
-  return det;
 }
 function elKeyTerms(eventId, level){
   const ev = EVENTS.find(x => x.id===eventId);
@@ -2113,8 +1989,7 @@ function renderPlacardsSection(){
     h('div',{class:'fm-pane-h'}, h('h2',{}, e.title, ' ', span(String(e.year),'fm-year')), tabs),
     row.level==='l0' ? elLangPicker() : null,
     reading,
-    elKeyTerms(e.id, row.level),
-    elPbsVideos(e.id, row.level)
+    elKeyTerms(e.id, row.level)
   );
 
   // your turn: 1) rate, 2) explain (opens once a number is picked)
@@ -2309,7 +2184,6 @@ function renderSummarySection(){
         readingBox,
         h('div',{class:'event-link'}, a(event.wiki,'Read on Wikipedia →','link')),
         elKeyTerms(event.id, row.level),
-        elPbsVideos(event.id, row.level),
         h('div',{},
           h('label',{},'Why did this event cause that much unrest?'),
           starterChips,
@@ -3605,17 +3479,6 @@ if(relaxToggle){
     save();
     render();
     toast(e.target.checked ? 'Shorter answers are now accepted.' : 'Full sentences required again.');
-  });
-}
-
-const videosToggle = document.getElementById('videosToggle');
-if(videosToggle){
-  videosToggle.checked = state.showVideosAll;
-  videosToggle.addEventListener('change', (e)=>{
-    state.showVideosAll = e.target.checked;
-    save();
-    render();
-    toast(e.target.checked ? 'PBS videos now show at every reading level.' : 'PBS videos show at Level 3 only.');
   });
 }
 

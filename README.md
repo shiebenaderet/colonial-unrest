@@ -29,11 +29,6 @@ Work saves in the browser on that computer. **Save a backup** (placard screens a
 
 All levels carry the same facts. Level 0 and its translations were fact-checked against Levels 1–3 and the historical record, and each translation was checked sentence by sentence against the English. Have a native speaker spot-check the translations when you can.
 
-### Optional PBS videos (Level 3)
-Placards at **Level 3** end with a collapsed panel, *Go deeper: watch the PBS video(s)*, holding one or two clips from PBS LearningMedia's collection [The Shot Heard 'Round the World](https://www.pbslearningmedia.org/collection/the-shot-heard-round-the-world/) (Witnessing History Education Foundation, Inc.; excerpts from the 2023 KET-presented documentary of the same name; rated grades 9–12). Each clip has a one-line reason to watch, a **Play here** button that loads the PBS player in place (nothing loads until it is pressed, and nothing autoplays), an **Open on PBS LearningMedia** link as a fallback, and a ready-made citation. The panel is skipped by Listen. The videos are never required.
-
-Settings has **Show the optional PBS videos at every reading level** for a student at Level 1 or 2 who wants them. The clip-to-placard map is `EVENT_VIDEOS` in `index.html`; every placard but the Quartering Act gets a direct clip, and the Quartering Act gets *Boston in Turmoil, 1768–1770* (troops arriving to live in Boston).
-
 ### Writing supports by level
 Every question has one direct prompt, a **Look at** (where to find the evidence), and **Start with** sentence starters keyed to the student's level. Level 0 adds a tap-to-insert **word bank** and accepts shorter answers. Level 3 adds a **Going further** prompt aimed at the level-4 criterion.
 
@@ -52,7 +47,7 @@ Progress is saved per device. A student who switches Chromebooks loads their bac
 
 ## Accessibility and language support
 
-- **Settings** (header) holds light/dark, "Shorter answers OK", the PBS videos toggle, Translate, backups, and start over.
+- **Settings** (header) holds light/dark, "Shorter answers OK", Translate, backups, and start over.
 - **Listen** (header) reads the current screen aloud and highlights each sentence. A Level 0 translation is read in its own language. You can tap any paragraph to jump there and change the speed. This comes from the course readings' `reader-tools.js` (see the header of `reader-tools.js` for what was adapted).
 - **Font** (header) changes the reading area: it offers Atkinson Hyperlegible Next (the default, bundled), Lexend, OpenDyslexic, and Verdana, plus text size and wider spacing.
 - **"Shorter answers OK"** (Settings) relaxes the full-sentence and punctuation rule.
