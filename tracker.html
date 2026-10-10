@@ -33,9 +33,9 @@
   td .yr{font-size:9pt;color:var(--muted)}
   td .side{display:block;font-size:8.5pt;color:var(--muted);font-style:italic;line-height:1.2;margin-top:.02in}
   td.lv{font-size:11pt;letter-spacing:.16em;border-left:.75px solid var(--rule)}
-  /* two ruled writing lines, each a third of an inch tall */
-  td.why{padding-top:.02in;padding-bottom:.04in}
-  td.why .ln{height:.34in;border-bottom:.75px solid var(--line)}
+  /* one dotted midline splits the cell into two writing lines */
+  td.why{position:relative}
+  td.why .ln{position:absolute;left:.06in;right:.06in;top:50%;border-top:1px dotted #bdbdbd}
   tfoot td{padding:.05in;font-size:10.5pt;font-weight:700;height:.4in;vertical-align:middle}
   tfoot td.box{border:1.5px solid #000}
   .key{font-size:9.5pt;margin:.12in 0 0;color:var(--ink);line-height:1.35}
@@ -79,7 +79,7 @@
     var tr = document.createElement('tr');
     var year = e[0].indexOf(String(e[1])) === -1 ? ' <span class="yr">' + e[1] + '</span>' : '';
     tr.innerHTML = '<td>' + (i + 1) + '. ' + e[0] + year + '<span class="side">' + e[2] + '</span></td>' +
-      '<td class="lv">0 1 2 3</td><td class="box"></td><td class="box why"><div class="ln"></div><div class="ln"></div></td><td class="box"></td><td class="box"></td>';
+      '<td class="lv">0 1 2 3</td><td class="box"></td><td class="box why"><div class="ln"></div></td><td class="box"></td><td class="box"></td>';
     tb.appendChild(tr);
   });
 </script>

@@ -756,6 +756,9 @@
   .link-pickers{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:flex-end;margin:6px 0 10px}
   .link-pickers label{display:flex;flex-direction:column;gap:4px;flex:1 1 200px;font-size:14px;font-weight:700;color:var(--muted)}
   .link-pickers select{font-size:15px;padding:8px 10px}
+  .canvas-mark{display:inline-block;width:1.15em;height:1.15em;vertical-align:-0.2em;margin-right:.3em}
+  .canvas-mark svg{width:100%;height:100%;display:block}
+  .with-canvas-mark{display:flex;align-items:center;gap:0}
   .fm-levels{display:flex;border:1.5px solid var(--edge);border-radius:8px;overflow:hidden}
   .fm-levels button{background:transparent;border:0;border-left:1px solid var(--edge);color:var(--fg);padding:6px 10px;font-weight:700;font-size:14px;cursor:pointer}
   .fm-levels button:first-child{border-left:0}
@@ -2466,14 +2469,14 @@ function renderQuestionsSection(){
   confirmWrap.append(cbLabel, done);
 
   reflectionCard.append(
-    h('div',{class:'card-h'}, h('h3',{},'Reflect, then turn in on Canvas')),
+    h('div',{class:'card-h'}, h('h3',{class:'with-canvas-mark'}, elCanvasMark(), 'Reflect, then turn in on Canvas')),
     h('div',{class:'card-b grid'},
       ...qBlocks,
       h('div',{class:'turn-in'},
         h('h3',{},'Turn in your work'),
         h('ol',{class:'turn-in-steps'},
           h('li',{}, 'Press ', strong('Copy my work'), '.'),
-          h('li',{}, 'Open the Canvas assignment ', strong('Unrest in the Colonies'), ' and press ', strong('Start Assignment'), '.'),
+          h('li',{}, 'Open the Canvas assignment ', elCanvasMark(), strong('Unrest in the Colonies'), ' and press ', strong('Start Assignment'), '.'),
           h('li',{}, 'Paste (', strong('Ctrl + V'), ') into the text box, then press ', strong('Submit Assignment'), '.')
         ),
         missingNote,
@@ -2690,8 +2693,8 @@ function rationaleStarters(level, idx){
 function rationalePush(level, idx){
   if(level!=='adv') return null;
   return idx===0
-    ? 'Going further: was this anger new, or did it come from something colonists already wanted?'
-    : 'Going further: was this event a new cause of anger, or did it add to anger that was already moving?';
+    ? 'Going further: Was this anger new, or did it come from something colonists already wanted?'
+    : 'Going further: Was this event a new cause of anger, or did it add to anger that was already moving?';
 }
 // Britain's side, on every placard at every level. The starter follows who
 // acted: for a British action it asks what Britain hoped for; for a colonial
@@ -2711,12 +2714,12 @@ const SIDE_STARTERS = {
          clash:'Each side blamed the other: Britain said ___, colonists said ___, and I think ___.' }
 };
 function sideStarter(level, idx){ const ev = EVENTS[idx]; const t = SIDE_STARTERS[level] || SIDE_STARTERS.core; return ev && t[ev.side] ? t[ev.side] : null; }
-const RATIONALE_LOOK = 'Look at: the part of the reading that tells how colonists reacted.';
+const RATIONALE_LOOK = 'Look at: The part of the reading that tells how colonists reacted.';
 const LOOK_HINT_PLACARD = ' Open “Show the reading again” below if you need it.';
 const LOOK_HINT_SUMMARY = ' The reading is just above.';
 const REFLECTION_QS = {
   q3: { q:'Which event did you move the most points on, and what changed your mind?',
-        look:'Look at: the “How your ratings changed” table above.',
+        look:'Look at: The “How your ratings changed” table above.',
         l0:['I changed ___ from ___ to ___. I changed it because ___.'], bank:['more','less','important','angry','first','later','because'],
         ss:['I moved ___ from ___ to ___ points because ___.', 'At first I gave ___ more points, but then ___.'],
         core:['I moved ___ from ___ to ___ points because ___.', 'I decided ___ mattered more than I first thought because earlier events like ___ had already ___.'],
@@ -2724,22 +2727,22 @@ const REFLECTION_QS = {
   // {A} and {B} are filled from the two event pickers (the event, and what it
   // led to); until a student picks, they show as blanks.
   q4: { q:'Which event changed what happened next the most, and how?',
-        look:'Look at: your two highest-rated events in the table above, and which events came right after them.',
+        look:'Look at: Your two highest-rated events in the table above, and the event right before each one. Which earlier event set it off?',
         pick:true,
         l0:['The most important event was {A}. After it, {B} happened.'], bank:['led to','after','so','because','war','protest','punish'],
         ss:['{A} changed what happened next: it led to {B} because ___.', 'After {A}, colonists ___.'],
         core:['{A} changed what happened next the most: it led to {B} because ___.', 'In the long run, {A} mattered more than ___ because ___.'],
         adv:['{A} changed what happened next the most: it led to {B}, and without it ___.', '___ caused the most anger in the moment, but {A} mattered more in the long run because ___.', '{A} changed history, but it worked because ___ was already moving.'],
-        push:'Going further: the event that caused the most anger at the time may not be the one with the biggest effect later. Which is yours?' },
+        push:'Going further: The event that caused the most anger at the time may not be the one with the biggest effect later. Which is yours?' },
   // Unit 2 supporting essential question, verbatim from the Unit 2 Content Brief.
   // Evidence: the class unrest chart built on Day 5 (class.html) and the tracker.
   q5: { q:'How did loyal British subjects turn into revolutionaries in barely a decade?',
-        look:'Look at: the class unrest chart. Where does the line climb fastest? Which events did your class give the most points?',
+        look:'Look at: The class unrest chart. Where does the line climb fastest? Which events did your class give the most points?',
         l0:['Colonists turned against Britain because ___. The biggest jump was ___.'], bank:['loyal','angry','tax','punish','together','fight','because','so'],
         ss:['Colonists went from loyal to rebels because ___.', 'The class chart shows the biggest jump at ___, because ___.'],
         core:['Loyal colonists became revolutionaries because ___.', 'Our class gave the most points to ___, which shows ___.'],
         adv:['The change came from ___, not just one event: the class chart shows ___.', 'Some colonists stayed loyal because ___, but most ___ because ___.'],
-        push:'Going further: was there one turning point, or did anger build step by step? Use the shape of the class chart.' }
+        push:'Going further: Was there one turning point, or did anger build step by step? Use the shape of the class chart.' }
 };
 function supportLevel(){ return state.readLevel || 'core'; }
 // Insert a word at the cursor of a textarea (word bank chips).
@@ -2787,6 +2790,13 @@ function elLinkPickers(onChange){
   const la = h('label',{}, 'This event…', selA); la.setAttribute('for','q4-pick-a');
   const lb = h('label',{}, '…led to', selB); lb.setAttribute('for','q4-pick-b');
   return h('div',{class:'link-pickers'}, la, lb);
+}
+// The Canvas mark (a ring of eight segments with eight dots), drawn inline so it
+// works offline. Decorative: the words beside it say Canvas.
+function elCanvasMark(){
+  const w = h('span',{class:'canvas-mark'});
+  w.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9.2" fill="none" stroke="#E4060F" stroke-width="3.4" stroke-dasharray="4.8 2.42"/><g fill="#E4060F"><circle cx="16.36" cy="15.35" r="1.1"/><circle cx="12.72" cy="17.45" r="1.1"/><circle cx="8.65" cy="16.36" r="1.1"/><circle cx="6.55" cy="12.72" r="1.1"/><circle cx="7.64" cy="8.65" r="1.1"/><circle cx="11.28" cy="6.55" r="1.1"/><circle cx="15.35" cy="7.64" r="1.1"/><circle cx="17.45" cy="11.28" r="1.1"/></g></svg>';
+  return w;
 }
 // Builds the support block for one question: Look at, starters, (word bank), (push).
 function elSupports({look, starters, bank, push}, input, onChange){
