@@ -32,9 +32,9 @@
   tbody td{border-bottom:.75px solid var(--rule);padding:.04in .05in;height:.78in;vertical-align:top}
   tbody td.box{border-left:.75px solid var(--rule)}
   td .yr{font-size:9pt;color:var(--muted)}
-  td .push{display:block;font-size:8.5pt;color:var(--ink);line-height:1.3;margin-top:.04in;white-space:nowrap}
-  td .push span{margin-right:.1in}
-  td .push b{font-size:10pt;vertical-align:-1px}
+  /* Who pushed: students draw an arrow (or an X for a clash) in the box between the two sides. */
+  td .push{display:flex;align-items:center;gap:.06in;font-size:9pt;color:var(--muted);margin-top:.05in}
+  td .push i{display:inline-block;width:.85in;height:.24in;border:1px solid #9a9a9a;border-radius:3px;background:#fafafa}
   /* one dotted midline splits the cell into two writing lines */
   td.why{position:relative}
   td.why .ln{position:absolute;left:.06in;right:.06in;top:50%;border-top:1px dotted #bdbdbd}
@@ -61,7 +61,7 @@
       <div>Level I Read (circle)<span class="lv">0 1 2 3</span></div>
     </div>
   </div>
-  <p class="lead">Circle the level you read at the top. For each event, mark who pushed (Britain →, ← Colonists, or →← Both), write your rating (1–8), and a few words for why. With your partner, agree on points that add up to 36, then write the class average.</p>
+  <p class="lead">Circle the level you read at the top. For each event, draw who pushed in the box (an arrow from the side that pushed, or an X when both sides clashed), write your rating (1–8), and a few words for why. With your partner, agree on points that add up to 36, then write the class average.</p>
   <table>
     <colgroup><col class="ev"><col class="r"><col class="w"><col class="g"><col class="c"></colgroup>
     <thead><tr><th>Event</th><th>My Rating<br>(1–8)</th><th>Why, in a Few Words</th><th>Our Pair's<br>Points (1–8)</th><th>Class<br>Average</th></tr></thead>
@@ -72,7 +72,7 @@
   <div class="foot"><span>unrest.mrbsocialstudies.org</span><span>Keep this if your computer resets: It is your backup.</span></div>
 </div>
 <script>
-  // [title, year, who acted]. On paper the student marks who pushed; the tag
+  // [title, year, who acted]. On paper the student draws who pushed; the tag
   // is the answer the app shows. The year is left off when the title says it.
   var EVENTS = [['Proclamation of 1763',1763,'British Action'],['Quartering Act',1765,'British Action'],['Stamp Act',1765,'British Action'],
     ['Townshend Acts',1767,'British Action'],['Boston Massacre',1770,'Both Sides Clash'],['Boston Tea Party',1773,'Colonial Response'],
@@ -81,7 +81,7 @@
   EVENTS.forEach(function (e, i) {
     var tr = document.createElement('tr');
     var year = e[0].indexOf(String(e[1])) === -1 ? ' <span class="yr">' + e[1] + '</span>' : '';
-    tr.innerHTML = '<td>' + (i + 1) + '. ' + e[0] + year + '<span class="push"><span>&#9744; Britain <b>&rarr;</b></span><span>&#9744; <b>&larr;</b> Colonists</span><span>&#9744; <b>&rarr;&larr;</b> Both</span></span></td>' +
+    tr.innerHTML = '<td>' + (i + 1) + '. ' + e[0] + year + '<span class="push">Colonists <i></i> Britain</span></td>' +
       '<td class="box"></td><td class="box why"><div class="ln"></div></td><td class="box"></td><td class="box"></td>';
     tb.appendChild(tr);
   });

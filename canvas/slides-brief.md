@@ -66,10 +66,10 @@ Every placard shows a tag beside the title, on its own line after "Who acted:"
 - **← Colonial Response** (Tea Party, First Continental Congress)
 - **→← Both Sides Clash** (Boston Massacre, Lexington & Concord)
 
-On the paper tracker the label is *not* printed. Under each event students
-mark one of three boxes: ☐ Britain → ☐ ← Colonists ☐ →← Both. Tell them the
-app shows the answer and they copy it to the tracker, so by the end they see
-the back-and-forth pattern on paper. On Wednesday the class chart shows the
+On the paper tracker the label is *not* printed. Under each event is
+"Colonists [box] Britain": students draw an arrow from the side that pushed,
+or an X when both sides clashed. Tell them the app shows the answer and they
+draw it on the tracker, so by the end they see the back-and-forth on paper. On Wednesday the class chart shows the
 tags under each event, and the "Think deeper" prompt asks: after each British
 action, what did colonists do, and how did Britain answer?
 
@@ -89,8 +89,8 @@ action, what did colonists do, and how did Britain answer?
    side**, for example "Britain thought this would ___, but colonists saw it
    as ___ because ___." Model using it once so they know Britain's reasons
    count as evidence too. Level 0 adds a tap-to-insert word bank.
-5. **Tracker**: write the same rating and a few words on paper. Mark who
-   pushed.
+5. **Tracker**: write the same rating and a few words on paper. Draw who
+   pushed in the box.
 6. **Save & next**. At the end of class, **Save a backup** (top right). On a
    different Chromebook, **Load a backup** on the sign-in screen restores it.
 
@@ -147,10 +147,10 @@ app shows a Canvas logo beside the turn-in heading so they know where it goes.
 2. What we are learning (the two outcomes, levels 3 and 4, verbatim from the app).
 3. The three days at a glance.
 4. The unrest scale (section 3 above).
-5. Who pushed: The three tags with arrows, and the tracker checkboxes.
+5. Who pushed: The three tags with arrows, and the tracker box (arrow or X).
 6. Model placard 1 (live in the app, or screenshots of: header with tag and
    Listen, the 1 to 8 squares with the key open, the Start with chips).
-7. Your tracker (the PDF, annotated: level at top, who pushed, rating, why).
+7. Your tracker (the PDF, annotated: level at top, the who-pushed box, rating, why).
 8. Save a backup (end of Monday and Tuesday).
 9. Wednesday: Pairs, 36 points, the green Continue.
 10. The class chart (class.html, Present mode).
