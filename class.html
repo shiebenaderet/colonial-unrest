@@ -223,7 +223,7 @@
     if(s.n>1){
       var top=debate.filter(function(i){ return s.max[i]-s.min[i]>=2; }).slice(0,2);
       facts.appendChild(el('div',{class:'fact'},[el('h3',{text:'Pairs disagreed most about'}),
-        top.length ? el('ol',{}, top.map(function(i){ return el('li',{text:EVENTS[i][0]+': from '+s.min[i]+' to '+s.max[i]+' points'}); })) : el('p',{text:'Pairs mostly agreed: no event differed by 2 or more points.'})]));
+        top.length ? el('ol',{}, top.map(function(i){ return el('li',{text:EVENTS[i][0]+': from '+s.min[i]+' to '+s.max[i]+' points'}); })) : el('p',{text:'Pairs mostly agreed: No event differed by 2 or more points.'})]));
     }
     // table view
     var t=el('table',{class:'avg-table'}); t.appendChild(el('thead',{},[el('tr',{},[el('th',{text:'Event'}),el('th',{text:'Year'}),el('th',{text:'Who acted'}),el('th',{text:'Average'}),el('th',{text:'Range'}),el('th',{text:'Running total'})])]));

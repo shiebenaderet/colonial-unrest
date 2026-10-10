@@ -48,7 +48,7 @@ and how many of them? Pick the number that fits.**
 | 7 | Defiance | Whole colonies are angry together and no longer willing to obey. |
 | 8 | Ready to fight | Anger is everywhere, and people will risk their lives over it. |
 
-Why it changed: the old meanings named actions (boycott, petition, march, arm),
+Why it changed: The old meanings named actions (boycott, petition, march, arm),
 so a student could match the word "boycott" in the Stamp Act reading to a 5.
 The new meanings measure **how angry and how many**. When you model placard 1,
 say that out loud: "The number is not about what they did. It is about how
@@ -58,7 +58,7 @@ The key opens automatically on placard 1 and is one tap away ("What do the
 numbers mean?") on every later placard. The chosen number's meaning shows
 under the squares.
 
-## 4. Who pushed: the tags and the arrows (one slide)
+## 4. Who pushed: The tags and the arrows (one slide)
 
 Every placard shows a tag beside the title, on its own line after "Who acted:"
 
@@ -114,7 +114,7 @@ action, what did colonists do, and how did Britain answer?
 ## 7. Reflection and turn-in (three questions)
 
 1. Which event did you move the most points on, and what changed your mind?
-   (Look at: the "How your ratings changed" table.)
+   (Look at: The "How your ratings changed" table.)
 2. Which event changed what happened next the most, and how? Two pickers:
    **This event…** and **…led to** (only later events offered). The picks fill
    the event names into the sentence starters. Hint: look at your two
@@ -147,12 +147,12 @@ app shows a Canvas logo beside the turn-in heading so they know where it goes.
 2. What we are learning (the two outcomes, levels 3 and 4, verbatim from the app).
 3. The three days at a glance.
 4. The unrest scale (section 3 above).
-5. Who pushed: the three tags with arrows, and the tracker checkboxes.
+5. Who pushed: The three tags with arrows, and the tracker checkboxes.
 6. Model placard 1 (live in the app, or screenshots of: header with tag and
    Listen, the 1 to 8 squares with the key open, the Start with chips).
 7. Your tracker (the PDF, annotated: level at top, who pushed, rating, why).
 8. Save a backup (end of Monday and Tuesday).
-9. Wednesday: pairs, 36 points, the green Continue.
+9. Wednesday: Pairs, 36 points, the green Continue.
 10. The class chart (class.html, Present mode).
 11. Reflect and turn in (the three questions, Copy my work, Canvas).
 

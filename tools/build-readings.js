@@ -24,8 +24,8 @@ const paras = html => html.trim().split(/\n\s*\n/).map(p => `<p>${p.trim().repla
       terms: (GLOSSARY[e.id] || []).map(g => ({ t: g.t, d: g.d, u: !!g.u })) }))
   }));
 
-  const LEVEL_NOTE = { l0: 'Level 0: short sentences, key words explained in the text',
-    ss: 'Level 1: below grade, plain words', core: 'Level 2: at grade', adv: 'Level 3: above grade, with primary sources' };
+  const LEVEL_NOTE = { l0: 'Level 0: Short sentences, key words explained in the text',
+    ss: 'Level 1: Below grade, plain words', core: 'Level 2: At grade', adv: 'Level 3: Above grade, with primary sources' };
   const order = ['l0', 'ss', 'core', 'adv'];
 
   let body = `
