@@ -1577,7 +1577,7 @@ function elKeyTerms(eventId, level){
   const list = h('ul',{class:'key-terms-list'});
   terms.forEach(({t,d,c,u})=>{
     const li = h('li',{}, strong(t), ` — ${d}`);
-    if(u) li.append(' ', h('span',{class:'unit-word'}, 'On your vocab card'));
+    if(u) li.append(' ', h('span',{class:'unit-word'}, 'Unit 2 word'));
     if(c) li.append(h('span',{class:'cognate'}, `Similar word in Spanish · Portuguese · French: ${c}`));
     list.appendChild(li);
   });

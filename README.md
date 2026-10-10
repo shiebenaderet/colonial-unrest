@@ -51,9 +51,13 @@ Progress is saved per device. A student who switches Chromebooks loads their bac
 - **Listen** (header) reads the current screen aloud and highlights each sentence. A Level 0 translation is read in its own language. You can tap any paragraph to jump there and change the speed. This comes from the course readings' `reader-tools.js` (see the header of `reader-tools.js` for what was adapted).
 - **Font** (header) changes the reading area: it offers Atkinson Hyperlegible Next (the default, bundled), Lexend, OpenDyslexic, and Verdana, plus text size and wider spacing.
 - **"Shorter answers OK"** (Settings) relaxes the full-sentence and punctuation rule.
-- **Key terms** appear on every placard. The five Causes of Unrest card terms are word for word and tagged "On your vocab card." Spanish, Portuguese, and French cognates are flagged.
+- **Key terms** appear on every placard. The five Unit 2 terms (Proclamation of 1763, taxation without representation, boycott, repeal, Intolerable Acts) are word for word and tagged "Unit 2 word." Spanish, Portuguese, and French cognates are flagged.
 - **Screen readers** get the point total, status messages, and a data table of the chart. The rating control and timeline work fully from the keyboard.
 - **Reduced motion** is respected.
+
+## Printable readings
+
+`readings.html` (`unrest.mrbsocialstudies.org/readings.html`) is every reading at all four levels, plus Level 0 in each language, with a Print button. `canvas/unrest-readings.pdf` is the same page as a PDF. Both are generated from the text in `index.html` by `node tools/build-readings.js` (needs Playwright); rerun it after editing any reading so the print copy never drifts from the app. `canvas/` also holds the paste-ready Canvas assignment page and the tracker PDF.
 
 ## Images
 
