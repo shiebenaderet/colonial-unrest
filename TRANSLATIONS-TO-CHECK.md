@@ -95,6 +95,6 @@ language). Please confirm or correct them; the English is the reference.
 | English | Español | Português | Русский | 中文 |
 |---|---|---|---|---|
 | Who acted: | ¿Quién actuó? | Quem agiu? | Кто действовал? | 谁采取了行动？ |
-| British action | Acción británica | Ação britânica | Действие Британии | 英国的行动 |
-| Colonial response | Respuesta colonial | Resposta colonial | Ответ колонистов | 殖民地的回应 |
-| Both sides clash | Choque de ambos lados | Choque dos dois lados | Столкновение сторон | 双方冲突 |
+| British Action | Acción británica | Ação britânica | Действие Британии | 英国的行动 |
+| Colonial Response | Respuesta colonial | Resposta colonial | Ответ колонистов | 殖民地的回应 |
+| Both Sides Clash | Choque de ambos lados | Choque dos dois lados | Столкновение сторон | 双方冲突 |

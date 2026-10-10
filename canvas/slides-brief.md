@@ -62,9 +62,9 @@ under the squares.
 
 Every placard shows a tag beside the title, on its own line after "Who acted:"
 
-- **→ British action** (Proclamation, Quartering, Stamp, Townshend, Intolerable)
-- **← Colonial response** (Tea Party, First Continental Congress)
-- **→← Both sides clash** (Boston Massacre, Lexington & Concord)
+- **→ British Action** (Proclamation, Quartering, Stamp, Townshend, Intolerable)
+- **← Colonial Response** (Tea Party, First Continental Congress)
+- **→← Both Sides Clash** (Boston Massacre, Lexington & Concord)
 
 On the paper tracker the label is *not* printed. Under each event students
 mark one of three boxes: ☐ Britain → ☐ ← Colonists ☐ →← Both. Tell them the
