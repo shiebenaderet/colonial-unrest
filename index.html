@@ -733,6 +733,7 @@
   /* Who-acted tag: text carries the meaning; colour is a second cue. Tints
      clear 7:1 on the dark theme and 5:1 on the light one. */
   .side-tag{display:inline-block;vertical-align:middle;font-size:13px;font-weight:700;letter-spacing:.02em;line-height:1.3;border-radius:999px;padding:2px 9px;border:1.5px solid currentColor;white-space:nowrap}
+  .side-glyph{font-weight:800;margin-right:.35em;letter-spacing:-.05em}
   .side-british{color:#ffb4a8} .side-colonial{color:#8fe0a8} .side-clash{color:#f3c76b}
   body.light .side-british{color:#9f1d12} body.light .side-colonial{color:#145a30} body.light .side-clash{color:#6b4400}
   .summary-title .side-tag{font-size:12px;padding:1px 8px}
@@ -1096,8 +1097,11 @@ const SIDE = {
 };
 function sideLabel(ev, lang='en'){ const t = SIDE[ev.side]; return t ? (t[lang] || t.en) : ''; }
 // filled = the solid chip on the placard header; elsewhere the tag is outlined.
+const SIDE_GLYPH = { british:'→', colonial:'←', clash:'→←' };   // who pushed whom
 function elSideTag(ev, lang='en', filled=false){
-  const tag = span(sideLabel(ev, lang), 'side-tag side-'+ev.side + (filled ? ' filled' : ''));
+  const tag = span('', 'side-tag side-'+ev.side + (filled ? ' filled' : ''));
+  const g = span(SIDE_GLYPH[ev.side] || '', 'side-glyph'); g.setAttribute('aria-hidden','true');
+  tag.append(g, sideLabel(ev, lang));
   if(lang!=='en'){ tag.setAttribute('lang', LANG_TAG[lang]); tag.setAttribute('translate','no'); }
   return tag;
 }

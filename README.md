@@ -33,7 +33,7 @@ All levels carry the same facts. Level 0 and its translations were fact-checked 
 Every question has one direct prompt, a **Look at** (where to find the evidence), and **Start with** sentence starters keyed to the student's level. On every placard, at every level, one starter asks for Britain's side and follows the who-acted tag: what Britain hoped a British action would do, how Britain read a colonial response, or how each side saw a clash. Level 0 adds a tap-to-insert **word bank** and accepts shorter answers. Level 3 adds a **Going further** prompt aimed at the level-4 criterion.
 
 ### Paper backup
-`tracker.html` prints one full-page tracker per letter sheet. Every level uses the same sheet: name, period, partner and pair number; the level read (circled once at the top); then for each event (with its who-acted tag) my rating, a ruled cell for why, our pair's points, and the class average. It is the paper record for the Day 6 pair budget and a backup if a computer resets.
+`tracker.html` prints one full-page tracker per letter sheet. Every level uses the same sheet: name, period, partner and pair number; the level read (circled once at the top); then for each event, who pushed (the student marks Britain →, ← Colonists, or →← Both), my rating, a ruled cell for why, our pair's points, and the class average. It is the paper record for the Day 6 pair budget and a backup if a computer resets.
 
 ## Suggested pacing
 
