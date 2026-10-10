@@ -60,11 +60,13 @@ under the squares.
 
 ## 4. Who pushed: The tags and the arrows (one slide)
 
-Every placard shows a tag beside the title, on its own line after "Who acted:"
+Every placard shows a pill beside the title, on its own line after "Who
+acted:", with the arrow drawn from the side that pushed, exactly as on the
+tracker:
 
-- **→ British Action** (Proclamation, Quartering, Stamp, Townshend, Intolerable)
-- **← Colonial Response** (Tea Party, First Continental Congress)
-- **→← Both Sides Clash** (Boston Massacre, Lexington & Concord)
+- **Colonists ← Britain** = British Action (Proclamation, Quartering, Stamp, Townshend, Intolerable)
+- **Colonists → Britain** = Colonial Response (Tea Party, First Continental Congress)
+- **Colonists →← Britain** = Both Sides Clash (Boston Massacre, Lexington & Concord)
 
 On the paper tracker the label is *not* printed. Under each event is
 "Colonists [box] Britain": students draw an arrow from the side that pushed,
@@ -147,7 +149,7 @@ app shows a Canvas logo beside the turn-in heading so they know where it goes.
 2. What we are learning (the two outcomes, levels 3 and 4, verbatim from the app).
 3. The three days at a glance.
 4. The unrest scale (section 3 above).
-5. Who pushed: The three tags with arrows, and the tracker box (arrow or X).
+5. Who pushed: The three pills (Colonists ← Britain, Colonists → Britain, Colonists →← Britain), and the tracker box (arrow or X).
 6. Model placard 1 (live in the app, or screenshots of: header with tag and
    Listen, the 1 to 8 squares with the key open, the Start with chips).
 7. Your tracker (the PDF, annotated: level at top, the who-pushed box, rating, why).

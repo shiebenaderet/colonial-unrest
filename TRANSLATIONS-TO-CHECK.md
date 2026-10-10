@@ -98,3 +98,5 @@ language). Please confirm or correct them; the English is the reference.
 | British Action | Acción británica | Ação britânica | Действие Британии | 英国的行动 |
 | Colonial Response | Respuesta colonial | Resposta colonial | Ответ колонистов | 殖民地的回应 |
 | Both Sides Clash | Choque de ambos lados | Choque dos dois lados | Столкновение сторон | 双方冲突 |
+| Colonists (on the pill) | Colonos | Colonos | Колонисты | 殖民地居民 |
+| Britain (on the pill) | Gran Bretaña | Grã-Bretanha | Британия | 英国 |
