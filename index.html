@@ -318,6 +318,12 @@
   .budget-hint.is-over{color:#f87171}
   .summary-actions-col{flex-direction:column;align-items:flex-end;gap:6px}
   .budget-cta-hint{font-size:12px;color:var(--muted);max-width:240px;text-align:right}
+  /* Once the 36 points balance, the Continue button is the obvious next step:
+     larger, labelled "Step 4 of 4 is next", and it pulses a few times. */
+  .budget-next-label{font-size:13px;font-weight:700;color:#15803d;text-transform:uppercase;letter-spacing:.06em}
+  .btn-ready{font-size:18px;padding:14px 22px;box-shadow:0 0 0 0 rgba(22,163,74,.55);animation:cta-pulse 1.6s ease-out 3}
+  .summary-footer.is-balanced, body.light .summary-footer.is-balanced{border-left:6px solid #16a34a !important}
+  @keyframes cta-pulse{0%{box-shadow:0 0 0 0 rgba(22,163,74,.55)}70%{box-shadow:0 0 0 14px rgba(22,163,74,0)}100%{box-shadow:0 0 0 0 rgba(22,163,74,0)}}
   body.light .budget-badge.is-balanced{color:#15803d;background:rgba(22,163,74,.12)}
   body.light .budget-badge.is-under{color:#b45309;background:rgba(217,119,6,.12)}
   body.light .budget-badge.is-over{color:#b91c1c;background:rgba(239,68,68,.12)}
@@ -452,6 +458,7 @@
 
 /* Respect users who ask the OS to reduce motion (ADHD, vestibular, migraine). */
 @media (prefers-reduced-motion: reduce){
+  .btn-ready{animation:none}
   html{scroll-behavior:auto}
   *,*::before,*::after{
     animation-duration:0.001ms !important;
@@ -2296,7 +2303,7 @@ function renderSummarySection(){
 
   card.append(
     summaryList,
-    h('div',{class:'summary-footer'},
+    h('div',{class:'summary-footer' + (remaining===0 ? ' is-balanced' : '')},
       h('div',{class:'budget-summary'},
         h('div',{class:'budget-head'},
           span('Points spent','sub'),
@@ -2309,7 +2316,8 @@ function renderSummarySection(){
         showNudge ? span('Your ratings barely differ — raise the events that mattered most and lower the smaller ones to show your thinking.', 'budget-nudge') : null
       ),
       h('div',{class:'summary-actions summary-actions-col'},
-        btn('Continue to reflections →', ()=>{ setPhase('questions'); scrollToSection('section-questions'); }, remaining!==0),
+        remaining===0 ? span('Step 4 of 4 is next', 'budget-next-label') : null,
+        (()=>{ const b = btn(remaining===0 ? 'Continue to reflections →' : 'Continue (spend all 36 first)', ()=>{ setPhase('questions'); scrollToSection('section-questions'); }, remaining!==0); if(remaining===0) b.classList.add('btn-large','btn-ready'); return b; })(),
         remaining!==0 ? span(ctaHint, 'budget-cta-hint') : null
       )
     ),
