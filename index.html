@@ -1647,9 +1647,9 @@ function buildWorkText(){
   const lvl = state.readLevel ? levelLabel(state.readLevel) : 'not chosen';
   const lang = state.readLevel==='l0' && state.l0lang!=='en' ? ` (${(L0_LANGS.find(([k])=>k===state.l0lang)||[])[1]})` : '';
   L.push('UNREST IN THE COLONIES');
-  L.push(`${A.name||'(no name)'} · Period ${A.period||'?'}${A.group ? ' · Group '+A.group : ''} · Starting reading level: ${lvl}${lang}`);
+  L.push(`${A.name||'(no name)'} · Period ${A.period||'?'}${A.group ? ' · Pair '+A.group : ''} · Starting reading level: ${lvl}${lang}`);
   L.push('');
-  L.push(`MY RATINGS AND REASONS (my first rating → ${A.group ? 'our group\'s' : 'final'} points)`);
+  L.push(`MY RATINGS AND REASONS (my first rating → ${A.group ? 'our pair\'s' : 'final'} points)`);
   EVENTS.forEach((ev,i)=>{
     const r = state.rows[ev.id];
     const first = state.firstPicks ? state.firstPicks[ev.id] : r.rating;
@@ -2165,14 +2165,15 @@ function renderSummarySection(){
   const card = h('div',{class:'step-card'});
   const groupInput = inp('group', state.answers.group||'', v=>{ state.answers.group=v; save(); });
   groupInput.id = 'group-number'; groupInput.classList.add('fm-group-input'); groupInput.setAttribute('autocomplete','off');
-  // Day 5: groups agree on one 36-point budget (on their trackers), and each
-  // student enters it here. The class average is built on class.html.
+  // Day 6: pairs agree on one 36-point budget (on their trackers), and each
+  // student enters it here with the pair number the teacher posted. The class
+  // average is built on class.html. (The field is still answers.group.)
   const intro = h('div',{class:'step-intro'},
-    h('h2',{},'Spend 36 points with your group'),
-    p('With your group, agree on how many points each event gets. The points must add up to exactly 36, so you cannot give every event an 8. Decide which events mattered most.', 'section-lead'),
+    h('h2',{},'Spend 36 points with your partner'),
+    p('With your partner, agree on how many points each event gets. The points must add up to exactly 36, so you cannot give every event an 8. Decide which events mattered most.', 'section-lead'),
     h('div',{class:'fm-group-row'},
-      h('label',{}, 'Group number', groupInput),
-      p('Write the same numbers in the “Our group” column on your tracker.', 'fm-hint')),
+      h('label',{}, 'Pair number', groupInput),
+      p('Your pair number is on the board, next to your names. Write the same points in the “Our pair” column on your tracker.', 'fm-hint')),
     p('Each event needs at least 1 point. To give a big event more, take points from smaller ones.', 'fm-hint')
   );
   card.append(intro);
@@ -2365,7 +2366,7 @@ function renderQuestionsSection(){
     headerRow.append(
       h('div',{class:'comparison-event'},'Event'),
       h('div',{class:'comparison-before'},'My first rating'),
-      h('div',{class:'comparison-after'}, state.answers.group ? 'Group points' : 'Final points'),
+      h('div',{class:'comparison-after'}, state.answers.group ? 'Pair points' : 'Final points'),
       h('div',{class:'comparison-change'},'Change')
     );
     comparisonTable.appendChild(headerRow);

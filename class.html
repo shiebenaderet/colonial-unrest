@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Class Unrest Average</title>
-<!-- Teacher page for Day 5. Type each group's 36-point budget from their
+<!-- Teacher page for Day 6. Type each pair's 36-point budget from their
      trackers; the page averages them, charts how unrest added up from 1763 to
-     1775, and lists the events groups disagreed on most. Data stays in this
+     1775, and lists the events pairs disagreed on most. Data stays in this
      browser (one set per period). Nothing is sent anywhere. -->
 <link rel="stylesheet" href="fonts/atkinson.css">
 <style>
@@ -93,11 +93,11 @@
   </section>
 
   <section class="card entry">
-    <h2>Group budgets</h2>
-    <p class="hint">Type each group's points from the “Our group” column of their tracker. Each row should add up to 36. Saved in this browser, separately for each period.</p>
+    <h2>Pair budgets</h2>
+    <p class="hint">Type each pair's points from the “Our pair” column of their tracker, in the row with their pair number. Each row should add up to 36. Saved in this browser, separately for each period.</p>
     <div class="table-wrap"><table id="entry"></table></div>
     <div class="row-actions">
-      <button class="btn" id="addRow" type="button">+ Add a group</button>
+      <button class="btn" id="addRow" type="button">+ Add a pair</button>
       <button class="btn" id="copy" type="button">Copy results as text</button>
       <button class="btn" id="clear" type="button">Clear this period</button>
     </div>
@@ -147,15 +147,15 @@
   // ---- entry table
   function drawEntry(){
     var t=$('entry'); t.textContent='';
-    var head=el('tr',{},[el('th',{text:'Group'})]);
+    var head=el('tr',{},[el('th',{text:'Pair'})]);
     EVENTS.forEach(function(e,i){ head.appendChild(el('th',{scope:'col'},[ (i+1)+'. '+e[1], el('span',{class:'yr',text:String(e[2])}) ])); });
     head.appendChild(el('th',{text:'Total'})); head.appendChild(el('th',{},[el('span',{class:'muted',text:''})]));
     t.appendChild(el('thead',{},[head]));
     var tb=el('tbody');
     rows().forEach(function(r,ri){
-      var tr=el('tr'); tr.appendChild(el('th',{scope:'row',text:'Group '+(ri+1)}));
+      var tr=el('tr'); tr.appendChild(el('th',{scope:'row',text:'Pair '+(ri+1)}));
       r.forEach(function(v,ci){
-        var inp=el('input',{type:'text',inputmode:'numeric',maxlength:'1',value:v,'aria-label':'Group '+(ri+1)+', '+EVENTS[ci][0]});
+        var inp=el('input',{type:'text',inputmode:'numeric',maxlength:'1',value:v,'aria-label':'Pair '+(ri+1)+', '+EVENTS[ci][0]});
         var n=parseInt(v,10); if(v!=='' && !(n>=1&&n<=8)) inp.classList.add('bad');
         inp.addEventListener('input', function(){
           this.value=this.value.replace(/[^0-9]/g,'').slice(0,1); r[ci]=this.value; save();
@@ -166,7 +166,7 @@
         tr.appendChild(el('td',{},[inp]));
       });
       tr.appendChild(el('td',{class:'total'}));
-      var del=el('button',{class:'del',type:'button','aria-label':'Remove group '+(ri+1),title:'Remove this group',text:'×'});
+      var del=el('button',{class:'del',type:'button','aria-label':'Remove pair '+(ri+1),title:'Remove this pair',text:'×'});
       del.addEventListener('click', function(){ rows().splice(ri,1); save(); drawEntry(); drawResults(); });
       tr.appendChild(el('td',{},[del]));
       updateTotal(tr, r);
@@ -211,8 +211,8 @@
     var s=stats(), box=$('chartBox'), facts=$('facts'), tbl=$('avgTable');
     box.textContent=''; facts.textContent=''; tbl.textContent='';
     var all=rows().filter(function(r){ return r.some(function(v){return v!=='';}); }).length;
-    if(!s){ $('basis').textContent=''; box.appendChild(el('p',{class:'empty',text:'Results appear here once at least one group’s row adds up to exactly 36.'})); return; }
-    $('basis').textContent = 'Based on '+s.n+' group'+(s.n>1?'s':'')+(all>s.n ? ' ('+(all-s.n)+' row'+(all-s.n>1?'s':'')+' not counted yet: '+(all-s.n>1?'they don’t':'it doesn’t')+' add up to 36)' : '')+'. Period '+period+'.';
+    if(!s){ $('basis').textContent=''; box.appendChild(el('p',{class:'empty',text:'Results appear here once at least one pair’s row adds up to exactly 36.'})); return; }
+    $('basis').textContent = 'Based on '+s.n+' pair'+(s.n>1?'s':'')+(all>s.n ? ' ('+(all-s.n)+' row'+(all-s.n>1?'s':'')+' not counted yet: '+(all-s.n>1?'they don’t':'it doesn’t')+' add up to 36)' : '')+'. Period '+period+'.';
     box.appendChild(chart(s));
     // facts
     var order=s.avg.map(function(a,i){return i;}).sort(function(a,b){return s.avg[b]-s.avg[a];});
@@ -222,8 +222,8 @@
     facts.appendChild(el('div',{class:'fact'},[el('h3',{text:'Biggest jump in the line'}), el('p',{text:EVENTS[jumps][0]+' added the most: the line climbs '+r1(s.avg[jumps])+' points there.'})]));
     if(s.n>1){
       var top=debate.filter(function(i){ return s.max[i]-s.min[i]>=2; }).slice(0,2);
-      facts.appendChild(el('div',{class:'fact'},[el('h3',{text:'Groups disagreed most about'}),
-        top.length ? el('ol',{}, top.map(function(i){ return el('li',{text:EVENTS[i][0]+': from '+s.min[i]+' to '+s.max[i]+' points'}); })) : el('p',{text:'Groups mostly agreed: no event differed by 2 or more points.'})]));
+      facts.appendChild(el('div',{class:'fact'},[el('h3',{text:'Pairs disagreed most about'}),
+        top.length ? el('ol',{}, top.map(function(i){ return el('li',{text:EVENTS[i][0]+': from '+s.min[i]+' to '+s.max[i]+' points'}); })) : el('p',{text:'Pairs mostly agreed: no event differed by 2 or more points.'})]));
     }
     // table view
     var t=el('table',{class:'avg-table'}); t.appendChild(el('thead',{},[el('tr',{},[el('th',{text:'Event'}),el('th',{text:'Year'}),el('th',{text:'Who acted'}),el('th',{text:'Average'}),el('th',{text:'Range'}),el('th',{text:'Running total'})])]));
@@ -274,8 +274,8 @@
 
   $('copy').addEventListener('click', function(){
     var s=stats(); if(!s){ this.textContent='No complete rows yet'; var b=this; setTimeout(function(){ b.textContent='Copy results as text'; },2000); return; }
-    var lines=['Class unrest average, Period '+period+' ('+s.n+' groups)'];
-    EVENTS.forEach(function(e,i){ lines.push(e[0]+' ('+e[2]+', '+e[3]+'): '+r1(s.avg[i])+' (groups gave '+s.min[i]+'–'+s.max[i]+'), running total '+r1(s.run[i])); });
+    var lines=['Class unrest average, Period '+period+' ('+s.n+' pairs)'];
+    EVENTS.forEach(function(e,i){ lines.push(e[0]+' ('+e[2]+', '+e[3]+'): '+r1(s.avg[i])+' (pairs gave '+s.min[i]+'–'+s.max[i]+'), running total '+r1(s.run[i])); });
     var text=lines.join('\n'), b=this;
     var done=function(ok){ b.textContent= ok?'Copied':'Copy failed: select the table instead'; setTimeout(function(){ b.textContent='Copy results as text'; },2200); };
     if(navigator.clipboard) navigator.clipboard.writeText(text).then(function(){done(true);},function(){done(false);}); else done(false);
