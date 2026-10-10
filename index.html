@@ -588,6 +588,11 @@
   header #rtools{position:relative;margin:0;flex-wrap:nowrap}
   header #rtools .rt-btn{min-height:40px;padding:.35rem .8rem}
   header .rt-panel{position:absolute;top:calc(100% + 8px);right:0;width:min(360px,90vw);z-index:30;box-shadow:0 10px 30px rgba(0,0,0,.3);color:var(--fg)}
+  /* Each panel row is a label column and an options column, so options that wrap
+     line up under the first one instead of under the label. */
+  header .rt-panel .rt-row{display:grid;grid-template-columns:76px 1fr;gap:10px;align-items:center;margin:0 0 14px}
+  header .rt-panel .rt-row:last-child{margin:0}
+  header .rt-panel .rt-opts{display:flex;flex-wrap:wrap;gap:8px}
   #rtools,.rt-player{--card:var(--panel);--ink:var(--fg);--band:var(--surface-alt);--rule:var(--border)}
 
   /* Header on narrow screens: wrap the actions under the title instead of
@@ -3674,5 +3679,17 @@ attachHeaderListeners();
 render();
 </script>
 <script src="reader-tools.js?v=20261005"></script>
+<script>
+// Group each Font-panel row's buttons so the row can be label + options (see the
+// header .rt-panel .rt-row rule). The buttons keep their handlers.
+window.addEventListener("load", function(){
+  document.querySelectorAll("#rtools .rt-row").forEach(function(row){
+    if(row.querySelector(".rt-opts")) return;
+    var opts = document.createElement("div"); opts.className = "rt-opts";
+    Array.prototype.slice.call(row.querySelectorAll(":scope > .rt-opt")).forEach(function(b){ opts.appendChild(b); });
+    row.appendChild(opts);
+  });
+});
+</script>
 </body>
 </html>
