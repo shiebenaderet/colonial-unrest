@@ -724,6 +724,20 @@
   .side-british{color:#ffb4a8} .side-colonial{color:#8fe0a8} .side-clash{color:#f3c76b}
   body.light .side-british{color:#9f1d12} body.light .side-colonial{color:#145a30} body.light .side-clash{color:#6b4400}
   .summary-title .side-tag{font-size:12px;padding:1px 8px}
+  /* Placard header: title (+ Listen) on the first row, who acted (+ level tabs) on the second. */
+  .fm-read-h{display:grid;grid-template-columns:1fr auto;gap:10px 12px;align-items:center}
+  .fm-read-h h2{grid-column:1;grid-row:1}
+  .fm-read-h .fm-listen{grid-column:2;grid-row:1;justify-self:end}
+  .fm-read-h .fm-who{grid-column:1;grid-row:2;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .fm-read-h .fm-levels{grid-column:2;grid-row:2;justify-self:end}
+  .fm-who-label{font-size:14px;font-weight:700;color:var(--muted)}
+  .side-tag.filled, body.light .side-tag.filled{color:#fff;border-color:transparent;font-size:14px;padding:4px 12px}
+  .side-tag.filled.side-british{background:#9f1d12} .side-tag.filled.side-colonial{background:#145a30} .side-tag.filled.side-clash{background:#6b4400}
+  .fm-listen{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:4px 12px;border-radius:999px;border:1.5px solid var(--edge);background:var(--surface-alt);color:var(--fg);font-weight:700;font-size:14px;cursor:pointer}
+  .fm-listen svg{width:20px;height:20px;flex:none}
+  .fm-listen:hover{border-color:var(--accent)}
+  .fm-listen:disabled{opacity:.5;cursor:default}
+  @media (max-width:640px){ .fm-read-h{grid-template-columns:1fr} .fm-read-h h2,.fm-read-h .fm-listen,.fm-read-h .fm-who,.fm-read-h .fm-levels{grid-column:1;grid-row:auto;justify-self:start} }
   nav.timeline .side-tag{display:block;width:max-content;margin-top:4px;font-size:11px;padding:0 7px}
   nav.timeline li button.active .side-tag{color:#fff}
   /* Reflection 2: pick the event and what it led to; the starters fill in the names. */
@@ -1062,11 +1076,13 @@ const LANG_TAG = {en:'en', es:'es', pt:'pt-BR', ru:'ru', zh:'zh-Hans'};
 const SIDE = {
   british:  {en:'British action',    es:'Acción británica',      pt:'Ação britânica',        ru:'Действие Британии',   zh:'英国的行动'},
   colonial: {en:'Colonial response', es:'Respuesta colonial',    pt:'Resposta colonial',     ru:'Ответ колонистов',    zh:'殖民地的回应'},
-  clash:    {en:'Both sides clash',  es:'Choque de ambos lados', pt:'Choque dos dois lados', ru:'Столкновение сторон', zh:'双方冲突'}
+  clash:    {en:'Both sides clash',  es:'Choque de ambos lados', pt:'Choque dos dois lados', ru:'Столкновение сторон', zh:'双方冲突'},
+  who:      {en:'Who acted:',        es:'¿Quién actuó?',          pt:'Quem agiu?',            ru:'Кто действовал?',     zh:'谁采取了行动？'}
 };
 function sideLabel(ev, lang='en'){ const t = SIDE[ev.side]; return t ? (t[lang] || t.en) : ''; }
-function elSideTag(ev, lang='en'){
-  const tag = span(sideLabel(ev, lang), 'side-tag side-'+ev.side);
+// filled = the solid chip on the placard header; elsewhere the tag is outlined.
+function elSideTag(ev, lang='en', filled=false){
+  const tag = span(sideLabel(ev, lang), 'side-tag side-'+ev.side + (filled ? ' filled' : ''));
   if(lang!=='en'){ tag.setAttribute('lang', LANG_TAG[lang]); tag.setAttribute('translate','no'); }
   return tag;
 }
@@ -1929,17 +1945,24 @@ function elTimeline(){
 // react, so students rate by evidence of reaction rather than by gut feeling.
 // Grouped under the meter's four labels (Calm, Rising, Boiling, Explosive).
 const SCALE = [
-  {n:1, band:'Calm',      name:'Barely noticed', desc:'Most colonists shrug it off.'},
-  {n:2, band:'Calm',      name:'Grumbling',      desc:'Some colonists complain to each other.'},
-  {n:3, band:'Rising',    name:'Upset',          desc:'People argue about it in town and in newspapers.'},
-  {n:4, band:'Rising',    name:'Angry',          desc:'Colonists send complaints and petitions to Britain.'},
-  {n:5, band:'Boiling',   name:'Protest',        desc:'Colonists boycott, march, or refuse to obey the law.'},
-  {n:6, band:'Boiling',   name:'Fury',           desc:'Crowds turn rough, and protest spreads to other colonies.'},
-  {n:7, band:'Explosive', name:'Defiance',       desc:'Colonies work together to openly defy Britain.'},
-  {n:8, band:'Explosive', name:'Ready to fight', desc:'Colonists arm themselves, and fighting breaks out.'}
+  // Each meaning says how angry people were and how many, never which action
+  // they took, so a word naming an action in the reading can't be matched to
+  // a number.
+  {n:1, band:'Calm',      name:'Barely noticed', desc:'Almost nobody cares. Life goes on.'},
+  {n:2, band:'Calm',      name:'Grumbling',      desc:'A few people are annoyed and say so to friends.'},
+  {n:3, band:'Rising',    name:'Upset',          desc:'Many people are bothered. It comes up in town and in the papers.'},
+  {n:4, band:'Rising',    name:'Angry',          desc:'Most people are angry, and they want Britain to hear it.'},
+  {n:5, band:'Boiling',   name:'Protest',        desc:'Anger is strong and shared. People are ready to act together.'},
+  {n:6, band:'Boiling',   name:'Fury',           desc:'Crowds are furious. Tempers are hot enough to turn rough.'},
+  {n:7, band:'Explosive', name:'Defiance',       desc:'Whole colonies are angry together and no longer willing to obey.'},
+  {n:8, band:'Explosive', name:'Ready to fight', desc:'Anger is everywhere, and people will risk their lives over it.'}
 ];
 // The scale in the Level 0 languages, shown when a student reads Level 0 in
 // that language. Each name keeps the English word beside it for class talk.
+// NOTE (Oct 2026): the English prompt and meanings were rewritten to measure
+// anger and how many people felt it, not which action they took. The lines
+// below are still the OLD meanings. Drafts of the new ones, awaiting a native
+// speaker's check, are in TRANSLATIONS-TO-CHECK.md; swap them in once checked.
 const SCALE_I18N = {
   es:{summary:'¿Qué significan los números?', prompt:'Imagina que vives en las colonias. ¿Cómo reaccionaría la gente ante este suceso? Elige el número que mejor corresponde.', means:'significa',
       items:[['Casi nadie lo nota','La mayoría de los colonos no le da importancia.'],['Quejas','Algunos colonos se quejan entre ellos.'],['Molestia','La gente discute sobre esto en el pueblo y en los periódicos.'],['Enojo','Los colonos envían quejas y peticiones a Gran Bretaña.'],['Protesta','Los colonos hacen boicots, marchan o se niegan a obedecer la ley.'],['Furia','Las multitudes se ponen agresivas y la protesta se extiende a otras colonias.'],['Desafío','Las colonias trabajan juntas para desafiar abiertamente a Gran Bretaña.'],['Listos para pelear','Los colonos se arman y empiezan los combates.']]},
@@ -1968,13 +1991,32 @@ function elScaleKey(open, lang='en'){
   if(open) det.open = true;
   if(t){ det.setAttribute('lang', LANG_TAG[lang]); det.setAttribute('translate','no'); }
   det.appendChild(h('summary',{}, t ? t.summary : 'What do the numbers mean?'));
-  det.appendChild(p(t ? t.prompt : 'Imagine you live in the colonies. How would people react to this event? Pick the number that matches.', 'fm-hint'));
+  det.appendChild(p(t ? t.prompt : 'Imagine you live in the colonies. How angry would this make people, and how many of them? Pick the number that fits.', 'fm-hint'));
   const list = h('ol',{class:'fm-scale-list'});
   SCALE.forEach(sc=>{ const st = scaleText(sc.n, lang); list.appendChild(h('li',{}, span(String(sc.n),'fm-scale-n'), h('span',{}, strong(st.label), ` — ${st.desc}`))); });
   det.appendChild(list);
   return det;
 }
 
+// A small Listen button on the placard itself (headphones), so a student does
+// not have to find the one in the header. It presses the header's button and
+// mirrors its word (Listen / Pause / Resume) through one shared observer.
+const ICON_HEADPHONES = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M4 15v-4a8 8 0 0 1 16 0v4"/><path fill="currentColor" d="M3 14h3a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2v-4zm18 0h-3a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h1a2 2 0 0 0 2-2v-4z"/></svg>';
+let listenMirror = null;
+function headerListenButton(){ return document.querySelector('#rtools .rt-primary'); }
+function syncListenButtons(){
+  const hb = headerListenButton(); const word = (hb && hb.getAttribute('aria-label')) || 'Listen';
+  document.querySelectorAll('.fm-listen').forEach(b=>{ b.querySelector('span').textContent = word; b.setAttribute('aria-label', word + ': read this screen aloud'); b.disabled = Boolean(hb && hb.disabled); });
+}
+function elListenButton(){
+  const b = h('button',{type:'button', class:'fm-listen', onclick:()=>{ const hb = headerListenButton(); if(hb) hb.click(); }});
+  b.innerHTML = ICON_HEADPHONES; b.appendChild(span('Listen'));
+  b.setAttribute('aria-label','Listen: read this screen aloud');
+  const hb = headerListenButton();
+  if(hb && !listenMirror){ listenMirror = new MutationObserver(syncListenButtons); listenMirror.observe(hb, {attributes:true, attributeFilter:['aria-label','disabled']}); }
+  if(hb) queueMicrotask(syncListenButtons);
+  return b;
+}
 // One placard per screen: the reading on the left, rate-and-explain on the
 // right, so the evidence stays in view while students write.
 function elProgressDots(){
@@ -2013,8 +2055,16 @@ function renderPlacardsSection(){
   fig.classList.add('fm-figure');
   reading.appendChild(fig);
   fillReading(reading, e, row.level);
+  // The year is left off when the title already says it (Proclamation of 1763).
+  const yearEl = e.title.includes(String(e.year)) ? null : span(String(e.year),'fm-year');
+  const whoLabel = span(SIDE.who[tagLang] || SIDE.who.en, 'fm-who-label');
+  if(tagLang!=='en'){ whoLabel.setAttribute('lang', LANG_TAG[tagLang]); whoLabel.setAttribute('translate','no'); }
   const readCol = h('article',{class:'fm-pane fm-read'},
-    h('div',{class:'fm-pane-h'}, h('h2',{}, e.title, ' ', span(String(e.year),'fm-year'), ' ', elSideTag(e, tagLang)), tabs),
+    h('div',{class:'fm-pane-h fm-read-h'},
+      h('h2',{}, e.title, yearEl ? ' ' : null, yearEl),
+      elListenButton(),
+      h('div',{class:'fm-who'}, whoLabel, elSideTag(e, tagLang, true)),
+      tabs),
     row.level==='l0' ? elLangPicker() : null,
     reading,
     elKeyTerms(e.id, row.level)
