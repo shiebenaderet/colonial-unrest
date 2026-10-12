@@ -788,6 +788,9 @@
   .fm-pill{margin-left:auto;font-size:14px;font-weight:700;color:var(--fg);background:var(--surface-alt);border-radius:999px;padding:2px 10px}
   .fm-q{font-weight:700}
   .fm-turn .fm-actions{padding:0 16px 16px}
+  .fm-finisher{margin:0 16px 16px;padding:12px 14px;border-radius:10px;background:var(--tint);display:grid;gap:4px}
+  .fm-finisher .fm-hint{margin:0}
+  .fm-finisher-link{color:var(--accent);font-weight:800;text-decoration:underline}
   .meter-cell, body.light .meter-cell{padding-top:0 !important;height:44px;border-radius:8px;border:1.5px solid var(--edge) !important;background:var(--surface-alt) !important;color:var(--fg);font-weight:800;font-size:16px;transform:none !important}
   .meter-cell::after{display:none !important}
   .meter-num{position:relative;z-index:1}
@@ -2186,7 +2189,12 @@ function renderPlacardsSection(){
     h('div',{class:'fm-turn-body'}, step1, step2),
     h('div',{class:'fm-actions'},
       btnGhost('← Back', ()=>{ if(state.current>0){ state.current--; save(); render(); } }, state.current===0),
-      btn(isLast ? 'Spend your 36 points →' : 'Save & next →', saveAndContinue))
+      btn(isLast ? 'Spend your 36 points →' : 'Save & next →', saveAndContinue)),
+    // Fast finishers: the extension menu lives beside the activity (Oct 2026).
+    isLast ? h('div',{class:'fm-finisher'},
+      h('strong',{},'Finished all nine placards?'),
+      p('Pick an activity from the Fast Finisher Menu while you wait for the class.','fm-hint'),
+      a('fast-finisher.html','Open the Fast Finisher Menu →','fm-finisher-link')) : null
   );
 
   section.append(...[

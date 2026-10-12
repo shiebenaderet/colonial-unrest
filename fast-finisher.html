@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fast Finisher Menu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap">
+<style>
+/* Layout: one column of menu cards ordered by difficulty; each card opens its activity in place. Unit 2 brick red palette. */
+:root{
+  --bg:#f6f1e8; --panel:#fffdf9; --ink:#1f2124; --muted:#5a4f45; --rule:#d6cfc3;
+  --deep:#7a2a28; --accent:#b23a34; --tint:#f6e7e4; --gold:#9a7536;
+  --ok:#2c6b37; --ok-tint:#e4f1e6; --bad:#9f1d12; --bad-tint:#fbe4e1; --on-accent:#ffffff;
+  --display:'Playfair Display',Georgia,'Times New Roman',serif;
+  --body:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1a1614; --panel:#241f1c; --ink:#f3ece3; --muted:#c9bcae; --rule:#40362f;
+  --deep:#f0a59c; --accent:#e9827a; --tint:#3a2421; --gold:#d9b46a;
+  --ok:#8fd19a; --ok-tint:#1f3424; --bad:#ff9f94; --bad-tint:#3d1f1c; --on-accent:#1a0b09; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1a1614; --panel:#241f1c; --ink:#f3ece3; --muted:#c9bcae; --rule:#40362f;
+  --deep:#f0a59c; --accent:#e9827a; --tint:#3a2421; --gold:#d9b46a;
+  --ok:#8fd19a; --ok-tint:#1f3424; --bad:#ff9f94; --bad-tint:#3d1f1c; --on-accent:#1a0b09; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55;margin:0}
+.wrap{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:28px 56px;display:grid;gap:22px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;color:var(--deep)}
+h1{font-size:clamp(30px,6vw,42px);line-height:1.1}
+h2{font-size:24px}
+h3{font-size:19px}
+p{margin:0}
+a{color:var(--accent);font-weight:700}
+.lead{max-width:62ch}
+.rule-box{background:var(--tint);border-left:5px solid var(--accent);border-radius:8px;padding:12px 16px;font-weight:700}
+.who{display:flex;flex-wrap:wrap;gap:10px;align-items:end;background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:14px 16px}
+.who label{display:flex;flex-direction:column;gap:4px;font-weight:700;font-size:15px;flex:1 1 140px;min-width:0}
+input[type=text],select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--rule);border-radius:8px;padding:9px 11px;width:100%}
+textarea{min-height:110px;resize:vertical}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+.menu{display:grid;gap:16px}
+.item{background:var(--panel);border:1px solid var(--rule);border-radius:14px;overflow:hidden}
+.item > summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:16px 18px}
+.item > summary::-webkit-details-marker{display:none}
+.stars{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:70px}
+.stars b{color:var(--accent);font-size:18px;letter-spacing:1px;line-height:1}
+.stars span{font-size:13px;font-weight:800;color:var(--muted)}
+.sum-text{display:grid;gap:3px;min-width:0}
+.meta{font-size:14px;color:var(--muted);font-weight:600}
+.open-tag{font-size:14px;font-weight:800;color:var(--accent);white-space:nowrap}
+.item[open] .open-tag::after{content:" ▴"}
+.item:not([open]) .open-tag::after{content:" ▾"}
+.body{padding:4px 18px 20px;display:grid;gap:14px;border-top:1px solid var(--rule)}
+.body > :first-child{margin-top:14px}
+ol,ul{margin:0;padding-left:22px;display:grid;gap:6px}
+.btn{font:inherit;font-weight:800;font-size:16px;border:0;border-radius:8px;padding:10px 16px;background:var(--accent);color:var(--on-accent);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--rule)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btnrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.linkbtn{display:inline-block;text-decoration:none;background:var(--accent);color:var(--on-accent);border-radius:8px;padding:10px 16px;font-weight:800}
+
+/* quiz + detective */
+.q{border:1px solid var(--rule);border-radius:10px;padding:12px 14px;display:grid;gap:8px}
+.q p.prompt{font-weight:700}
+.opts{display:grid;gap:6px}
+.opt{font:inherit;text-align:left;background:var(--bg);color:var(--ink);border:1.5px solid var(--rule);border-radius:8px;padding:8px 12px;cursor:pointer}
+.opt.right{background:var(--ok-tint);border-color:var(--ok)}
+.opt.wrong{background:var(--bad-tint);border-color:var(--bad)}
+.opt:disabled{cursor:default}
+.fb{font-size:15px;font-weight:600}
+.fb.right{color:var(--ok)} .fb.wrong{color:var(--bad)}
+.score{font-weight:800;font-size:18px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+
+/* breakout */
+.locks{display:flex;gap:8px;flex-wrap:wrap}
+.lockpip{font-size:14px;font-weight:800;border-radius:999px;padding:4px 12px;border:1.5px solid var(--rule);color:var(--muted)}
+.lockpip.now{border-color:var(--accent);color:var(--accent)}
+.lockpip.done{background:var(--ok);border-color:var(--ok);color:var(--panel)}
+.lock{background:var(--bg);border:2px solid var(--deep);border-radius:12px;padding:16px;display:grid;gap:12px}
+.cipher{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:24px;font-weight:700;letter-spacing:4px;word-break:break-word;color:var(--deep)}
+.wheel{overflow-x:auto}
+.wheel table{border-collapse:collapse;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:15px}
+.wheel td{border:1px solid var(--rule);padding:3px 6px;text-align:center;min-width:26px}
+.wheel tr:first-child td{font-weight:800;color:var(--deep)}
+.price{border-collapse:collapse;font-variant-numeric:tabular-nums}
+.price td,.price th{border-bottom:1px solid var(--rule);padding:6px 10px;text-align:left}
+.price th{font-weight:800}
+.order-list{display:grid;gap:6px;padding:0;list-style:none}
+.order-list li{display:flex;gap:10px;align-items:center;background:var(--panel);border:1px solid var(--rule);border-radius:8px;padding:8px 12px}
+.badge{display:inline-grid;place-items:center;min-width:34px;height:34px;border-radius:8px;background:var(--deep);color:var(--panel);font-weight:800;font-variant-numeric:tabular-nums}
+.side-row{display:grid;grid-template-columns:1fr minmax(0,210px);gap:10px;align-items:center}
+@media(max-width:560px){.side-row{grid-template-columns:1fr}}
+.code-in{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.code-in input{max-width:220px;font-size:20px;font-weight:800;letter-spacing:2px}
+.msg{font-weight:700}
+.msg.wrong{color:var(--bad)} .msg.right{color:var(--ok)}
+.hint{font-size:15px;color:var(--muted);background:var(--panel);border-radius:8px;padding:8px 12px}
+.escaped{background:var(--ok-tint);border:2px solid var(--ok);border-radius:12px;padding:18px;display:grid;gap:8px;text-align:center}
+.escaped .code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:26px;font-weight:800;letter-spacing:3px;color:var(--ok)}
+
+.sign-list{display:grid;gap:8px;padding:0;list-style:none}
+.sign-list li{border:1px solid var(--rule);border-radius:10px;padding:10px 14px;display:grid;gap:2px}
+.sign-list b{color:var(--deep)}
+.small{font-size:15px;color:var(--muted)}
+footer{font-size:14px;color:var(--muted);text-align:center}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<main class="wrap">
+  <header style="display:grid;gap:10px">
+    <h1>Fast Finisher Menu</h1>
+    <p class="lead">Done with Understanding Unrest? Pick one activity below. The stars show how hard it is, from one star (easier) to four stars (hardest).</p>
+  </header>
+
+  <p class="rule-box">Before you start: all nine placards on Understanding Unrest must be rated, with a reason for each one.</p>
+
+  <section class="who" aria-label="Your name">
+    <label for="fn">First name<input type="text" id="fn" autocomplete="off"></label>
+    <label for="li">Last initial<input type="text" id="li" maxlength="1" autocomplete="off"></label>
+    <label for="per">Period
+      <select id="per"><option value="">Pick</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select>
+    </label>
+  </section>
+
+  <section class="menu" aria-label="Activities">
+
+    <!-- 1 star: protest sign -->
+    <details class="item" id="sign">
+      <summary>
+        <div class="stars" aria-label="1 star"><b>★</b><span>Easier</span></div>
+        <div class="sum-text"><h2>Protest Sign</h2><p class="meta">Paper and colored pencils · 20 minutes</p></div>
+        <span class="open-tag">Open</span>
+      </summary>
+      <div class="body">
+        <p>Make a protest sign a colonist could have carried. Use one sheet of 8.5 x 11 paper.</p>
+        <ol>
+          <li>Pick one complaint from the list below.</li>
+          <li>Write a short slogan on your sign (5 to 8 words).</li>
+          <li>Draw a picture that shows the complaint. Fill the page.</li>
+          <li>On the back, write your name, the event, and one sentence: "Colonists were angry because ___."</li>
+        </ol>
+        <h3>Complaints From the Placards</h3>
+        <ul class="sign-list">
+          <li><b>Proclamation of 1763</b><span>We fought for that land, and now we can't settle on it.</span></li>
+          <li><b>Quartering Act</b><span>We have to house and supply soldiers we never asked for.</span></li>
+          <li><b>Stamp Act</b><span>We pay a tax on paper, but no one in Parliament speaks for us.</span></li>
+          <li><b>Townshend Acts</b><span>Glass, paint, paper and tea are taxed before they reach our stores.</span></li>
+          <li><b>Boston Massacre</b><span>Soldiers fired on a crowd in our own streets.</span></li>
+          <li><b>Tea Act (Boston Tea Party)</b><span>Britain decided about our tea without asking us.</span></li>
+          <li><b>Intolerable Acts</b><span>Boston's port is closed and our town meetings are limited.</span></li>
+        </ul>
+        <p class="small">Turn your sign in to the tray. Mr. B may hang the best ones on the wall.</p>
+      </div>
+    </details>
+
+    <!-- 2 stars: Liberty's Kids -->
+    <details class="item" id="lk">
+      <summary>
+        <div class="stars" aria-label="2 stars"><b>★★</b><span>Medium</span></div>
+        <div class="sum-text"><h2>Liberty's Kids: The Boston Tea Party</h2><p class="meta">Video with headphones, then 10 questions · 35 minutes</p></div>
+        <span class="open-tag">Open</span>
+      </summary>
+      <div class="body">
+        <p>Watch Episode 1 of Liberty's Kids. It is a cartoon from PBS about two teenage reporters in 1773. Then answer the questions. You can't change an answer after you pick it, so watch closely.</p>
+        <div class="btnrow"><a class="linkbtn" href="https://www.youtube.com/watch?v=R8Ch0zsHVUk" target="_blank" rel="noopener">Watch on YouTube</a><span class="small">About 24 minutes. Headphones on.</span></div>
+        <div id="lkQuiz" class="menu"></div>
+        <p class="score" id="lkScore" aria-live="polite"></p>
+        <div class="btnrow"><button class="btn ghost" type="button" id="lkCopy">Copy my results</button><span class="small" id="lkCopyMsg" aria-live="polite"></span></div>
+      </div>
+    </details>
+
+    <!-- 3 stars: Engraving Detective -->
+    <details class="item" id="det">
+      <summary>
+        <div class="stars" aria-label="3 stars"><b>★★★</b><span>Hard</span></div>
+        <div class="sum-text"><h2>Engraving Detective</h2><p class="meta">Primary source · 20 minutes</p></div>
+        <span class="open-tag">Open</span>
+      </summary>
+      <div class="body">
+        <p>Paul Revere made a famous picture of the Boston Massacre in 1770. It spread across the colonies and made people furious. But was it true? Open the picture and look closely. Then decide what each detail is.</p>
+        <div class="btnrow"><a class="linkbtn" href="https://en.wikipedia.org/wiki/Boston_Massacre" target="_blank" rel="noopener">Open the Engraving</a><span class="small">It is the first picture on the page. Tap it to zoom in.</span></div>
+        <p><b>Fact</b> means it really happened. <b>Exaggerated</b> means Revere changed it to make the British look worse. <b>Left Out</b> means something true that the picture hides.</p>
+        <div id="detQuiz" class="menu"></div>
+        <p class="score" id="detScore" aria-live="polite"></p>
+        <label for="detWhy" style="font-weight:700;display:grid;gap:6px">Why would Revere make the picture this way? Use one detail as evidence.
+          <span class="small" style="font-weight:600">Start with: "Revere showed ___ because he wanted colonists to ___."</span>
+          <textarea id="detWhy"></textarea>
+        </label>
+        <div class="btnrow"><button class="btn ghost" type="button" id="detCopy">Copy my results</button><span class="small" id="detCopyMsg" aria-live="polite"></span></div>
+      </div>
+    </details>
+
+    <!-- 3.5 stars: Breakout -->
+    <details class="item" id="bo">
+      <summary>
+        <div class="stars" aria-label="3 stars"><b>★★★</b><span>Hard</span></div>
+        <div class="sum-text"><h2>Boston 1770 Breakout</h2><p class="meta">Four locks · 20 to 30 minutes</p></div>
+        <span class="open-tag">Open</span>
+      </summary>
+      <div class="body">
+        <p>The Sons of Liberty locked their secret papers in a chest. Open all four locks to find the password. Every student gets different codes, so you have to solve your own.</p>
+        <div class="locks" id="boPips" aria-label="Lock progress"></div>
+        <div id="boStage"></div>
+      </div>
+    </details>
+
+    <!-- 4 stars: Mission US -->
+    <details class="item" id="mus">
+      <summary>
+        <div class="stars" aria-label="4 stars"><b>★★★★</b><span>Challenge</span></div>
+        <div class="sum-text"><h2>Mission US: For Crown or Colony?</h2><p class="meta">Game with headphones · 40 minutes or more</p></div>
+        <span class="open-tag">Open</span>
+      </summary>
+      <div class="body">
+        <p>Play Nat Wheeler, a 14-year-old printer's apprentice in Boston in 1770. You will meet Patriots and Loyalists, and your choices change what happens to Nat. This one is long, so it's for students who finish early more than once.</p>
+        <div class="btnrow"><a class="linkbtn" href="https://www.mission-us.org/games/for-crown-or-colony/" target="_blank" rel="noopener">Play Mission US</a><span class="small">Free, no account needed for guest play.</span></div>
+        <h3>Choice Log</h3>
+        <p>Write down three choices Nat made. For each one, say which side it pushed him toward: Patriot, Loyalist, or neither.</p>
+        <label for="musLog" style="font-weight:700;display:grid;gap:6px">My choice log
+          <span class="small" style="font-weight:600">Start with: "Nat chose to ___. This pushed him toward ___ because ___."</span>
+          <textarea id="musLog" style="min-height:160px"></textarea>
+        </label>
+        <div class="btnrow"><button class="btn ghost" type="button" id="musCopy">Copy my choice log</button><span class="small" id="musCopyMsg" aria-live="polite"></span></div>
+      </div>
+    </details>
+  </section>
+
+  <footer>Mr. B · Social Studies 8 · Unit 2</footer>
+</main>
+
+<script>
+(function(){
+  /* ---------- storage (optional; page works without it) ---------- */
+  const KEY='ff-menu-colonial-unrest-v1';
+  let store={};
+  try{ store=JSON.parse(localStorage.getItem(KEY)||'{}')||{}; }catch(e){ store={}; }
+  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(store)); }catch(e){} }
+
+  /* ---------- name ---------- */
+  const fn=document.getElementById('fn'), li=document.getElementById('li'), per=document.getElementById('per');
+  fn.value=store.fn||''; li.value=store.li||''; per.value=store.per||'';
+  [fn,li,per].forEach(el=>el.addEventListener('input',()=>{store.fn=fn.value.trim();store.li=li.value.trim().toUpperCase();store.per=per.value;save();}));
+  function who(){ const n=(store.fn||'')+(store.li?' '+store.li+'.':''); return (n||'(no name)')+(store.per?', Period '+store.per:''); }
+
+  /* ---------- seeded random: each student gets a seed, kept on this device ---------- */
+  if(!store.seed){ store.seed=Math.floor(Math.random()*2147483646)+1; save(); }
+  function rng(seed){ let a=seed>>>0; return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+  function shuffle(arr,r){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(r()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+  function pick(arr,r){ return arr[Math.floor(r()*arr.length)]; }
+
+  function el(tag,attrs,...kids){ const e=document.createElement(tag); if(attrs) for(const k in attrs){ if(k==='class') e.className=attrs[k]; else if(k==='text') e.textContent=attrs[k]; else e.setAttribute(k,attrs[k]); } kids.forEach(k=>{ if(k!=null) e.append(k); }); return e; }
+
+  async function copyText(text,msgEl){
+    try{ await navigator.clipboard.writeText(text); msgEl.textContent='Copied. Paste it into Canvas.'; }
+    catch(e){ const ta=el('textarea'); ta.value=text; ta.setAttribute('readonly',''); ta.style.minHeight='140px'; msgEl.textContent='Select the text below and copy it.'; msgEl.after(ta); ta.select(); }
+  }
+
+  /* ---------- reusable multiple choice builder ---------- */
+  function buildMC(container,items,keyName,scoreEl,r){
+    store[keyName]=store[keyName]||{};
+    const answered=store[keyName];
+    const order=shuffle(items.map((_,i)=>i),r);
+    function update(){ const done=Object.keys(answered).length; const right=Object.values(answered).filter(v=>v.ok).length; scoreEl.textContent=done? 'Score: '+right+' of '+items.length+(done<items.length?' (keep going)':''):''; }
+    order.forEach((idx,n)=>{
+      const it=items[idx];
+      const box=el('div',{class:'q'});
+      box.append(el('p',{class:'prompt',text:(n+1)+'. '+it.q}));
+      const opts=el('div',{class:'opts'}); const fb=el('p',{class:'fb','aria-live':'polite'});
+      const choices=it.fixed? it.choices.slice() : shuffle(it.choices,r);
+      const btns=choices.map(c=>{ const b=el('button',{class:'opt',type:'button',text:c}); opts.append(b); return b; });
+      function lock(choice){
+        btns.forEach(b=>{ b.disabled=true; if(b.textContent===it.a) b.classList.add('right'); else if(b.textContent===choice) b.classList.add('wrong'); });
+        const ok=choice===it.a; fb.className='fb '+(ok?'right':'wrong'); fb.textContent=(ok?'Correct. ':'Not quite. ')+it.why;
+      }
+      btns.forEach(b=>b.addEventListener('click',()=>{ answered[idx]={pick:b.textContent,ok:b.textContent===it.a}; save(); lock(b.textContent); update(); }));
+      if(answered[idx]) lock(answered[idx].pick);
+      box.append(opts,fb); container.append(box);
+    });
+    update();
+    return ()=>{ const right=Object.values(answered).filter(v=>v.ok).length; return {right,total:items.length,done:Object.keys(answered).length}; };
+  }
+
+  /* ---------- Liberty's Kids ---------- */
+  const LK=[
+    {q:'Sarah Phillips is sailing from England. Which city was she supposed to go to?',choices:['Philadelphia','Boston','New York','Charleston'],a:'Philadelphia',why:'She was headed to Philadelphia, but a storm brought her ship to Boston.'},
+    {q:'Ben Franklin\'s young reporters write for which newspaper?',choices:['The Philadelphia Gazette','The Boston Gazette','The London Times','The New York Post'],a:'The Philadelphia Gazette',why:'James and Sarah report for Franklin\'s Philadelphia Gazette.'},
+    {q:'Whose side does Sarah tell the story from at the start?',choices:['The British side','The Patriot side','The French side','Neither side'],a:'The British side',why:'Sarah is from England. Her letters home give the British point of view.'},
+    {q:'What was the name of the Boston group that was angry at Parliament?',choices:['Sons of Liberty','Minutemen','Continental Congress','Loyalists'],a:'Sons of Liberty',why:'The Sons of Liberty planned the Tea Party.'},
+    {q:'The episode lists earlier things that made Boston angry. Which one was NOT on the list?',choices:['The Louisiana Purchase','The Stamp Act','The Boston Massacre','The Sugar Act'],a:'The Louisiana Purchase',why:'The Louisiana Purchase was in 1803, thirty years later. The other three came before 1773.'},
+    {q:'How did the colonists disguise themselves to board the ships?',choices:['As Mohawk Indians','As British soldiers','As sailors','They wore no disguise'],a:'As Mohawk Indians',why:'They dressed as Mohawk Indians. Your Boston Tea Party placard says this too.'},
+    {q:'What slogan did the protesters use?',choices:['No taxation without representation','Give me liberty or give me death','Remember the Alamo','Don\'t tread on me'],a:'No taxation without representation',why:'It means: you can\'t tax us if we have no vote in Parliament.'},
+    {q:'On your Understanding Unrest placards, the Boston Tea Party is tagged as what?',choices:['Colonial Response','British Action','Both Sides Clash'],a:'Colonial Response',fixed:true,why:'The colonists acted, pushing back against the Tea Act.'},
+    {q:'Which placard comes right after the Tea Party, as Britain\'s answer to it?',choices:['Intolerable Acts','Stamp Act','Quartering Act','Proclamation of 1763'],a:'Intolerable Acts',why:'Britain closed Boston\'s port to punish the city. That is Episode 2.'},
+    {q:'Which part of the episode is made up?',choices:['Sarah, James and Henri are fictional characters','The tea was thrown into the harbor','Colonists were angry about the Tea Act','Ben Franklin was a real person'],a:'Sarah, James and Henri are fictional characters',why:'The kids are invented so you can see history through their eyes. The events and Ben Franklin are real.'}
+  ];
+  const lkScore=document.getElementById('lkScore');
+  const lkResult=buildMC(document.getElementById('lkQuiz'),LK,'lk',lkScore,rng(store.seed+11));
+  document.getElementById('lkCopy').addEventListener('click',()=>{ const s=lkResult(); copyText('Liberty\'s Kids Ep. 1, '+who()+': '+s.right+' of '+s.total+' correct ('+s.done+' answered).',document.getElementById('lkCopyMsg')); });
+
+  /* ---------- Engraving Detective ---------- */
+  const DC=['Fact','Exaggerated','Left Out'];
+  const DET=[
+    {q:'The soldiers stand in a neat, straight line and fire together, like on parade.',a:'Exaggerated',why:'It was chaotic. Soldiers fired one at a time after being hit and shoved.'},
+    {q:'Captain Preston raises his sword as if ordering his men to fire.',a:'Exaggerated',why:'No one proved he gave an order. A Boston jury found him not guilty.'},
+    {q:'The colonists in the crowd stand calmly and are not doing anything.',a:'Exaggerated',why:'The crowd threw snowballs, ice and sticks and shouted at the soldiers.'},
+    {q:'A gun fires from a building with a sign that says "Butcher\'s Hall."',a:'Exaggerated',why:'There is no evidence of shooting from that building. The sign calls the British butchers.'},
+    {q:'Crispus Attucks, a sailor of African and Native American descent, was one of the men killed.',a:'Left Out',why:'Attucks died that night, but the engraving does not clearly show him.'},
+    {q:'Colonists were killed by British soldiers\' gunfire on King Street.',a:'Fact',why:'Five colonists died from their wounds.'},
+    {q:'John Adams, a Patriot lawyer, later defended the soldiers in court.',a:'Left Out',why:'The picture shows only one side. Adams said "facts are stubborn things."'},
+    {q:'Revere copied the design from another artist, Henry Pelham.',a:'Left Out',why:'Pelham accused Revere of stealing his drawing.'}
+  ].map(d=>Object.assign({choices:DC,fixed:true},d));
+  const detScore=document.getElementById('detScore');
+  const detResult=buildMC(document.getElementById('detQuiz'),DET,'det',detScore,rng(store.seed+23));
+  const detWhy=document.getElementById('detWhy'); detWhy.value=store.detWhy||''; detWhy.addEventListener('input',()=>{store.detWhy=detWhy.value;save();});
+  document.getElementById('detCopy').addEventListener('click',()=>{ const s=detResult(); copyText('Engraving Detective, '+who()+': '+s.right+' of '+s.total+' correct.\nWhy Revere made it this way: '+(detWhy.value.trim()||'(not written yet)'),document.getElementById('detCopyMsg')); });
+
+  /* ---------- Mission US ---------- */
+  const musLog=document.getElementById('musLog'); musLog.value=store.musLog||''; musLog.addEventListener('input',()=>{store.musLog=musLog.value;save();});
+  document.getElementById('musCopy').addEventListener('click',()=>copyText('Mission US Choice Log, '+who()+':\n'+(musLog.value.trim()||'(empty)'),document.getElementById('musCopyMsg')));
+
+  /* ---------- Breakout ---------- */
+  const EVENTS=[
+    {t:'Proclamation of 1763',y:1763,s:'British Action'},
+    {t:'Quartering Act',y:1765,s:'British Action'},
+    {t:'Stamp Act',y:1765,s:'British Action'},
+    {t:'Townshend Acts',y:1767,s:'British Action'},
+    {t:'Boston Massacre',y:1770,s:'Both Sides Clash'},
+    {t:'Boston Tea Party',y:1773,s:'Colonial Response'},
+    {t:'Intolerable Acts',y:1774,s:'British Action'},
+    {t:'First Continental Congress',y:1774,s:'Colonial Response'},
+    {t:'Lexington & Concord',y:1775,s:'Both Sides Clash'}
+  ];
+  // Order of the nine is the placard order (A to I), which is chronological.
+  const r=rng(store.seed+37);
+
+  // Lock 1: cipher
+  const WORDS=['BOYCOTT','REPEAL','LIBERTY','PATRIOT','PROTEST','CONSENT','HOMESPUN','PARLIAMENT'];
+  const word=pick(WORDS,r), shift=2+Math.floor(r()*9); // 2..10
+  const ABC='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const enc=w=>w.split('').map(c=>ABC[(ABC.indexOf(c)+shift)%26]).join('');
+  // Lock 2: boycott math (pence; 12 pence = 1 shilling)
+  const GOODS=[{g:'glass windowpane',u:'pane',p:3},{g:'paper',u:'quire',p:4},{g:'lead',u:'pound',p:2},{g:'paint',u:'pound',p:5},{g:'tea',u:'pound',p:6}];
+  const good=pick(GOODS,r), qty=2+Math.floor(r()*5), months=2+Math.floor(r()*5); // qty 2..6, months 2..6
+  const pence=good.p*qty*months;
+  // Lock 3: timeline (4 events with different years, random number tags)
+  let byYear={}; EVENTS.forEach((e,i)=>{(byYear[e.y]=byYear[e.y]||[]).push(i);});
+  const years=shuffle(Object.keys(byYear),r).slice(0,4);
+  const tlIdx=years.map(y=>pick(byYear[y],r));
+  const tags=shuffle([1,2,3,4,5,6,7,8,9],r).slice(0,4);
+  const tlItems=tlIdx.map((ei,k)=>({e:EVENTS[ei],tag:tags[k]}));
+  const tlCode=tlItems.slice().sort((a,b)=>a.e.y-b.e.y).map(x=>x.tag).join('');
+  const tlShown=shuffle(tlItems,r);
+  // Lock 4: who acted (4 events, at least one of each tag when possible)
+  const sideIdx=shuffle([0,1,2,3,4,5,6,7,8],r).slice(0,4);
+  // password
+  const PASS=['JOIN OR DIE','UNITE','NO STAMPS','HOMESPUN'];
+  const finalWord=pick(PASS,r);
+
+  const LOCKS=[
+    {name:'Lock 1: The Secret Message',
+     build(box,done){
+       box.append(el('p',{text:'A Sons of Liberty note was written in code. Every letter was moved '+shift+' letters forward in the alphabet. Move each letter back '+shift+' to read it.'}));
+       box.append(el('p',{class:'cipher',text:enc(word)}));
+       const tb=el('table'); const r1=el('tr'), r2=el('tr');
+       ABC.split('').forEach((c,i)=>{ r1.append(el('td',{text:ABC[(i+shift)%26]})); r2.append(el('td',{text:c})); });
+       tb.append(r1,r2);
+       box.append(el('p',{class:'small',text:'Code letter (top) and real letter (bottom):'}),el('div',{class:'wheel'},tb));
+       return codeInput(box,'Type the word',v=>v.replace(/\s/g,'').toUpperCase()===word,'Find each code letter in the top row. The real letter is right under it.',done);
+     }},
+    {name:'Lock 2: The Boycott Ledger',
+     build(box,done){
+       box.append(el('p',{text:'The Townshend Acts taxed goods like glass, paper, lead, paint and tea. A Boston family signed a pledge to stop buying British '+good.g+'.'}));
+       const t=el('table',{class:'price'});
+       t.append(el('tr',null,el('th',{text:'Item'}),el('th',{text:'Price'})));
+       GOODS.forEach(x=>t.append(el('tr',null,el('td',{text:x.g}),el('td',{text:x.p+' pence a '+x.u}))));
+       box.append(el('p',{class:'small',text:'Merchant\'s price list (puzzle prices):'}),el('div',{style:'overflow-x:auto'},t));
+       box.append(el('p',{text:'The family used to buy '+qty+' '+good.u+'s of '+good.g+' every month. They kept the boycott for '+months+' months. How many pence did they keep away from British merchants?'}));
+       return codeInput(box,'Pence',v=>parseInt(v,10)===pence,'Price × how many each month × number of months.',done);
+     }},
+    {name:'Lock 3: The Timeline Dial',
+     build(box,done){
+       box.append(el('p',{text:'Each event has a number. Put the events in the order they happened, then type their numbers in that order.'}));
+       const ul=el('ul',{class:'order-list'});
+       tlShown.forEach(x=>ul.append(el('li',null,el('span',{class:'badge',text:String(x.tag)}),el('span',{text:x.e.t}))));
+       box.append(ul);
+       return codeInput(box,'4-digit code',v=>v.replace(/\D/g,'')===tlCode,'Your placards go in time order. The Proclamation is first and Lexington & Concord is last.',done);
+     }},
+    {name:'Lock 4: Who Acted?',
+     build(box,done){
+       box.append(el('p',{text:'Every placard had a tag. Set each switch to the right tag. All four must be right to open the lock.'}));
+       const sels=sideIdx.map(i=>{
+         const id='side'+i; const s=el('select',{id});
+         s.append(el('option',{value:'',text:'Pick a tag'}));
+         ['British Action','Colonial Response','Both Sides Clash'].forEach(o=>s.append(el('option',{value:o,text:o})));
+         box.append(el('div',{class:'side-row'},el('label',{for:id,text:EVENTS[i].t,style:'font-weight:700'}),s));
+         return {s,i};
+       });
+       const msg=el('p',{class:'msg','aria-live':'polite'});
+       const hint=el('p',{class:'hint',hidden:''}); hint.textContent='British Action: Britain made a law or rule. Colonial Response: colonists pushed back. Both Sides Clash: the two sides fought face to face.';
+       const b=el('button',{class:'btn',type:'button',text:'Try the lock'});
+       const h=el('button',{class:'btn ghost',type:'button',text:'Hint'});
+       h.addEventListener('click',()=>{hint.hidden=false;});
+       b.addEventListener('click',()=>{
+         const wrong=sels.filter(x=>x.s.value!==EVENTS[x.i].s).length;
+         if(!wrong){ msg.className='msg right'; msg.textContent='Click! The lock opens.'; setTimeout(done,700); }
+         else { msg.className='msg wrong'; msg.textContent=wrong+' of 4 switches are wrong. Try again.'; }
+       });
+       box.append(el('div',{class:'btnrow'},b,h),msg,hint);
+     }}
+  ];
+
+  function codeInput(box,label,check,hintText,done){
+    const id='code'+Math.floor(r()*1e6);
+    const inp=el('input',{type:'text',id,autocomplete:'off'});
+    const b=el('button',{class:'btn',type:'button',text:'Try the lock'});
+    const h=el('button',{class:'btn ghost',type:'button',text:'Hint'});
+    const msg=el('p',{class:'msg','aria-live':'polite'});
+    const hint=el('p',{class:'hint',hidden:'',text:hintText});
+    let tries=0;
+    function go(){ if(check(inp.value.trim())){ msg.className='msg right'; msg.textContent='Click! The lock opens.'; setTimeout(done,700);} else { tries++; msg.className='msg wrong'; msg.textContent='That code doesn\'t work. Try again.'+(tries>=2?' Use the hint.':''); } }
+    b.addEventListener('click',go); inp.addEventListener('keydown',e=>{ if(e.key==='Enter') go(); });
+    h.addEventListener('click',()=>{hint.hidden=false;});
+    box.append(el('div',{class:'code-in'},el('label',{for:id,text:label,style:'font-weight:700'}),inp,b,h),msg,hint);
+  }
+
+  const stage=document.getElementById('boStage'), pips=document.getElementById('boPips');
+  if(typeof store.bo!=='number') store.bo=0;
+  function renderBO(){
+    pips.textContent='';
+    LOCKS.forEach((L,i)=>pips.append(el('span',{class:'lockpip'+(i<store.bo?' done':i===store.bo?' now':''),text:'Lock '+(i+1)})));
+    stage.textContent='';
+    if(store.bo>=LOCKS.length){
+      if(!store.boTime){ store.boTime=new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}); save(); }
+      const box=el('div',{class:'escaped'});
+      box.append(el('h3',{text:'The Chest Is Open'}),el('p',{text:'Inside is a handbill with the Sons of Liberty password:'}),el('p',{class:'code',text:finalWord}),el('p',{text:who()+' · opened at '+store.boTime}),el('p',{class:'small',text:'Raise your hand and show Mr. B this screen.'}));
+      stage.append(box); return;
+    }
+    const L=LOCKS[store.bo];
+    const box=el('div',{class:'lock'}); box.append(el('h3',{text:L.name}));
+    stage.append(box);
+    L.build(box,()=>{ store.bo++; save(); renderBO(); stage.scrollIntoView({block:'nearest'}); });
+  }
+  renderBO();
+})();
+</script>
+</body>
+</html>
