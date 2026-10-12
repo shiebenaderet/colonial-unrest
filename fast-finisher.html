@@ -84,7 +84,15 @@ ol,ul{margin:0;padding-left:22px;display:grid;gap:6px}
 .cipher{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:24px;font-weight:700;letter-spacing:4px;word-break:break-word;color:var(--deep)}
 .wheel{overflow-x:auto}
 .wheel table{border-collapse:collapse;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:15px}
-.wheel td{border:1px solid var(--rule);padding:3px 6px;text-align:center;min-width:26px}
+.wheel{position:relative;scroll-behavior:smooth}
+.wheel td{border:1px solid var(--rule);padding:6px 4px;text-align:center;min-width:32px;font-size:18px;font-weight:700}
+.wheel td.pick{background:var(--tint);color:var(--deep);font-size:24px;border-left:4px solid var(--accent);border-right:4px solid var(--accent)}
+.wheel tr:first-child td.pick{border-top:4px solid var(--accent)}
+.wheel tr:last-child td.pick{border-bottom:4px solid var(--accent)}
+.cipher-row{display:flex;flex-wrap:wrap;gap:6px}
+.cl{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:24px;font-weight:800;min-width:46px;min-height:50px;border:2px solid var(--rule);border-radius:8px;background:var(--panel);color:var(--deep);cursor:pointer}
+.cl.on{border-color:var(--accent);background:var(--tint)}
+.slide-lbl{font-weight:800;min-width:120px;text-align:center;font-variant-numeric:tabular-nums}
 .wheel tr:first-child td{font-weight:800;color:var(--deep)}
 .price{border-collapse:collapse;font-variant-numeric:tabular-nums}
 .price td,.price th{border-bottom:1px solid var(--rule);padding:6px 10px;text-align:left}
@@ -365,13 +373,37 @@ footer{font-size:14px;color:var(--muted);text-align:center}
   const LOCKS=[
     {name:'Lock 1: The Secret Message',
      build(box,done){
-       box.append(el('p',{text:'A Sons of Liberty note was written in code. Every letter was moved '+shift+' letters forward in the alphabet. Move each letter back '+shift+' to read it.'}));
-       box.append(el('p',{class:'cipher',text:enc(word)}));
-       const tb=el('table'); const r1=el('tr'), r2=el('tr');
-       ABC.split('').forEach((c,i)=>{ r1.append(el('td',{text:ABC[(i+shift)%26]})); r2.append(el('td',{text:c})); });
+       box.append(el('p',{text:'A Sons of Liberty note was written in code. Every letter was moved '+shift+' letters forward in the alphabet.'}));
+       box.append(el('ol',null,
+         el('li',{text:'Slide the bottom row until it says "Moved back '+shift+'."'}),
+         el('li',{text:'Tap a letter in the message. A box shows the real letter under it.'}),
+         el('li',{text:'Write down each real letter, then type the word.'})));
+       const coded=enc(word);
+       let active=-1, slide=0;
+       const msgRow=el('div',{class:'cipher-row'});
+       const tb=el('table'); const r1=el('tr'), r2=el('tr'); const top=[], bot=[];
+       ABC.split('').forEach(c=>{ const a=el('td',{text:c}), b=el('td'); top.push(a); bot.push(b); r1.append(a); r2.append(b); });
        tb.append(r1,r2);
-       box.append(el('p',{class:'small',text:'Code letter (top) and real letter (bottom):'}),el('div',{class:'wheel'},tb));
-       return codeInput(box,'Type the word',v=>v.replace(/\s/g,'').toUpperCase()===word,'Find each code letter in the top row. The real letter is right under it.',done);
+       const wheel=el('div',{class:'wheel'},tb);
+       const slideLbl=el('span',{class:'slide-lbl','aria-live':'polite'});
+       function draw(){
+         bot.forEach((td,i)=>{ td.textContent=ABC[(i-slide+26)%26]; });
+         slideLbl.textContent='Moved back '+slide;
+         const col=active>=0 ? ABC.indexOf(coded[active]) : -1;
+         top.forEach((td,i)=>{ td.classList.toggle('pick',i===col); bot[i].classList.toggle('pick',i===col); });
+         [...msgRow.children].forEach((b,k)=>{ b.classList.toggle('on',k===active); b.setAttribute('aria-pressed',k===active?'true':'false'); });
+         if(col>=0){ const td=top[col]; wheel.scrollLeft=Math.max(0,td.offsetLeft-wheel.clientWidth/2+td.offsetWidth/2); }
+       }
+       coded.split('').forEach((c,k)=>{ const b=el('button',{type:'button',class:'cl',text:c,'aria-label':'Code letter '+c}); b.addEventListener('click',()=>{ active=k; draw(); }); msgRow.append(b); });
+       const left=el('button',{class:'btn ghost',type:'button',text:'◀ Slide'});
+       const right=el('button',{class:'btn ghost',type:'button',text:'Slide ▶'});
+       left.addEventListener('click',()=>{ slide=(slide+25)%26; draw(); });
+       right.addEventListener('click',()=>{ slide=(slide+1)%26; draw(); });
+       box.append(el('p',{class:'small',text:'The coded message (tap a letter):'}),msgRow,
+         el('div',{class:'btnrow'},left,slideLbl,right),
+         el('p',{class:'small',text:'Top row: code letter. Bottom row: real letter.'}),wheel);
+       draw();
+       return codeInput(box,'Type the word',v=>v.replace(/\s/g,'').toUpperCase()===word,'Press Slide until it says "Moved back '+shift+'." Then tap each letter in the message and read the bottom letter in the box.',done);
      }},
     {name:'Lock 2: The Boycott Ledger',
      build(box,done){
