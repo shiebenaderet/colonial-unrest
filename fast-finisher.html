@@ -114,6 +114,22 @@ ol,ul{margin:0;padding-left:22px;display:grid;gap:6px}
 .sign-list li{border:1px solid var(--rule);border-radius:10px;padding:10px 14px;display:grid;gap:2px}
 .sign-list b{color:var(--deep)}
 .small{font-size:15px;color:var(--muted)}
+.engraving{margin:0;display:grid;gap:6px}
+.zoom-open{padding:0;border:1px solid var(--rule);border-radius:10px;background:var(--bg);cursor:zoom-in;overflow:hidden;max-width:420px}
+.zoom-open img{display:block;width:100%;height:auto}
+.engraving figcaption{font-size:14px;color:var(--muted)}
+.q .detail{display:block;max-width:100%;max-height:300px;width:auto;border:1px solid var(--rule);border-radius:8px}
+.q .check{font-size:14px;font-weight:700;color:var(--accent)}
+.evidence{background:var(--tint);border-left:5px solid var(--accent);border-radius:8px;padding:12px 16px;display:grid;gap:8px}
+.evidence ol{list-style:none;padding:0;gap:8px}
+.evidence .src{display:block;font-size:13px;color:var(--muted);font-weight:600}
+.lightbox{position:fixed;inset:0;z-index:50;background:rgba(15,10,8,.88);display:flex;flex-direction:column}
+.lightbox[hidden]{display:none}
+.lb-bar{display:flex;justify-content:flex-end;gap:10px;padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top,0px))}
+.lb-bar .btn.ghost{color:#fff;border-color:#bbb}
+.lb-scroll{flex:1;overflow:auto;padding:0 16px 16px;text-align:center}
+.lb-scroll img{max-width:100%;height:auto}
+.lb-scroll.zoomed img{max-width:none;width:220%}
 footer{font-size:14px;color:var(--muted);text-align:center}
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -205,15 +221,40 @@ footer{font-size:14px;color:var(--muted);text-align:center}
         <span class="open-tag">Open</span>
       </summary>
       <div class="body">
-        <p>Paul Revere made a famous picture of the Boston Massacre in 1770. It spread across the colonies and made people furious. But was it true? Open the picture and look closely. Then decide what each detail is.</p>
-        <div class="btnrow"><a class="linkbtn" href="https://en.wikipedia.org/wiki/Boston_Massacre" target="_blank" rel="noopener">Open the Engraving</a><span class="small">It is the first picture on the page. Tap it to zoom in.</span></div>
-        <p><b>Fact</b> means it really happened. <b>Exaggerated</b> means Revere changed it to make the British look worse. <b>Left Out</b> means something true that the picture hides.</p>
+        <p>Paul Revere made a famous picture of the Boston Massacre in 1770. It spread across the colonies and made people furious. But was it true? First look closely at the picture. Then check it against what witnesses said at the trials.</p>
+        <figure class="engraving">
+          <button type="button" class="zoom-open" id="revOpen" aria-label="Open the engraving full size">
+            <img src="images/ff-revere-full.jpg" alt="Paul Revere's 1770 engraving of the Boston Massacre: a line of British soldiers fires into a crowd in King Street while an officer raises his sword.">
+          </button>
+          <figcaption>&ldquo;The Bloody Massacre,&rdquo; engraved and sold by Paul Revere, Boston, 1770. Library of Congress, public domain. <b>Click the picture to see it bigger.</b></figcaption>
+        </figure>
+
+        <h3>Part 1: Look Closely</h3>
+        <p>Answer from the picture only. Each question shows you the part to look at.</p>
+        <div id="detLook" class="menu"></div>
+        <p class="score" id="detLookScore" aria-live="polite"></p>
+
+        <h3>The Evidence</h3>
+        <div class="evidence">
+          <p>What witnesses and the trials said about March 5, 1770.</p>
+          <ol>
+            <li><b>Evidence 1.</b> The crowd threw snowballs, chunks of ice and sticks at the soldiers. People shouted at them and dared them to fire. <span class="src">Witnesses at the trials, 1770</span></li>
+            <li><b>Evidence 2.</b> One soldier was knocked down. The shots came one after another, in confusion, not all at once. <span class="src">Witnesses at the trials, 1770</span></li>
+            <li><b>Evidence 3.</b> Captain Preston, the officer, said he never gave an order to fire. A Boston jury found him not guilty. <span class="src">Preston&rsquo;s trial, October 1770</span></li>
+            <li><b>Evidence 4.</b> Four men from the Custom House were put on trial for shooting from its windows. The jury found them not guilty. <span class="src">Trial, December 1770</span></li>
+            <li><b>Evidence 5.</b> Five men died: Samuel Gray, Samuel Maverick, James Caldwell, Crispus Attucks and Patrick Carr. <span class="src">The caption under Revere&rsquo;s picture</span></li>
+          </ol>
+        </div>
+
+        <h3>Part 2: Picture vs. Evidence</h3>
+        <p><b>Fact</b> means the evidence agrees. <b>Exaggerated</b> means Revere changed it to make the British look worse. <b>Left Out</b> means something true that the picture does not show. Each one tells you which evidence to check.</p>
         <div id="detQuiz" class="menu"></div>
         <p class="score" id="detScore" aria-live="polite"></p>
-        <label for="detWhy" style="font-weight:700;display:grid;gap:6px">Why would Revere make the picture this way? Use one detail as evidence.
-          <span class="small" style="font-weight:600">Start with: "Revere showed ___ because he wanted colonists to ___."</span>
+        <label for="detWhy" style="font-weight:700;display:grid;gap:6px">Why would Revere make the picture this way? Use one detail and one piece of evidence.
+          <span class="small" style="font-weight:600">Start with: "Revere showed ___, but Evidence ___ says ___. He wanted colonists to ___."</span>
           <textarea id="detWhy"></textarea>
         </label>
+        <p class="hint"><b>Did you know?</b> John Adams, a Patriot lawyer, defended the soldiers in court. Six of the eight soldiers were found not guilty, and two were found guilty of manslaughter. Revere also copied his design from another Boston artist, Henry Pelham, who was angry about it.</p>
         <div class="btnrow"><button class="btn ghost" type="button" id="detCopy">Copy my results</button><span class="small" id="detCopyMsg" aria-live="polite"></span></div>
       </div>
     </details>
@@ -239,6 +280,10 @@ footer{font-size:14px;color:var(--muted);text-align:center}
     </details>
   </section>
 
+  <div class="lightbox" id="revBox" hidden role="dialog" aria-modal="true" aria-label="The engraving, full size">
+    <div class="lb-bar"><button type="button" class="btn ghost" id="revZoom">Zoom in</button><button type="button" class="btn" id="revClose">Close</button></div>
+    <div class="lb-scroll" id="revScroll"><img src="images/ff-revere-full.jpg" alt="Paul Revere's 1770 engraving of the Boston Massacre, full size." id="revBig"></div>
+  </div>
   <footer>Mr. B · Social Studies 8 · Unit 2</footer>
 </main>
 
@@ -270,15 +315,17 @@ footer{font-size:14px;color:var(--muted);text-align:center}
   }
 
   /* ---------- reusable multiple choice builder ---------- */
-  function buildMC(container,items,keyName,scoreEl,r){
+  function buildMC(container,items,keyName,scoreEl,r,opt){
     store[keyName]=store[keyName]||{};
     const answered=store[keyName];
-    const order=shuffle(items.map((_,i)=>i),r);
+    const order=(opt&&opt.keepOrder)? items.map((_,i)=>i) : shuffle(items.map((_,i)=>i),r);
     function update(){ const done=Object.keys(answered).length; const right=Object.values(answered).filter(v=>v.ok).length; scoreEl.textContent=done? 'Score: '+right+' of '+items.length+(done<items.length?' (keep going)':''):''; }
     order.forEach((idx,n)=>{
       const it=items[idx];
       const box=el('div',{class:'q'});
+      if(it.img){ const im=el('img',{class:'detail',src:it.img,alt:'Detail from the engraving for question '+(n+1)}); im.style.cursor='zoom-in'; box.append(im); }
       box.append(el('p',{class:'prompt',text:(n+1)+'. '+it.q}));
+      if(it.check) box.append(el('p',{class:'check',text:it.check}));
       const opts=el('div',{class:'opts'}); const fb=el('p',{class:'fb','aria-live':'polite'});
       const choices=it.fixed? it.choices.slice() : shuffle(it.choices,r);
       const btns=choices.map(c=>{ const b=el('button',{class:'opt',type:'button',text:c}); opts.append(b); return b; });
@@ -312,21 +359,44 @@ footer{font-size:14px;color:var(--muted);text-align:center}
   document.getElementById('lkCopy').addEventListener('click',()=>{ const s=lkResult(); copyText('Liberty\'s Kids Ep. 1, '+who()+': '+s.right+' of '+s.total+' correct ('+s.done+' answered).',document.getElementById('lkCopyMsg')); });
 
   /* ---------- Engraving Detective ---------- */
+  // Part 1 is answered from the picture alone (each question shows its detail);
+  // Part 2 checks each detail against the evidence box, which names its source.
+  const LOOK=[
+    {img:'images/ff-revere-soldiers.jpg',q:'How are the soldiers standing?',choices:['In a neat line, side by side','Scattered and running away','Kneeling behind a wall'],a:'In a neat line, side by side',why:'Revere drew them shoulder to shoulder, like soldiers on parade.'},
+    {img:'images/ff-revere-soldiers.jpg',q:'Are the soldiers firing all together, or one at a time?',choices:['All together, at the same moment','One at a time','They are not firing'],a:'All together, at the same moment',why:'Every gun points at the crowd and smokes at once, like a firing line.'},
+    {img:'images/ff-revere-officer.jpg',q:'What is the officer at the far right doing?',choices:['Raising his sword, like he is giving an order','Trying to stop his soldiers','Running away from the crowd'],a:'Raising his sword, like he is giving an order',why:'His sword is up and his arm points his men toward the crowd.'},
+    {img:'images/ff-revere-crowd.jpg',q:'What are the people in the crowd doing?',choices:['Standing still or helping the wounded','Throwing snowballs and sticks','Attacking the soldiers with clubs'],a:'Standing still or helping the wounded',why:'No one in the crowd is throwing anything. They look like helpless victims.'},
+    {img:'images/ff-revere-window.jpg',q:'Look at the building. What does the top sign say, and what comes out of the window below it?',choices:['Butcher\'s Hall, and a gun is firing','Town Hall, and a flag','Butcher\'s Hall, and nothing'],a:'Butcher\'s Hall, and a gun is firing',why:'Revere labeled the Custom House "Butcher\'s Hall," calling the British butchers. A gun fires from a window.'},
+    {img:'images/ff-revere-names.jpg',q:'The caption at the bottom names the men who were killed. Which name is on the list?',choices:['Crispus Attucks','John Adams','Paul Revere'],a:'Crispus Attucks',why:'Crispus Attucks, a sailor of African and Native American descent, was one of the five men killed.'}
+  ];
   const DC=['Fact','Exaggerated','Left Out'];
   const DET=[
-    {q:'The soldiers stand in a neat, straight line and fire together, like on parade.',a:'Exaggerated',why:'It was chaotic. Soldiers fired one at a time after being hit and shoved.'},
-    {q:'Captain Preston raises his sword as if ordering his men to fire.',a:'Exaggerated',why:'No one proved he gave an order. A Boston jury found him not guilty.'},
-    {q:'The colonists in the crowd stand calmly and are not doing anything.',a:'Exaggerated',why:'The crowd threw snowballs, ice and sticks and shouted at the soldiers.'},
-    {q:'A gun fires from a building with a sign that says "Butcher\'s Hall."',a:'Exaggerated',why:'There is no evidence of shooting from that building. The sign calls the British butchers.'},
-    {q:'Crispus Attucks, a sailor of African and Native American descent, was one of the men killed.',a:'Left Out',why:'Attucks died that night, but the engraving does not clearly show him.'},
-    {q:'Colonists were killed by British soldiers\' gunfire on King Street.',a:'Fact',why:'Five colonists died from their wounds.'},
-    {q:'John Adams, a Patriot lawyer, later defended the soldiers in court.',a:'Left Out',why:'The picture shows only one side. Adams said "facts are stubborn things."'},
-    {q:'Revere copied the design from another artist, Henry Pelham.',a:'Left Out',why:'Pelham accused Revere of stealing his drawing.'}
+    {q:'The soldiers stand in a neat line and fire all together.',check:'Check: Evidence 2',a:'Exaggerated',why:'Witnesses said the shots came one after another, in confusion.'},
+    {q:'The officer raises his sword as if ordering his men to fire.',check:'Check: Evidence 3',a:'Exaggerated',why:'Preston said he gave no order, and a Boston jury found him not guilty.'},
+    {q:'The crowd stands calmly and does nothing to the soldiers.',check:'Check: Evidence 1',a:'Exaggerated',why:'The crowd threw snowballs, ice and sticks and dared the soldiers to fire.'},
+    {q:'A gun fires from a window of the Custom House.',check:'Check: Evidence 4',a:'Exaggerated',why:'Men were tried for this and found not guilty. Revere drew it as if it was certain.'},
+    {q:'Men in the crowd were killed by British gunfire in King Street.',check:'Check: Evidence 5',a:'Fact',why:'Five men died, and the caption names all five.'},
+    {q:'Snowballs, ice and sticks being thrown at the soldiers.',check:'Check: Evidence 1',a:'Left Out',why:'It happened, but you cannot find it anywhere in the picture.'},
+    {q:'A soldier being knocked down before the shooting.',check:'Check: Evidence 2',a:'Left Out',why:'Witnesses described it, but Revere did not draw it.'}
   ].map(d=>Object.assign({choices:DC,fixed:true},d));
+  const lookScore=document.getElementById('detLookScore');
+  const lookResult=buildMC(document.getElementById('detLook'),LOOK,'detLook',lookScore,rng(store.seed+29),{keepOrder:true});
   const detScore=document.getElementById('detScore');
-  const detResult=buildMC(document.getElementById('detQuiz'),DET,'det',detScore,rng(store.seed+23));
+  const detResult=buildMC(document.getElementById('detQuiz'),DET,'detSort',detScore,rng(store.seed+23));
   const detWhy=document.getElementById('detWhy'); detWhy.value=store.detWhy||''; detWhy.addEventListener('input',()=>{store.detWhy=detWhy.value;save();});
-  document.getElementById('detCopy').addEventListener('click',()=>{ const s=detResult(); copyText('Engraving Detective, '+who()+': '+s.right+' of '+s.total+' correct.\nWhy Revere made it this way: '+(detWhy.value.trim()||'(not written yet)'),document.getElementById('detCopyMsg')); });
+  document.getElementById('detCopy').addEventListener('click',()=>{ const a=lookResult(), s=detResult(); copyText('Engraving Detective, '+who()+': Look Closely '+a.right+' of '+a.total+', Picture vs. Evidence '+s.right+' of '+s.total+'.\nWhy Revere made it this way: '+(detWhy.value.trim()||'(not written yet)'),document.getElementById('detCopyMsg')); });
+
+  // The engraving, full size, without leaving the page.
+  const revBox=document.getElementById('revBox'), revScroll=document.getElementById('revScroll'), revZoom=document.getElementById('revZoom');
+  let revLast=null;
+  function openRev(){ revLast=document.activeElement; revBox.hidden=false; revScroll.classList.remove('zoomed'); revZoom.textContent='Zoom in'; document.getElementById('revClose').focus(); }
+  function closeRev(){ revBox.hidden=true; if(revLast) revLast.focus(); }
+  document.getElementById('revOpen').addEventListener('click',openRev);
+  document.getElementById('revClose').addEventListener('click',closeRev);
+  revZoom.addEventListener('click',()=>{ const z=revScroll.classList.toggle('zoomed'); revZoom.textContent=z?'Zoom out':'Zoom in'; });
+  revBox.addEventListener('click',e=>{ if(e.target===revBox||e.target===revScroll) closeRev(); });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!revBox.hidden) closeRev(); });
+  document.addEventListener('click',e=>{ const im=e.target.closest&&e.target.closest('.q .detail'); if(im) openRev(); });
 
   /* ---------- Mission US ---------- */
   const musLog=document.getElementById('musLog'); musLog.value=store.musLog||''; musLog.addEventListener('input',()=>{store.musLog=musLog.value;save();});
