@@ -373,16 +373,15 @@ footer{font-size:14px;color:var(--muted);text-align:center}
   const DET=[
     {q:'The soldiers stand in a neat line and fire all together.',check:'Check: Evidence 2',a:'Exaggerated',why:'Witnesses said the shots came one after another, in confusion.'},
     {q:'The officer raises his sword as if ordering his men to fire.',check:'Check: Evidence 3',a:'Exaggerated',why:'Preston said he gave no order, and a Boston jury found him not guilty.'},
-    {q:'The crowd stands calmly and does nothing to the soldiers.',check:'Check: Evidence 1',a:'Exaggerated',why:'The crowd threw snowballs, ice and sticks and dared the soldiers to fire.'},
     {q:'A gun fires from a window of the Custom House.',check:'Check: Evidence 4',a:'Exaggerated',why:'Men were tried for this and found not guilty. Revere drew it as if it was certain.'},
     {q:'Men in the crowd were killed by British gunfire in King Street.',check:'Check: Evidence 5',a:'Fact',why:'Five men died, and the caption names all five.'},
-    {q:'Snowballs, ice and sticks being thrown at the soldiers.',check:'Check: Evidence 1',a:'Left Out',why:'It happened, but you cannot find it anywhere in the picture.'},
+    {q:'Snowballs, ice and sticks being thrown at the soldiers.',check:'Check: Evidence 1',a:'Left Out',why:'It happened, but Revere left it out. He drew the crowd standing calmly instead, so they look like helpless victims.'},
     {q:'A soldier being knocked down before the shooting.',check:'Check: Evidence 2',a:'Left Out',why:'Witnesses described it, but Revere did not draw it.'}
   ].map(d=>Object.assign({choices:DC,fixed:true},d));
   const lookScore=document.getElementById('detLookScore');
   const lookResult=buildMC(document.getElementById('detLook'),LOOK,'detLook',lookScore,rng(store.seed+29),{keepOrder:true});
   const detScore=document.getElementById('detScore');
-  const detResult=buildMC(document.getElementById('detQuiz'),DET,'detSort',detScore,rng(store.seed+23));
+  const detResult=buildMC(document.getElementById('detQuiz'),DET,'detSort2',detScore,rng(store.seed+23));
   const detWhy=document.getElementById('detWhy'); detWhy.value=store.detWhy||''; detWhy.addEventListener('input',()=>{store.detWhy=detWhy.value;save();});
   document.getElementById('detCopy').addEventListener('click',()=>{ const a=lookResult(), s=detResult(); copyText('Engraving Detective, '+who()+': Look Closely '+a.right+' of '+a.total+', Picture vs. Evidence '+s.right+' of '+s.total+'.\nWhy Revere made it this way: '+(detWhy.value.trim()||'(not written yet)'),document.getElementById('detCopyMsg')); });
 
