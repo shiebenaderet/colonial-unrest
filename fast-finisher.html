@@ -195,7 +195,7 @@ footer{font-size:14px;color:var(--muted);text-align:center}
         <div class="btnrow"><a class="linkbtn" href="https://www.youtube.com/watch?v=R8Ch0zsHVUk" target="_blank" rel="noopener">Watch on YouTube</a><span class="small">About 24 minutes. Headphones on.</span></div>
         <div id="lkQuiz" class="menu"></div>
         <p class="score" id="lkScore" aria-live="polite"></p>
-        <div class="btnrow"><button class="btn ghost" type="button" id="lkCopy">Copy my results</button><span class="small" id="lkCopyMsg" aria-live="polite"></span></div>
+        <div class="btnrow"><button class="btn" type="button" id="lkSend">Send to Mr. B</button><button class="btn ghost" type="button" id="lkCopy">Copy my results</button><span class="small" id="lkCopyMsg" aria-live="polite"></span></div>
       </div>
     </details>
 
@@ -255,7 +255,7 @@ footer{font-size:14px;color:var(--muted);text-align:center}
           <textarea id="detWhy"></textarea>
         </label>
         <p class="hint"><b>Did you know?</b> John Adams, a Patriot lawyer, defended the soldiers in court. Six of the eight soldiers were found not guilty, and two were found guilty of manslaughter. Revere also copied his design from another Boston artist, Henry Pelham, who was angry about it.</p>
-        <div class="btnrow"><button class="btn ghost" type="button" id="detCopy">Copy my results</button><span class="small" id="detCopyMsg" aria-live="polite"></span></div>
+        <div class="btnrow"><button class="btn" type="button" id="detSend">Send to Mr. B</button><button class="btn ghost" type="button" id="detCopy">Copy my results</button><span class="small" id="detCopyMsg" aria-live="polite"></span></div>
       </div>
     </details>
 
@@ -275,7 +275,7 @@ footer{font-size:14px;color:var(--muted);text-align:center}
           <span class="small" style="font-weight:600">Start with: "Nat chose to ___. This pushed him toward ___ because ___."</span>
           <textarea id="musLog" style="min-height:160px"></textarea>
         </label>
-        <div class="btnrow"><button class="btn ghost" type="button" id="musCopy">Copy my choice log</button><span class="small" id="musCopyMsg" aria-live="polite"></span></div>
+        <div class="btnrow"><button class="btn" type="button" id="musSend">Send to Mr. B</button><button class="btn ghost" type="button" id="musCopy">Copy my choice log</button><span class="small" id="musCopyMsg" aria-live="polite"></span></div>
       </div>
     </details>
   </section>
@@ -312,6 +312,36 @@ footer{font-size:14px;color:var(--muted);text-align:center}
   async function copyText(text,msgEl){
     try{ await navigator.clipboard.writeText(text); msgEl.textContent='Copied. Paste it into Canvas.'; }
     catch(e){ const ta=el('textarea'); ta.value=text; ta.setAttribute('readonly',''); ta.style.minHeight='140px'; msgEl.textContent='Select the text below and copy it.'; msgEl.after(ta); ta.select(); }
+  }
+
+  /* ---------- Send to Mr. B ----------
+     Posts through a hidden frame to the Apps Script in tools/fast-finisher-mailer.gs,
+     which emails Mr. B. The frame carries the student's Google sign-in, which an
+     "Edmonds accounts only" deployment needs; the script answers with postMessage. */
+  const MAILER_URL = '';   // the Apps Script web app URL (ends in /exec)
+  let sendN = 0;
+  function sendToMrB(payload, btn, msgEl){
+    if(!store.fn || !store.per){ msgEl.textContent='Type your first name and pick your period at the top first.'; fn.focus(); return; }
+    if(!MAILER_URL){ msgEl.textContent='Sending is not turned on yet. Use the Copy button and paste it into Canvas.'; return; }
+    const name='ff-send-'+(++sendN);
+    const frame=el('iframe',{name,title:'sending',hidden:''}); document.body.append(frame);
+    const form=el('form',{method:'POST',action:MAILER_URL,target:name,hidden:''});
+    const inp=el('input',{type:'hidden',name:'payload'});
+    inp.value=JSON.stringify(Object.assign({student:(store.fn||'')+(store.li?' '+store.li+'.':''), period:store.per||''}, payload));
+    form.append(inp); document.body.append(form);
+    btn.disabled=true; msgEl.textContent='Sending…';
+    let done=false;
+    function finish(ok, text){ if(done) return; done=true; window.removeEventListener('message', onMsg); btn.disabled=false; msgEl.textContent=text; setTimeout(()=>{ frame.remove(); form.remove(); }, 2000); }
+    function onMsg(e){ const d=e.data; if(!d || d.source!=='ff-mailer') return;
+      if(d.ok) finish(true, 'Sent to Mr. B at '+new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})+'.');
+      else finish(false, 'That did not send. Make sure you are signed in to your school account, then try again.'); }
+    window.addEventListener('message', onMsg);
+    setTimeout(()=>finish(false, 'Could not confirm it sent. Make sure you are signed in to your school account, or use the Copy button.'), 20000);
+    form.submit();
+  }
+  function mcItems(items, saved){
+    return items.map((it,i)=>{ const a=saved&&saved[i];
+      return {q:it.q, a:a? a.pick : '(not answered)', note:a? (a.ok? 'Correct' : 'Incorrect. Correct answer: '+it.a) : ''}; });
   }
 
   /* ---------- reusable multiple choice builder ---------- */
@@ -356,6 +386,7 @@ footer{font-size:14px;color:var(--muted);text-align:center}
   ];
   const lkScore=document.getElementById('lkScore');
   const lkResult=buildMC(document.getElementById('lkQuiz'),LK,'lk',lkScore,rng(store.seed+11));
+  document.getElementById('lkSend').addEventListener('click',e=>{ const s=lkResult(); sendToMrB({activity:"Liberty's Kids", score:s.right+' of '+s.total+' correct ('+s.done+' answered)', items:mcItems(LK, store.lk)}, e.currentTarget, document.getElementById('lkCopyMsg')); });
   document.getElementById('lkCopy').addEventListener('click',()=>{ const s=lkResult(); copyText('Liberty\'s Kids Ep. 1, '+who()+': '+s.right+' of '+s.total+' correct ('+s.done+' answered).',document.getElementById('lkCopyMsg')); });
 
   /* ---------- Engraving Detective ---------- */
@@ -383,6 +414,10 @@ footer{font-size:14px;color:var(--muted);text-align:center}
   const detScore=document.getElementById('detScore');
   const detResult=buildMC(document.getElementById('detQuiz'),DET,'detSort2',detScore,rng(store.seed+23));
   const detWhy=document.getElementById('detWhy'); detWhy.value=store.detWhy||''; detWhy.addEventListener('input',()=>{store.detWhy=detWhy.value;save();});
+  document.getElementById('detSend').addEventListener('click',e=>{ const a=lookResult(), s=detResult();
+    sendToMrB({activity:'Engraving Detective', score:'Look Closely '+a.right+' of '+a.total+' · Picture vs. Evidence '+s.right+' of '+s.total,
+      items:[...mcItems(LOOK, store.detLook).map(x=>Object.assign(x,{q:'Look Closely: '+x.q})), ...mcItems(DET, store.detSort2).map(x=>Object.assign(x,{q:'Picture vs. Evidence: '+x.q})),
+             {q:'Was Revere mostly showing what really happened in Boston, or was he stretching the truth?', a:detWhy.value.trim()||'(not written yet)'}]}, e.currentTarget, document.getElementById('detCopyMsg')); });
   document.getElementById('detCopy').addEventListener('click',()=>{ const a=lookResult(), s=detResult(); copyText('Engraving Detective, '+who()+': Look Closely '+a.right+' of '+a.total+', Picture vs. Evidence '+s.right+' of '+s.total+'.\nWhat really happened, or stretching the truth? '+(detWhy.value.trim()||'(not written yet)'),document.getElementById('detCopyMsg')); });
 
   // The engraving, full size, without leaving the page.
@@ -399,6 +434,7 @@ footer{font-size:14px;color:var(--muted);text-align:center}
 
   /* ---------- Mission US ---------- */
   const musLog=document.getElementById('musLog'); musLog.value=store.musLog||''; musLog.addEventListener('input',()=>{store.musLog=musLog.value;save();});
+  document.getElementById('musSend').addEventListener('click',e=>sendToMrB({activity:'Mission US', items:[{q:'Choice Log: three choices Nat made, and which side each pushed him toward', a:musLog.value.trim()||'(empty)'}]}, e.currentTarget, document.getElementById('musCopyMsg')));
   document.getElementById('musCopy').addEventListener('click',()=>copyText('Mission US Choice Log, '+who()+':\n'+(musLog.value.trim()||'(empty)'),document.getElementById('musCopyMsg')));
 
   /* ---------- Breakout ---------- */
@@ -539,7 +575,10 @@ footer{font-size:14px;color:var(--muted);text-align:center}
     if(store.bo>=LOCKS.length){
       if(!store.boTime){ store.boTime=new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}); save(); }
       const box=el('div',{class:'escaped'});
-      box.append(el('h3',{text:'The Chest Is Open'}),el('p',{text:'Inside is a handbill with the Sons of Liberty password:'}),el('p',{class:'code',text:finalWord}),el('p',{text:who()+' · opened at '+store.boTime}),el('p',{class:'small',text:'Raise your hand and show Mr. B this screen.'}));
+      box.append(el('h3',{text:'The Chest Is Open'}),el('p',{text:'Inside is a handbill with the Sons of Liberty password:'}),el('p',{class:'code',text:finalWord}),el('p',{text:who()+' · opened at '+store.boTime}),el('p',{class:'small',text:'Raise your hand and show Mr. B this screen, or send it to him.'}));
+      const boMsg=el('span',{class:'small','aria-live':'polite'}); const boBtn=el('button',{class:'btn',type:'button',text:'Send to Mr. B'});
+      boBtn.addEventListener('click',()=>sendToMrB({activity:'Boston 1770 Breakout', items:[{q:'Opened all four locks', a:'Opened at '+store.boTime+'. Password: '+finalWord}]}, boBtn, boMsg));
+      box.append(el('div',{class:'btnrow',style:'justify-content:center'},boBtn,boMsg));
       stage.append(box); return;
     }
     const L=LOCKS[store.bo];
