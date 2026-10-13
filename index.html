@@ -2305,7 +2305,8 @@ function renderSummarySection(){
       fillReading(readingBox, event, row.level);
       const rationaleInput = textarea(row.rationale, val=>{ row.rationale = val; });
       const starterChips = rationaleSupports(event.id, row.level, rationaleInput, v=>{ row.rationale = v; }, LOOK_HINT_SUMMARY);
-      container.append(
+      // Native append() prints a null as the text "null", so drop empty slots first.
+      container.append(...[
         h('div',{}, span('Reading level','sub'), levelButtons),
         row.level==='l0' ? elLangPicker() : null,
         readingBox,
@@ -2317,7 +2318,7 @@ function renderSummarySection(){
           rationaleInput
         ),
         span(state.relaxRationale ? 'Use a starter above or write a few words explaining your rating.' : 'Use a starter above or revise your own sentence so it ends with punctuation.', 'note')
-      );
+      ].filter(Boolean));
       return container;
     })() : null;
 
