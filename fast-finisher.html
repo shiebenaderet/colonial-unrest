@@ -250,8 +250,8 @@ footer{font-size:14px;color:var(--muted);text-align:center}
         <p><b>Fact</b> means the evidence agrees. <b>Exaggerated</b> means Revere changed it to make the British look worse. <b>Left Out</b> means something true that the picture does not show. Each one tells you which evidence to check.</p>
         <div id="detQuiz" class="menu"></div>
         <p class="score" id="detScore" aria-live="polite"></p>
-        <label for="detWhy" style="font-weight:700;display:grid;gap:6px">Why would Revere make the picture this way? Use one detail and one piece of evidence.
-          <span class="small" style="font-weight:600">Start with: "Revere showed ___, but Evidence ___ says ___. He wanted colonists to ___."</span>
+        <label for="detWhy" style="font-weight:700;display:grid;gap:6px"><span style="font-weight:400">Paul Revere called his picture &ldquo;The Bloody Massacre&rdquo; and sold copies all over the colonies.</span> Was he mostly showing what really happened in Boston, or was he stretching the truth? Use one detail from the picture and one piece of evidence to support your answer.
+          <span class="small" style="font-weight:600">Start with: "Revere was mostly ___. In the picture, he showed ___, but Evidence ___ says ___."</span>
           <textarea id="detWhy"></textarea>
         </label>
         <p class="hint"><b>Did you know?</b> John Adams, a Patriot lawyer, defended the soldiers in court. Six of the eight soldiers were found not guilty, and two were found guilty of manslaughter. Revere also copied his design from another Boston artist, Henry Pelham, who was angry about it.</p>
@@ -383,7 +383,7 @@ footer{font-size:14px;color:var(--muted);text-align:center}
   const detScore=document.getElementById('detScore');
   const detResult=buildMC(document.getElementById('detQuiz'),DET,'detSort2',detScore,rng(store.seed+23));
   const detWhy=document.getElementById('detWhy'); detWhy.value=store.detWhy||''; detWhy.addEventListener('input',()=>{store.detWhy=detWhy.value;save();});
-  document.getElementById('detCopy').addEventListener('click',()=>{ const a=lookResult(), s=detResult(); copyText('Engraving Detective, '+who()+': Look Closely '+a.right+' of '+a.total+', Picture vs. Evidence '+s.right+' of '+s.total+'.\nWhy Revere made it this way: '+(detWhy.value.trim()||'(not written yet)'),document.getElementById('detCopyMsg')); });
+  document.getElementById('detCopy').addEventListener('click',()=>{ const a=lookResult(), s=detResult(); copyText('Engraving Detective, '+who()+': Look Closely '+a.right+' of '+a.total+', Picture vs. Evidence '+s.right+' of '+s.total+'.\nWhat really happened, or stretching the truth? '+(detWhy.value.trim()||'(not written yet)'),document.getElementById('detCopyMsg')); });
 
   // The engraving, full size, without leaving the page.
   const revBox=document.getElementById('revBox'), revScroll=document.getElementById('revScroll'), revZoom=document.getElementById('revZoom');
