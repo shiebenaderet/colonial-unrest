@@ -75,9 +75,17 @@ function doPost(e) {
   } catch (err) {
     note = String(err && err.message || err);
   }
-  // The page posts through a hidden frame; this tells it whether the email went out.
+  // The page opens this in a new tab (so the student's school sign-in comes along).
+  // The tab says whether it worked and tells the menu page, then closes itself.
   const msg = JSON.stringify({ source: 'ff-mailer', ok: ok, note: note });
-  return HtmlService.createHtmlOutput('<script>try{window.top.postMessage(' + msg + ',"*")}catch(e){}</script>')
+  const page =
+    '<div style="font-family:Arial,sans-serif;max-width:520px;margin:60px auto;text-align:center;color:#1f2124">' +
+    (ok ? '<h1 style="color:#2c6b37">Sent to Mr. B</h1><p style="font-size:18px">You can close this tab and go back to the menu.</p>'
+        : '<h1 style="color:#9f1d12">That did not send</h1><p style="font-size:18px">Close this tab, then try again or use the Copy button.</p>') +
+    '</div>' +
+    '<script>try{var t=window.top;(t.opener||t).postMessage(' + msg + ',"*")}catch(e){}' +
+    (ok ? 'setTimeout(function(){try{window.top.close()}catch(e){}},2500);' : '') + '</script>';
+  return HtmlService.createHtmlOutput(page).setTitle(ok ? 'Sent to Mr. B' : 'Not sent')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 

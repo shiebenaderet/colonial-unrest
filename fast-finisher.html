@@ -315,28 +315,29 @@ footer{font-size:14px;color:var(--muted);text-align:center}
   }
 
   /* ---------- Send to Mr. B ----------
-     Posts through a hidden frame to the Apps Script in tools/fast-finisher-mailer.gs,
-     which emails Mr. B. The frame carries the student's Google sign-in, which an
-     "Edmonds accounts only" deployment needs; the script answers with postMessage. */
+     Posts in a small new window to the Apps Script in tools/fast-finisher-mailer.gs,
+     which emails Mr. B and answers with postMessage. */
   const MAILER_URL = 'https://script.google.com/a/macros/edmonds.wednet.edu/s/AKfycbxMFUW_B1AXQUPNPklTlOiOyUPTCFnDYKI9Dmp8mH9UUUo4RxHgTOKUkKN9_wFNnncw/exec';   // the Apps Script web app URL (ends in /exec)
   let sendN = 0;
   function sendToMrB(payload, btn, msgEl){
     if(!store.fn || !store.per){ msgEl.textContent='Type your first name and pick your period at the top first.'; fn.focus(); return; }
     if(!MAILER_URL){ msgEl.textContent='Sending is not turned on yet. Use the Copy button and paste it into Canvas.'; return; }
-    const name='ff-send-'+(++sendN);
-    const frame=el('iframe',{name,title:'sending',hidden:''}); document.body.append(frame);
-    const form=el('form',{method:'POST',action:MAILER_URL,target:name,hidden:''});
+    // A new tab, not a hidden frame: Chrome leaves the school Google sign-in out of
+    // hidden frames from other sites, and the mailer only accepts Edmonds accounts.
+    const name='ff-send-'+(++sendN)+'-'+Date.now();
+    const tab=window.open('', name, 'width=520,height=420');
+    const form=el('form',{method:'POST',action:MAILER_URL,target:tab? name : '_blank',hidden:''});
     const inp=el('input',{type:'hidden',name:'payload'});
     inp.value=JSON.stringify(Object.assign({student:(store.fn||'')+(store.li?' '+store.li+'.':''), period:store.per||''}, payload));
     form.append(inp); document.body.append(form);
-    btn.disabled=true; msgEl.textContent='Sending…';
+    btn.disabled=true; msgEl.textContent='Sending… a small window opened. It says "Sent to Mr. B" when it works.';
     let done=false;
-    function finish(ok, text){ if(done) return; done=true; window.removeEventListener('message', onMsg); btn.disabled=false; msgEl.textContent=text; setTimeout(()=>{ frame.remove(); form.remove(); }, 2000); }
+    function finish(text){ if(done) return; done=true; window.removeEventListener('message', onMsg); btn.disabled=false; msgEl.textContent=text; form.remove(); }
     function onMsg(e){ const d=e.data; if(!d || d.source!=='ff-mailer') return;
-      if(d.ok) finish(true, 'Sent to Mr. B at '+new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})+'.');
-      else finish(false, 'That did not send. Make sure you are signed in to your school account, then try again.'); }
+      finish(d.ok? 'Sent to Mr. B at '+new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})+'.'
+                 : 'That did not send. Make sure you are signed in to your school account, then try again.'); }
     window.addEventListener('message', onMsg);
-    setTimeout(()=>finish(false, 'Could not confirm it sent. Make sure you are signed in to your school account, or use the Copy button.'), 20000);
+    setTimeout(()=>finish('If the small window said "Sent to Mr. B", you are done. If not, use the Copy button.'), 30000);
     form.submit();
   }
   function mcItems(items, saved){
