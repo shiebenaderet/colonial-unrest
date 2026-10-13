@@ -70,6 +70,12 @@ ol,ul{margin:0;padding-left:22px;display:grid;gap:6px}
 .opt.right{background:var(--ok-tint);border-color:var(--ok)}
 .opt.wrong{background:var(--bad-tint);border-color:var(--bad)}
 .opt:disabled{cursor:default}
+.opt.tried{text-decoration:line-through;opacity:.6}
+.retry{display:grid;gap:6px;background:var(--bg);border:1px dashed var(--accent);border-radius:8px;padding:10px 12px}
+.retry label{font-weight:700;display:grid;gap:4px}
+.retry textarea{min-height:64px}
+.tries{font-size:13px;color:var(--muted);font-weight:700}
+.reveal-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .fb{font-size:15px;font-weight:600}
 .fb.right{color:var(--ok)} .fb.wrong{color:var(--bad)}
 .score{font-weight:800;font-size:18px}
@@ -341,16 +347,37 @@ footer{font-size:14px;color:var(--muted);text-align:center}
     form.submit();
   }
   function mcItems(items, saved){
-    return items.map((it,i)=>{ const a=saved&&saved[i];
-      return {q:it.q, a:a? a.pick : '(not answered)', note:a? (a.ok? 'Correct' : 'Incorrect. Correct answer: '+it.a) : ''}; });
+    saved=saved||{};
+    return items.map((it,i)=>{ const e=entry(saved,i);
+      if(!e||!e.tries.length) return {q:it.q, a:'(not answered)'};
+      const lines=e.tries.map((t,k)=>'Try '+(k+1)+': '+t.pick+(t.ok?' (right)':' (wrong)')+(t.why?'. Why I changed: "'+t.why+'"':''));
+      const last=e.tries[e.tries.length-1];
+      return {q:it.q, a:lines.join('\n'), note: last.ok ? '' : ('Did not get it. Correct answer: '+it.a+(e.shown?' (shown at the end)':''))}; });
   }
 
+
   /* ---------- reusable multiple choice builder ---------- */
+  // Each question keeps every attempt: {tries:[{pick, ok, why}], shown}. A wrong answer
+  // gives only a hint; Try again crosses out what they picked and asks why they are
+  // changing before a new pick counts. "Show answers" reveals the rest at the end.
+  const MIN_WHY_WORDS = 6;
+  function entry(saved, idx){
+    let e = saved[idx];
+    if(e && !e.tries) e = saved[idx] = {tries:[{pick:e.pick, ok:e.ok}]};   // older saves
+    return e;
+  }
   function buildMC(container,items,keyName,scoreEl,r,opt){
     store[keyName]=store[keyName]||{};
-    const answered=store[keyName];
+    const saved=store[keyName];
     const order=(opt&&opt.keepOrder)? items.map((_,i)=>i) : shuffle(items.map((_,i)=>i),r);
-    function update(){ const done=Object.keys(answered).length; const right=Object.values(answered).filter(v=>v.ok).length; scoreEl.textContent=done? 'Score: '+right+' of '+items.length+(done<items.length?' (keep going)':''):''; }
+    const redraws=[];
+    function tally(){
+      let first=0, right=0, done=0;
+      items.forEach((_,i)=>{ const e=entry(saved,i); if(!e||!e.tries.length) return; done++;
+        if(e.tries[0].ok) first++; if(e.tries[e.tries.length-1].ok) right++; });
+      return {first, right, done, total:items.length};
+    }
+    function update(){ const t=tally(); scoreEl.textContent = t.done ? 'Right on the first try: '+t.first+' of '+t.total+' · Right in the end: '+t.right+' of '+t.total+(t.done<t.total?' (keep going)':'') : ''; }
     order.forEach((idx,n)=>{
       const it=items[idx];
       const box=el('div',{class:'q'});
@@ -358,37 +385,85 @@ footer{font-size:14px;color:var(--muted);text-align:center}
       box.append(el('p',{class:'prompt',text:(n+1)+'. '+it.q}));
       if(it.check) box.append(el('p',{class:'check',text:it.check}));
       const opts=el('div',{class:'opts'}); const fb=el('p',{class:'fb','aria-live':'polite'});
+      const tries=el('p',{class:'tries'});
       const choices=it.fixed? it.choices.slice() : shuffle(it.choices,r);
       const btns=choices.map(c=>{ const b=el('button',{class:'opt',type:'button',text:c}); opts.append(b); return b; });
-      function lock(choice){
-        btns.forEach(b=>{ b.disabled=true; if(b.textContent===it.a) b.classList.add('right'); else if(b.textContent===choice) b.classList.add('wrong'); });
-        const ok=choice===it.a; fb.className='fb '+(ok?'right':'wrong'); fb.textContent=(ok?'Correct. ':'Not quite. ')+it.why;
+      const retryBtn=el('button',{class:'btn ghost',type:'button',text:'Try again'}); retryBtn.hidden=true;
+      const retryBox=el('div',{class:'retry'}); retryBox.hidden=true;
+      const whyId='why-'+keyName+'-'+idx;
+      const whyLab=el('label',{for:whyId,text:'Why are you changing your answer? What did you notice?'});
+      const whyIn=el('textarea',{id:whyId});
+      const whyMsg=el('span',{class:'small','aria-live':'polite',text:'Write at least one sentence, then pick your new answer.'});
+      retryBox.append(whyLab, whyIn, whyMsg);
+      let retrying=false;
+      function draw(){
+        const e=entry(saved,idx); const t=e? e.tries : [];
+        const last=t[t.length-1];
+        const picked=new Set(t.map(x=>x.pick));
+        const solved=last&&last.ok, shown=e&&e.shown;
+        btns.forEach(b=>{ b.classList.remove('right','wrong','tried');
+          const c=b.textContent;
+          if(solved||shown){ b.disabled=true; if(c===it.a) b.classList.add('right'); else if(last && c===last.pick && !last.ok) b.classList.add('wrong'); return; }
+          if(!t.length){ b.disabled=false; return; }
+          if(retrying){ b.disabled=picked.has(c); if(picked.has(c)) b.classList.add('tried'); return; }
+          b.disabled=true; if(c===last.pick) b.classList.add('wrong'); else if(picked.has(c)) b.classList.add('tried');
+        });
+        if(solved){ fb.className='fb right'; fb.textContent=(t.length>1?'Correct this time. ':'Correct. ')+it.why; }
+        else if(shown){ fb.className='fb wrong'; fb.textContent='The answer: '+it.a+'. '+it.why; }
+        else if(last){ fb.className='fb wrong'; fb.textContent='Not quite. '+(it.hint||'Look again, then try again.'); }
+        else { fb.className='fb'; fb.textContent=''; }
+        tries.textContent = t.length>1 ? 'Tries: '+t.length : '';
+        retryBtn.hidden = !(last && !last.ok && !shown) || retrying;
+        retryBox.hidden = !retrying;
       }
-      btns.forEach(b=>b.addEventListener('click',()=>{ answered[idx]={pick:b.textContent,ok:b.textContent===it.a}; save(); lock(b.textContent); update(); }));
-      if(answered[idx]) lock(answered[idx].pick);
-      box.append(opts,fb); container.append(box);
+      btns.forEach(b=>b.addEventListener('click',()=>{
+        const e=entry(saved,idx);
+        if(e && e.tries.length){
+          if(!retrying) return;
+          const why=whyIn.value.trim();
+          if(why.split(/\s+/).filter(Boolean).length < MIN_WHY_WORDS){ whyMsg.textContent='Tell why you are changing it first: at least one full sentence.'; whyIn.focus(); return; }
+          e.tries.push({pick:b.textContent, ok:b.textContent===it.a, why});
+          retrying=false; whyIn.value='';
+          whyMsg.textContent='Write at least one sentence, then pick your new answer.';
+        } else {
+          saved[idx]={tries:[{pick:b.textContent, ok:b.textContent===it.a}]};
+        }
+        save(); draw(); update();
+      }));
+      retryBtn.addEventListener('click',()=>{ retrying=true; draw(); whyIn.focus(); });
+      box.append(opts, fb, tries, retryBtn, retryBox); container.append(box);
+      redraws.push(draw); draw();
     });
+    const showBtn=el('button',{class:'btn ghost',type:'button',text:'Show answers'});
+    const showMsg=el('span',{class:'small'});
+    showBtn.addEventListener('click',()=>{
+      const t=tally();
+      if(t.done<t.total){ showMsg.textContent='Answer every question first.'; return; }
+      items.forEach((_,i)=>{ const e=entry(saved,i); if(e && !e.tries[e.tries.length-1].ok) e.shown=true; });
+      save(); redraws.forEach(f=>f()); showMsg.textContent='Answers shown for the ones you did not get. Your score stays the same.';
+    });
+    container.append(el('div',{class:'reveal-row'}, showBtn, showMsg));
     update();
-    return ()=>{ const right=Object.values(answered).filter(v=>v.ok).length; return {right,total:items.length,done:Object.keys(answered).length}; };
+    return tally;
   }
 
   /* ---------- Liberty's Kids ---------- */
   const LK=[
-    {q:'Sarah Phillips is sailing from England. Which city was she supposed to go to?',choices:['Philadelphia','Boston','New York','Charleston'],a:'Philadelphia',why:'She was headed to Philadelphia, but a storm brought her ship to Boston.'},
-    {q:'Ben Franklin\'s young reporters write for which newspaper?',choices:['The Philadelphia Gazette','The Boston Gazette','The London Times','The New York Post'],a:'The Philadelphia Gazette',why:'James and Sarah report for Franklin\'s Philadelphia Gazette.'},
-    {q:'Whose side does Sarah tell the story from at the start?',choices:['The British side','The Patriot side','The French side','Neither side'],a:'The British side',why:'Sarah is from England. Her letters home give the British point of view.'},
-    {q:'What was the name of the Boston group that was angry at Parliament?',choices:['Sons of Liberty','Minutemen','Continental Congress','Loyalists'],a:'Sons of Liberty',why:'The Sons of Liberty planned the Tea Party.'},
-    {q:'The episode lists earlier things that made Boston angry. Which one was NOT on the list?',choices:['The Louisiana Purchase','The Stamp Act','The Boston Massacre','The Sugar Act'],a:'The Louisiana Purchase',why:'The Louisiana Purchase was in 1803, thirty years later. The other three came before 1773.'},
-    {q:'How did the colonists disguise themselves to board the ships?',choices:['As Mohawk Indians','As British soldiers','As sailors','They wore no disguise'],a:'As Mohawk Indians',why:'They dressed as Mohawk Indians. Your Boston Tea Party placard says this too.'},
-    {q:'What slogan did the protesters use?',choices:['No taxation without representation','Give me liberty or give me death','Remember the Alamo','Don\'t tread on me'],a:'No taxation without representation',why:'It means: you can\'t tax us if we have no vote in Parliament.'},
-    {q:'On your Understanding Unrest placards, the Boston Tea Party is tagged as what?',choices:['Colonial Response','British Action','Both Sides Clash'],a:'Colonial Response',fixed:true,why:'The colonists acted, pushing back against the Tea Act.'},
-    {q:'Which placard comes right after the Tea Party, as Britain\'s answer to it?',choices:['Intolerable Acts','Stamp Act','Quartering Act','Proclamation of 1763'],a:'Intolerable Acts',why:'Britain closed Boston\'s port to punish the city. That is Episode 2.'},
-    {q:'Which part of the episode is made up?',choices:['Sarah, James and Henri are fictional characters','The tea was thrown into the harbor','Colonists were angry about the Tea Act','Ben Franklin was a real person'],a:'Sarah, James and Henri are fictional characters',why:'The kids are invented so you can see history through their eyes. The events and Ben Franklin are real.'}
+    {q:'Sarah Phillips is sailing from England. Which city was she supposed to go to?',choices:['Philadelphia','Boston','New York','Charleston'],a:'Philadelphia',hint:'Think back to the start, when the storm sends Sarah\'s ship off course.',why:'She was headed to Philadelphia, but a storm brought her ship to Boston.'},
+    {q:'Ben Franklin\'s young reporters write for which newspaper?',choices:['The Philadelphia Gazette','The Boston Gazette','The London Times','The New York Post'],a:'The Philadelphia Gazette',hint:'Listen for the city where Ben Franklin\'s paper is printed.',why:'James and Sarah report for Franklin\'s Philadelphia Gazette.'},
+    {q:'Whose side does Sarah tell the story from at the start?',choices:['The British side','The Patriot side','The French side','Neither side'],a:'The British side',hint:'Where is Sarah from, and who is she writing her letters to?',why:'Sarah is from England. Her letters home give the British point of view.'},
+    {q:'What was the name of the Boston group that was angry at Parliament?',choices:['Sons of Liberty','Minutemen','Continental Congress','Loyalists'],a:'Sons of Liberty',hint:'Listen for the group\'s name when the colonists plan the Tea Party.',why:'The Sons of Liberty planned the Tea Party.'},
+    {q:'The episode lists earlier things that made Boston angry. Which one was NOT on the list?',choices:['The Louisiana Purchase','The Stamp Act','The Boston Massacre','The Sugar Act'],a:'The Louisiana Purchase',hint:'Check the dates. One of these happened long after 1773.',why:'The Louisiana Purchase was in 1803, thirty years later. The other three came before 1773.'},
+    {q:'How did the colonists disguise themselves to board the ships?',choices:['As Mohawk Indians','As British soldiers','As sailors','They wore no disguise'],a:'As Mohawk Indians',hint:'Your Boston Tea Party card on Understanding Unrest says this too.',why:'They dressed as Mohawk Indians. Your Boston Tea Party placard says this too.'},
+    {q:'What slogan did the protesters use?',choices:['No taxation without representation','Give me liberty or give me death','Remember the Alamo','Don\'t tread on me'],a:'No taxation without representation',hint:'The slogan is about taxes and having a vote.',why:'It means: you can\'t tax us if we have no vote in Parliament.'},
+    {q:'On your Understanding Unrest placards, the Boston Tea Party is tagged as what?',choices:['Colonial Response','British Action','Both Sides Clash'],a:'Colonial Response',fixed:true,hint:'At the Tea Party, who acted: Britain or the colonists?',why:'The colonists acted, pushing back against the Tea Act.'},
+    {q:'Which placard comes right after the Tea Party, as Britain\'s answer to it?',choices:['Intolerable Acts','Stamp Act','Quartering Act','Proclamation of 1763'],a:'Intolerable Acts',hint:'What did Britain do to punish Boston for the tea?',why:'Britain closed Boston\'s port to punish the city. That is Episode 2.'},
+    {q:'Which part of the episode is made up?',choices:['Sarah, James and Henri are fictional characters','The tea was thrown into the harbor','Colonists were angry about the Tea Act','Ben Franklin was a real person'],a:'Sarah, James and Henri are fictional characters',hint:'Which of these could you find in a history book?',why:'The kids are invented so you can see history through their eyes. The events and Ben Franklin are real.'}
   ];
   const lkScore=document.getElementById('lkScore');
   const lkResult=buildMC(document.getElementById('lkQuiz'),LK,'lk',lkScore,rng(store.seed+11));
-  document.getElementById('lkSend').addEventListener('click',e=>{ const s=lkResult(); sendToMrB({activity:"Liberty's Kids", score:s.right+' of '+s.total+' correct ('+s.done+' answered)', items:mcItems(LK, store.lk)}, e.currentTarget, document.getElementById('lkCopyMsg')); });
-  document.getElementById('lkCopy').addEventListener('click',()=>{ const s=lkResult(); copyText('Liberty\'s Kids Ep. 1, '+who()+': '+s.right+' of '+s.total+' correct ('+s.done+' answered).',document.getElementById('lkCopyMsg')); });
+  document.getElementById('lkSend').addEventListener('click',e=>{ const s=lkResult(); sendToMrB({activity:"Liberty's Kids", score:'Right on the first try: '+s.first+' of '+s.total+' · Right in the end: '+s.right+' of '+s.total+' ('+s.done+' answered)', items:mcItems(LK, store.lk)}, e.currentTarget, document.getElementById('lkCopyMsg')); });
+  document.getElementById('lkCopy').addEventListener('click',()=>{ const s=lkResult(); copyText('Liberty\'s Kids Ep. 1, '+who()+': right on the first try '+s.first+' of '+s.total+', right in the end '+s.right+' of '+s.total+'.',document.getElementById('lkCopyMsg')); });
 
   /* ---------- Engraving Detective ---------- */
   // Part 1 is answered from the picture alone (each question shows its detail);
@@ -400,7 +475,7 @@ footer{font-size:14px;color:var(--muted);text-align:center}
     {img:'images/ff-revere-crowd.jpg',q:'What are the people in the crowd doing?',choices:['Standing still or helping the wounded','Throwing snowballs and sticks','Attacking the soldiers with clubs'],a:'Standing still or helping the wounded',why:'No one in the crowd is throwing anything. They look like helpless victims.'},
     {img:'images/ff-revere-window.jpg',q:'Look at the building. What does the top sign say, and what comes out of the window below it?',choices:['Butcher\'s Hall, and a gun is firing','Town Hall, and a flag','Butcher\'s Hall, and nothing'],a:'Butcher\'s Hall, and a gun is firing',why:'Revere labeled the Custom House "Butcher\'s Hall," calling the British butchers. A gun fires from a window.'},
     {img:'images/ff-revere-names.jpg',q:'The caption at the bottom names the men who were killed. Which name is on the list?',choices:['Crispus Attucks','John Adams','Paul Revere'],a:'Crispus Attucks',why:'Crispus Attucks, a sailor of African and Native American descent, was one of the five men killed.'}
-  ];
+  ].map(d=>Object.assign({hint:'Look closely at the picture above the question again.'},d));
   const DC=['Fact','Exaggerated','Left Out'];
   const DET=[
     {q:'The soldiers stand in a neat line and fire all together.',check:'Check: Evidence 2',a:'Exaggerated',why:'Witnesses said the shots came one after another, in confusion.'},
@@ -409,17 +484,17 @@ footer{font-size:14px;color:var(--muted);text-align:center}
     {q:'Men in the crowd were killed by British gunfire in King Street.',check:'Check: Evidence 5',a:'Fact',why:'Five men died, and the caption names all five.'},
     {q:'Snowballs, ice and sticks being thrown at the soldiers.',check:'Check: Evidence 1',a:'Left Out',why:'It happened, but Revere left it out. He drew the crowd standing calmly instead, so they look like helpless victims.'},
     {q:'A soldier being knocked down before the shooting.',check:'Check: Evidence 2',a:'Left Out',why:'Witnesses described it, but Revere did not draw it.'}
-  ].map(d=>Object.assign({choices:DC,fixed:true},d));
+  ].map(d=>Object.assign({choices:DC,fixed:true,hint:'Re-read '+d.check.replace('Check: ','')+' in the box above, then compare it to the picture.'},d));
   const lookScore=document.getElementById('detLookScore');
   const lookResult=buildMC(document.getElementById('detLook'),LOOK,'detLook',lookScore,rng(store.seed+29),{keepOrder:true});
   const detScore=document.getElementById('detScore');
   const detResult=buildMC(document.getElementById('detQuiz'),DET,'detSort2',detScore,rng(store.seed+23));
   const detWhy=document.getElementById('detWhy'); detWhy.value=store.detWhy||''; detWhy.addEventListener('input',()=>{store.detWhy=detWhy.value;save();});
   document.getElementById('detSend').addEventListener('click',e=>{ const a=lookResult(), s=detResult();
-    sendToMrB({activity:'Engraving Detective', score:'Look Closely '+a.right+' of '+a.total+' · Picture vs. Evidence '+s.right+' of '+s.total,
+    sendToMrB({activity:'Engraving Detective', score:'Look Closely: first try '+a.first+', in the end '+a.right+' of '+a.total+' · Picture vs. Evidence: first try '+s.first+', in the end '+s.right+' of '+s.total,
       items:[...mcItems(LOOK, store.detLook).map(x=>Object.assign(x,{q:'Look Closely: '+x.q})), ...mcItems(DET, store.detSort2).map(x=>Object.assign(x,{q:'Picture vs. Evidence: '+x.q})),
              {q:'Was Revere mostly showing what really happened in Boston, or was he stretching the truth?', a:detWhy.value.trim()||'(not written yet)'}]}, e.currentTarget, document.getElementById('detCopyMsg')); });
-  document.getElementById('detCopy').addEventListener('click',()=>{ const a=lookResult(), s=detResult(); copyText('Engraving Detective, '+who()+': Look Closely '+a.right+' of '+a.total+', Picture vs. Evidence '+s.right+' of '+s.total+'.\nWhat really happened, or stretching the truth? '+(detWhy.value.trim()||'(not written yet)'),document.getElementById('detCopyMsg')); });
+  document.getElementById('detCopy').addEventListener('click',()=>{ const a=lookResult(), s=detResult(); copyText('Engraving Detective, '+who()+': Look Closely first try '+a.first+', in the end '+a.right+' of '+a.total+'; Picture vs. Evidence first try '+s.first+', in the end '+s.right+' of '+s.total+'.\nWhat really happened, or stretching the truth? '+(detWhy.value.trim()||'(not written yet)'),document.getElementById('detCopyMsg')); });
 
   // The engraving, full size, without leaving the page.
   const revBox=document.getElementById('revBox'), revScroll=document.getElementById('revScroll'), revZoom=document.getElementById('revZoom');
