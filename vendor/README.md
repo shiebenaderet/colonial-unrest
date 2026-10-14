@@ -1,0 +1,1 @@
+`pptxgen.bundle.js` is PptxGenJS 3.12.0 (MIT, see `pptxgenjs-LICENSE.txt`), copied from the npm package's `dist/` folder. class.html loads it only when **Export as slides** is pressed, so the export works without reaching another website.

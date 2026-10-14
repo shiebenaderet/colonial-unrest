@@ -143,6 +143,7 @@
         <div class="export">
           <button class="btn" id="saveChart" type="button">Save this chart (PNG)</button>
           <button class="btn" id="saveAll" type="button">Save all views (PNG)</button>
+          <button class="btn" id="slides" type="button">Export as slides</button>
         </div>
         <details class="tbl"><summary>Show the numbers as a table</summary><div id="avgTable"></div></details>
       </div>
@@ -315,7 +316,7 @@
   function drawResults(){
     var s=stats(), box=$('chartBox'), facts=$('facts'), tbl=$('avgTable');
     box.textContent=''; facts.textContent=''; tbl.textContent=''; $('notice').innerHTML=''; $('legend').textContent='';
-    $('saveChart').disabled = $('saveAll').disabled = !s;
+    $('saveChart').disabled = $('saveAll').disabled = $('slides').disabled = !s;
     var all=pool().filter(function(r){ return r.some(function(v){return v!=='';}); }).length;
     if(!s){ $('basis').textContent=''; box.appendChild(el('p',{class:'empty',text:'Results appear here once at least one pair’s row adds up to exactly 36.'})); return; }
     $('basis').textContent = 'Based on '+s.n+' pair'+(s.n>1?'s':'')+(all>s.n ? ' ('+(all-s.n)+' row'+(all-s.n>1?'s':'')+' not counted yet: '+(all-s.n>1?'they don’t':'it doesn’t')+' add up to 36)' : '')+'. '+(period===ALL ? (function(u){ return u.length>1 ? 'Periods '+u.slice(0,-1).join(', ')+' and '+u[u.length-1] : 'Period '+u[0]; })(used()) : 'Period '+period)+'.';
@@ -594,6 +595,139 @@
       imgs.forEach(function(im){ g.drawImage(im,0,yy); yy+=im.height; });
       cv.toBlob(function(blob){ download(blob, fileName('all-views','png')); }, 'image/png');
     }).catch(function(){ flash(b,'Could not save the images'); });
+  });
+
+  // ---- export as slides: a PowerPoint deck (opens in Google Slides too) with
+  // each chart, how to read it in plain words, a question built from the
+  // class's own numbers, and teacher notes. The library loads only when asked.
+  function chartPNG(s, which){
+    var svg=chart(s, which, PAL.light, false), w=+svg.getAttribute('width'), h=+svg.getAttribute('height'), sc=2;
+    var src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(new XMLSerializer().serializeToString(svg));
+    return new Promise(function(ok, fail){
+      var img=new Image();
+      img.onload=function(){
+        var cv=document.createElement('canvas'); cv.width=w*sc; cv.height=h*sc;
+        var g=cv.getContext('2d'); g.fillStyle=PAL.light.bg; g.fillRect(0,0,cv.width,cv.height); g.drawImage(img,0,0,cv.width,cv.height);
+        ok({data:cv.toDataURL('image/png'), w:w, h:h});
+      };
+      img.onerror=fail; img.src=src;
+    });
+  }
+  var pptxReady=null;
+  function loadPptx(){
+    if(window.PptxGenJS) return Promise.resolve();
+    return pptxReady || (pptxReady=new Promise(function(ok, fail){
+      var sc=document.createElement('script'); sc.src='vendor/pptxgen.bundle.js'; sc.onload=ok;
+      sc.onerror=function(){ pptxReady=null; fail(new Error('no library')); }; document.head.appendChild(sc);
+    }));
+  }
+  // How to read each chart, for students: short steps, plain words.
+  var READ = {
+    each:['Each bar is one event. A taller bar means our class thought it caused more unrest.',
+          'The color shows who acted: red for Britain, green for the colonists, striped gold when both sides clashed.',
+          'The dashed line is 4. That is what every event would get if all nine were equal.',
+          'The thin black line on a bar goes from the lowest to the highest points any pair gave.'],
+    back:['Read from top to bottom, like a timeline.',
+          'A bar on the left means Britain acted. A bar on the right means the colonists acted. Bars on both sides mean the two sides clashed.',
+          'A longer bar means more unrest.',
+          'The notes between events tell what each side did next.'],
+    trend:['Each dot is one event. Higher means more unrest.',
+           'The shaded part on the right is 1770 to 1775. The part on the left is 1763 to 1767.',
+           'The thick line in each part is the average for those years.',
+           'If the line on the right is higher, unrest grew over time.'],
+    steps:['Each bar compares an event to the one right before it.',
+           'A bar going up means more unrest than the event before. A bar going down means less.',
+           'The tallest bar is the biggest jump.'],
+    total:['The line adds up our points one event at a time, until it reaches 36.',
+           'A steep part of the line means a lot of unrest at once.',
+           'A flat part means only a little unrest was added.']
+  };
+  function runs(html, base){   // the notices use <b>; turn them into bold runs
+    return html.split(/(<b>.*?<\/b>)/).filter(Boolean).map(function(part){
+      var b=/^<b>/.test(part); return {text:part.replace(/<\/?b>/g,''), options:Object.assign({bold:b, color:b?'8F1515':'14110D'}, base||{})};
+    });
+  }
+  function teacherNotes(s, which){
+    var order=s.avg.map(function(a,i){return i;}).sort(function(a,b){return s.avg[b]-s.avg[a];});
+    var big=biggestStep(s), lines=[];
+    if(which==='each') lines.push('Top three: '+order.slice(0,3).map(function(i){ return EVENTS[i][0]+' '+r1(s.avg[i]); }).join(', ')+'.', 'Point at the dashed line first, then ask who acted in the events above it.');
+    if(which==='back') lines.push('Cover the bars and read only the notes first: what did each side do next? Then show the bars and ask whether the answers got stronger.', 'Longest British bar: '+EVENTS[order.filter(function(i){ return EVENTS[i][3]==='Britain'; })[0]][0]+'. Longest colonial bar: '+EVENTS[order.filter(function(i){ return EVENTS[i][3]==='Colonists'; })[0]][0]+'.');
+    if(which==='trend') lines.push('1763–1767 average: '+r1(s.early)+'. 1770–1775 average: '+r1(s.late)+'.', 'Ask what changed around 1770: soldiers in Boston, the Massacre, and the two sides clashing directly.');
+    if(which==='steps' && big>0) lines.push('Biggest step up: '+EVENTS[big-1][0]+' to '+EVENTS[big][0]+' ('+sgn(s.step[big])+').', 'Ask what happened in between that made the next event land harder.');
+    if(which==='total') lines.push('Steeper stretches are where the class put the most points. Every pair spends 36, so the line always ends at 36.');
+    lines.push('', 'Class averages: '+EVENTS.map(function(e,i){ return e[1]+' '+r1(s.avg[i]); }).join(', ')+'.');
+    return lines.join('\n');
+  }
+  $('slides').addEventListener('click', function(){
+    var s=stats(), b=this; if(!s) return;
+    var t=b.textContent; b.textContent='Making slides…'; b.disabled=true;
+    var done=function(msg){ b.disabled=false; b.textContent=t; if(msg) flash(b,msg); };
+    var FACE='Atkinson Hyperlegible', INK='14110D', MUTED='4A4033', RED='8F1515', BG='FFFFFF', SOFT='F3EFE6';
+    var who=label()+' · '+s.n+' pair'+(s.n>1?'s':'');
+    Promise.all([loadPptx()].concat(VIEWS.map(function(v){ return chartPNG(s, v.id); }))).then(function(res){
+      var imgs=res.slice(1), pptx=new window.PptxGenJS();
+      pptx.layout='LAYOUT_WIDE'; pptx.title='What our class decided: '+label();
+      var SW=13.333;
+      function footer(sl){ sl.addText('Understanding Unrest in the Colonies · '+who, {x:0.5,y:7.0,w:SW-1,h:0.35,fontFace:FACE,fontSize:11,color:MUTED}); }
+
+      // 1. title
+      var sl=pptx.addSlide(); sl.background={color:SOFT};
+      sl.addText('What our class decided', {x:0.6,y:1.4,w:SW-1.2,h:1,fontFace:FACE,fontSize:44,bold:true,color:INK});
+      sl.addText('Understanding Unrest in the Colonies, 1763 to 1775', {x:0.6,y:2.4,w:SW-1.2,h:0.6,fontFace:FACE,fontSize:22,color:MUTED});
+      sl.addShape(pptx.ShapeType.rect, {x:0.6,y:3.5,w:0.12,h:1.6,fill:{color:RED},line:{color:RED}});
+      sl.addText([{text:'Our big question', options:{fontSize:16,bold:true,color:MUTED,breakLine:true}},
+                  {text:'How did loyal British subjects turn into revolutionaries in barely a decade?', options:{fontSize:28,bold:true,color:INK}}],
+                 {x:0.95,y:3.4,w:SW-1.8,h:1.8,fontFace:FACE,valign:'middle'});
+      sl.addText(who+' · '+new Date().toLocaleDateString(), {x:0.6,y:6.3,w:SW-1.2,h:0.4,fontFace:FACE,fontSize:14,color:MUTED});
+
+      // 2. where the numbers come from, and the color key
+      sl=pptx.addSlide(); sl.background={color:BG};
+      sl.addText('Where these numbers come from', {x:0.5,y:0.35,w:SW-1,h:0.8,fontFace:FACE,fontSize:32,bold:true,color:INK});
+      sl.addText([
+        {text:'Every pair had exactly 36 points to spend on the 9 events.', options:{bullet:true,breakLine:true}},
+        {text:'More points means the pair thought the event caused more unrest.', options:{bullet:true,breakLine:true}},
+        {text:'We averaged all '+s.n+' pair'+(s.n>1?'s':'')+'. If all nine events were equal, each would get 4 points.', options:{bullet:true}}
+      ], {x:0.6,y:1.4,w:7.4,h:3,fontFace:FACE,fontSize:22,color:INK,paraSpaceAfter:12,valign:'top'});
+      sl.addText('Who acted', {x:8.6,y:1.4,w:4.2,h:0.5,fontFace:FACE,fontSize:20,bold:true,color:INK});
+      [['Britain','C23B22','British action: Britain pushed'],['Colonists','13866F','Colonial response: colonists pushed'],['Clash','D9A521','Both sides clash']].forEach(function(k,i){
+        var yy=2.05+i*0.85;
+        sl.addShape(pptx.ShapeType.rect, {x:8.6,y:yy,w:0.55,h:0.55,fill:{color:k[1]},line:{color:k[1]}});
+        sl.addText(k[2]+(k[0]==='Clash'?' (striped bars on the charts)':''), {x:9.3,y:yy-0.05,w:3.6,h:0.65,fontFace:FACE,fontSize:17,color:INK,valign:'middle'});
+      });
+
+      // 3+. one slide per chart
+      VIEWS.forEach(function(v,i){
+        var im=imgs[i], sl=pptx.addSlide(); sl.background={color:BG};
+        sl.addText(v.title, {x:0.5,y:0.3,w:SW-1,h:0.75,fontFace:FACE,fontSize:30,bold:true,color:INK});
+        var bx=0.4, by=1.15, bw=8.2, bh=5.75, sc=Math.min(bw/im.w, bh/im.h), w=im.w*sc, h=im.h*sc;
+        sl.addImage({data:im.data, x:bx+(bw-w)/2, y:by+(bh-h)/2, w:w, h:h, altText:v.title});
+        sl.addText('How to read it', {x:8.9,y:1.15,w:4,h:0.45,fontFace:FACE,fontSize:18,bold:true,color:INK});
+        sl.addText(READ[v.id].map(function(line,k,a){ return {text:line, options:{bullet:{type:'number'}, breakLine:k<a.length-1}}; }),
+          {x:8.9,y:1.6,w:4,h:3.4,fontFace:FACE,fontSize:14,color:INK,paraSpaceAfter:5,valign:'top'});
+        var q=v.notice(s);
+        if(q){
+          sl.addShape(pptx.ShapeType.rect, {x:8.9,y:5.2,w:4,h:1.7,fill:{color:SOFT},line:{color:SOFT}});
+          sl.addShape(pptx.ShapeType.rect, {x:8.9,y:5.2,w:0.08,h:1.7,fill:{color:RED},line:{color:RED}});
+          sl.addText([{text:'Talk about it', options:{bold:true,fontSize:14,color:MUTED,breakLine:true}}].concat(runs(q,{fontSize:16})),
+            {x:9.1,y:5.25,w:3.75,h:1.6,fontFace:FACE,valign:'middle'});
+        }
+        footer(sl); sl.addNotes(teacherNotes(s, v.id));
+      });
+
+      // last: back to the big question
+      sl=pptx.addSlide(); sl.background={color:SOFT};
+      sl.addText('Back to the big question', {x:0.5,y:0.35,w:SW-1,h:0.8,fontFace:FACE,fontSize:32,bold:true,color:INK});
+      sl.addText('How did loyal British subjects turn into revolutionaries in barely a decade?', {x:0.5,y:1.25,w:SW-1,h:1,fontFace:FACE,fontSize:24,bold:true,color:RED});
+      sl.addText('Use our charts as evidence. Start with:', {x:0.5,y:2.5,w:SW-1,h:0.5,fontFace:FACE,fontSize:18,bold:true,color:MUTED});
+      sl.addText([
+        {text:'Our class thought unrest grew from ___ to ___ because ___.', options:{bullet:true,breakLine:true}},
+        {text:'When Britain ___, the colonists answered by ___. Then Britain ___.', options:{bullet:true,breakLine:true}},
+        {text:'The biggest jump came at ___, right after ___.', options:{bullet:true}}
+      ], {x:0.6,y:3.05,w:SW-1.2,h:2.6,fontFace:FACE,fontSize:22,color:INK,paraSpaceAfter:14,valign:'top'});
+      footer(sl);
+
+      return pptx.writeFile({fileName:fileName('slides','pptx')});
+    }).then(function(){ done(); }, function(){ done('Could not make the slides'); });
   });
 
   // ---- backup: every period in one file, and load it back
