@@ -8,7 +8,8 @@ The zip is what record.html's "Download all" gives: one audio file per reading
 is converted to a small mono MP3 (plays everywhere, iPads included) with its
 loudness evened out and the silence before the first word trimmed (the cues move
 with it), written to audio/<key>.mp3, and listed in
-audio/recordings.js, which reader-tools.js reads. Readings already in
+audio/recordings.js, which reader-tools.js reads (index.html's tag for it gets a
+new version, so browsers fetch the new list). Readings already in
 recordings.js and not in the zip are kept, so the zips can come a few at a time.
 Needs ffmpeg.
 """
@@ -78,6 +79,12 @@ def main(zpath):
         f.write('window.READER_AUDIO = ')
         f.write(json.dumps(dict(sorted(entries.items())), indent=1, ensure_ascii=False))
         f.write(';\n')
+    # A new version tag on the script so browsers fetch the new list.
+    ver = hashlib.sha1(open(JS, 'rb').read()).hexdigest()[:8]
+    page = os.path.join(ROOT, 'index.html')
+    html = open(page, encoding='utf-8').read()
+    html = re.sub(r'audio/recordings\.js\?v=[\w-]+', f'audio/recordings.js?v={ver}', html)
+    open(page, 'w', encoding='utf-8').write(html)
     print(f'{len(entries)} readings in audio/recordings.js')
 
 
