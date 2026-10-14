@@ -8,7 +8,8 @@
 <!-- Teacher page for Day 6. Type each pair's 36-point budget from their
      trackers; the page averages them, charts how unrest added up from 1763 to
      1775, and lists the events pairs disagreed on most. Data stays in this
-     browser (one set per period). Nothing is sent anywhere. -->
+     browser (one set per period). "All periods" pools every period's pairs
+     into one chart. Nothing is sent anywhere. -->
 <link rel="stylesheet" href="fonts/atkinson.css">
 <style>
   :root{
@@ -82,12 +83,18 @@
   .avg-table td.n{text-align:right}
 
   body.present .entry, body.present .row-actions, body.present header .entry-only{display:none}
+  body.all-view .period-only, body.all-view header .entry-only{display:none}
+  body:not(.all-view) .all-only{display:none}
   body.present main{max-width:1400px}
   body.present .eq{font-size:30px}
   body.present .fact{font-size:20px}
   body.present .notice{font-size:22px}
   body.present .views button{font-size:18px}
   .empty{padding:24px;text-align:center;color:var(--muted)}
+  /* Push and push back is tall with words in it: give it the full width, facts below */
+  .results.wide{grid-template-columns:1fr}
+  .results.wide .facts{grid-template-columns:repeat(auto-fit,minmax(240px,1fr));align-items:start}
+  .results.wide .chart-box{max-width:1100px}
   @media(max-width:900px){ .results{grid-template-columns:1fr} }
   @media (prefers-reduced-motion:no-preference){ .pt{transition:r .15s ease} }
 </style>
@@ -96,7 +103,7 @@
 <header>
   <div class="wrap">
     <h1>Class Unrest Average</h1>
-    <label>Period <select id="period"></select></label>
+    <label>Show <select id="period"></select></label>
     <button class="btn entry-only" id="example" type="button">Load example</button>
     <button class="btn" id="present" type="button">Present</button>
   </div>
@@ -109,13 +116,15 @@
   </section>
 
   <section class="card entry">
-    <h2>Pair budgets</h2>
-    <p class="hint">Type each pair's points from the “Our pair” column of their tracker, in the row with their pair number. Each row should add up to 36. Saved in this browser, separately for each period. <b>Save a backup</b> keeps every period in one small file, to load on another computer or after the browser is cleared.</p>
-    <div class="table-wrap"><table id="entry"></table></div>
+    <h2 class="period-only">Pair budgets</h2>
+    <h2 class="all-only">All periods together</h2>
+    <p class="hint all-only">This view adds up every pair from every period, so each pair counts the same. To type or change numbers, pick one period at the top.</p>
+    <p class="hint period-only">Type each pair's points from the “Our pair” column of their tracker, in the row with their pair number. Each row should add up to 36. Saved in this browser, separately for each period. <b>Save a backup</b> keeps every period in one small file, to load on another computer or after the browser is cleared.</p>
+    <div class="table-wrap period-only"><table id="entry"></table></div>
     <div class="row-actions">
-      <button class="btn" id="addRow" type="button">+ Add a pair</button>
+      <button class="btn period-only" id="addRow" type="button">+ Add a pair</button>
       <button class="btn" id="copy" type="button">Copy results as text</button>
-      <button class="btn" id="clear" type="button">Clear this period</button>
+      <button class="btn period-only" id="clear" type="button">Clear this period</button>
       <button class="btn" id="backup" type="button">Save a backup</button>
       <button class="btn" id="restore" type="button">Load a backup</button>
       <input type="file" id="restoreFile" accept=".json,application/json" hidden>
@@ -123,9 +132,9 @@
   </section>
 
   <section class="card">
-    <h2>What our class decided</h2>
+    <h2 id="resultsTitle">What our class decided</h2>
     <p class="hint" id="basis"></p>
-    <div class="results">
+    <div class="results" id="results">
       <div>
         <div class="views" id="views" role="group" aria-label="Chart view"></div>
         <p class="notice" id="notice"></p>
@@ -133,7 +142,7 @@
         <div class="chart-box" id="chartBox"></div>
         <div class="export">
           <button class="btn" id="saveChart" type="button">Save this chart (PNG)</button>
-          <button class="btn" id="saveAll" type="button">Save all four (PNG)</button>
+          <button class="btn" id="saveAll" type="button">Save all views (PNG)</button>
         </div>
         <details class="tbl"><summary>Show the numbers as a table</summary><div id="avgTable"></div></details>
       </div>
@@ -157,9 +166,14 @@
   var KEY = 'unrest-class-v1';
   var store = {};
   try { store = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { store = {}; }
+  var ALL = 'all';
   var period = store._period || '1';
   function save(){ store._period = period; try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} }
   function rows(){ if(!store[period]) store[period] = [blank(), blank(), blank(), blank(), blank(), blank()]; return store[period]; }
+  // Rows behind the results: one period, or every period pooled.
+  function pool(){ return period===ALL ? PERIODS.reduce(function(a,p){ return a.concat(store[p]||[]); },[]) : rows(); }
+  function used(){ return PERIODS.filter(function(p){ return (store[p]||[]).some(complete); }); }
+  function label(){ return period===ALL ? 'All periods' : 'Period '+period; }
   function blank(){ var r=[]; for(var i=0;i<N;i++) r.push(''); return r; }
   function nums(r){ return r.map(function(v){ var n=parseInt(v,10); return isFinite(n)?n:null; }); }
   function complete(r){ var n=nums(r); return n.every(function(v){ return v!==null && v>=1 && v<=8; }) && n.reduce(function(a,b){return a+b;},0)===36; }
@@ -167,12 +181,15 @@
   function el(tag, attrs, kids){ var e=document.createElement(tag); for(var k in (attrs||{})){ if(k==='text') e.textContent=attrs[k]; else e.setAttribute(k,attrs[k]); } (kids||[]).forEach(function(c){ if(c) e.appendChild(typeof c==='string'?document.createTextNode(c):c); }); return e; }
 
   // ---- period picker
-  PERIODS.forEach(function(p){ var o=el('option',{value:p,text:'Period '+p}); if(p===period) o.selected=true; $('period').appendChild(o); });
+  PERIODS.concat([ALL]).forEach(function(p){ var o=el('option',{value:p,text:p===ALL?'All periods':'Period '+p}); if(p===period) o.selected=true; $('period').appendChild(o); });
   $('period').addEventListener('change', function(){ period=this.value; save(); drawEntry(); drawResults(); });
 
   // ---- entry table
   function drawEntry(){
+    var all=period===ALL; document.body.classList.toggle('all-view', all);
+    $('resultsTitle').textContent = all ? 'What all our classes decided' : 'What our class decided';
     var t=$('entry'); t.textContent='';
+    if(all) return;
     var head=el('tr',{},[el('th',{text:'Pair'})]);
     EVENTS.forEach(function(e,i){ head.appendChild(el('th',{scope:'col'},[ (i+1)+'. '+e[1], el('span',{class:'yr',text:String(e[2])}) ])); });
     head.appendChild(el('th',{text:'Total'})); head.appendChild(el('th',{},[el('span',{class:'muted',text:''})]));
@@ -220,7 +237,7 @@
 
   // ---- results
   function stats(){
-    var good=rows().filter(complete).map(function(r){ return nums(r); });
+    var good=pool().filter(complete).map(function(r){ return nums(r); });
     if(!good.length) return null;
     var avg=[], min=[], max=[];
     for(var i=0;i<N;i++){
@@ -247,6 +264,19 @@
     light:{Britain:'#c23b22', Colonists:'#13866f', Clash:'#d9a521', bg:'#ffffff', fg:'#14110d', muted:'#4a4033', grid:'#e4dccb', edge:'#74674f', accent:'#8f1515', hatch:'rgba(255,255,255,.55)'},
     dark: {Britain:'#d94a4a', Colonists:'#1f9e80', Clash:'#b59018', bg:'#1e1a14', fg:'#f7f1e4', muted:'#d2c6ad', grid:'#3a3229', edge:'#a8987a', accent:'#ff9a90', hatch:'rgba(30,26,20,.55)'}
   };
+  // What each side did in the gap after each event, before the next one:
+  // [Britain, Colonists]. Every line is something the class can find in the
+  // readings or the unit; '' leaves that side's lane empty.
+  var NEXT = [
+    ['Keeps about 10,000 soldiers in America.', 'Many ignore the line and keep moving west.'],
+    ['Wants colonists to help pay for the soldiers and the war debt.', 'New York refuses to pay for the soldiers.'],
+    ['Repeals the tax (1766), but says it can still make any law for the colonies.', 'Boycotts, protests, and the Stamp Act Congress.'],
+    ['Sends soldiers to Boston (1768).', 'Boycott British goods again.'],
+    ['Drops most Townshend taxes but keeps the tea tax (1770). The Tea Act (1773) helps one company sell tea.', 'Committees of correspondence spread news colony to colony (1772).'],
+    ['Decides to punish Boston (1774).', 'Some colonists say Boston should pay for the tea.'],
+    ['Puts General Gage in charge of Massachusetts.', 'Other colonies send food to Boston and agree to meet.'],
+    ['Sends soldiers to take the colonists’ weapons at Concord (1775).', 'Boycott all British goods and train militias (minutemen).']
+  ];
   var SIDE_NAME = {Britain:'British action', Colonists:'Colonial response', Clash:'Both sides clash'};
   function pal(){ return window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? PAL.dark : PAL.light; }
 
@@ -254,6 +284,9 @@
     {id:'each',  label:'Each event',
      title:'Class average for each event',
      notice:function(s){ return 'Which events are <b>above the even-split line</b>? Who acted in those?'; }},
+    {id:'back',  label:'Push and push back',
+     title:'Push and push back, 1763 to 1775',
+     notice:function(s){ return 'Read down. Each push gets an answer from the other side. <b>Do the bars get longer</b> as each side answers the other?'; }},
     {id:'trend', label:'Getting worse?',
      title:'Did unrest grow over time?',
      notice:function(s){ return 'Events from 1770 on averaged <b>'+r1(s.late)+'</b>; events before 1770 averaged <b>'+r1(s.early)+'</b>. What changed?'; }},
@@ -283,12 +316,13 @@
     var s=stats(), box=$('chartBox'), facts=$('facts'), tbl=$('avgTable');
     box.textContent=''; facts.textContent=''; tbl.textContent=''; $('notice').innerHTML=''; $('legend').textContent='';
     $('saveChart').disabled = $('saveAll').disabled = !s;
-    var all=rows().filter(function(r){ return r.some(function(v){return v!=='';}); }).length;
+    var all=pool().filter(function(r){ return r.some(function(v){return v!=='';}); }).length;
     if(!s){ $('basis').textContent=''; box.appendChild(el('p',{class:'empty',text:'Results appear here once at least one pair’s row adds up to exactly 36.'})); return; }
-    $('basis').textContent = 'Based on '+s.n+' pair'+(s.n>1?'s':'')+(all>s.n ? ' ('+(all-s.n)+' row'+(all-s.n>1?'s':'')+' not counted yet: '+(all-s.n>1?'they don’t':'it doesn’t')+' add up to 36)' : '')+'. Period '+period+'.';
+    $('basis').textContent = 'Based on '+s.n+' pair'+(s.n>1?'s':'')+(all>s.n ? ' ('+(all-s.n)+' row'+(all-s.n>1?'s':'')+' not counted yet: '+(all-s.n>1?'they don’t':'it doesn’t')+' add up to 36)' : '')+'. '+(period===ALL ? (function(u){ return u.length>1 ? 'Periods '+u.slice(0,-1).join(', ')+' and '+u[u.length-1] : 'Period '+u[0]; })(used()) : 'Period '+period)+'.';
     var v=viewOf(view), P=pal();
+    $('results').classList.toggle('wide', view==='back');
     $('notice').innerHTML = v.notice(s);
-    if(view==='each' || view==='trend'){
+    if(view==='each' || view==='trend' || view==='back'){
       ['Britain','Colonists','Clash'].forEach(function(k){
         var sw=el('i'); sw.style.background = k==='Clash'
           ? 'repeating-linear-gradient(45deg,'+P.Clash+' 0 4px,'+P.hatch+' 4px 6px),'+P.Clash : P[k];
@@ -303,6 +337,10 @@
     if(view==='trend'){
       var bar=el('i'); bar.style.cssText='height:3px;background:'+P.fg+';border-radius:2px;width:18px';
       $('legend').appendChild(el('span',{},[bar,'Average of each half']));
+    }
+    if(view==='back'){
+      var gap=el('i'); gap.style.cssText='width:3px;height:14px;background:'+P.muted+';border-radius:1px';
+      $('legend').appendChild(el('span',{},[gap,'What each side did next']));
     }
     box.appendChild(chart(s, view, P, true));
 
@@ -331,10 +369,11 @@
     t.appendChild(tb); tbl.appendChild(t);
   }
 
-  // One chart, four views. Colors are passed in (P) so the saved image can be
+  // One chart, four views (Push and push back has its own, below). Colors are passed in (P) so the saved image can be
   // drawn light whatever the screen uses. interactive adds the hover/focus layer.
   var NS='http://www.w3.org/2000/svg', W=760, H=400, L=50, R=16, T=28, B=86, svgSeq=0;
   function chart(s, which, P, interactive){
+    if(which==='back') return backChart(s, P, interactive);
     var svg=document.createElementNS(NS,'svg'); svg.setAttribute('viewBox','0 0 '+W+' '+H);
     svg.setAttribute('width',W); svg.setAttribute('height',H);
     svg.setAttribute('font-family',"'Atkinson Hyperlegible Next','Atkinson Hyperlegible',Verdana,sans-serif");
@@ -447,10 +486,70 @@
     return wrap;
   }
 
+  // Push and push back: one row per event, Britain's bars to the left and the
+  // colonists' to the right, and between each pair of events what each side did
+  // next. Taller than the other views, so it has its own height.
+  function backChart(s, P, interactive){
+    var W=1100, cx=W/2, mid=84, lane=cx-mid-24, sc=lane/8, top=50, rowH=42, lh=19, wrapAt=50;
+    function wrap(str){ var out=[], line=''; str.split(' ').forEach(function(w){ if(line && (line+' '+w).length>wrapAt){ out.push(line); line=w; } else line=line?line+' '+w:w; }); if(line) out.push(line); return out; }
+    var gaps=NEXT.map(function(g){ return [wrap(g[0]), wrap(g[1])]; });
+    var gapH=gaps.map(function(g){ return Math.max(g[0].length, g[1].length, 1)*lh+18; });
+    var Hb=top+rowH*N+gapH.reduce(function(a,b){return a+b;},0)+8;
+    var svg=document.createElementNS(NS,'svg'); svg.setAttribute('viewBox','0 0 '+W+' '+Hb);
+    svg.setAttribute('width',W); svg.setAttribute('height',Hb);
+    svg.setAttribute('font-family',"'Atkinson Hyperlegible Next','Atkinson Hyperlegible',Verdana,sans-serif");
+    svg.setAttribute('role','img');
+    svg.setAttribute('aria-label', 'Push and push back: each event’s class average, with British actions on the left, colonial responses on the right, and what each side did next between events. '
+      +EVENTS.map(function(e,i){ return e[0]+' ('+SIDE_NAME[e[3]]+') '+r1(s.avg[i])+(i<N-1 ? '. Then Britain: '+(NEXT[i][0]||'nothing new')+' Colonists: '+(NEXT[i][1]||'nothing new') : ''); }).join(' '));
+    function mk(tag,a,parent){ var e=document.createElementNS(NS,tag); for(var k in a) e.setAttribute(k,a[k]); (parent||svg).appendChild(e); return e; }
+    function txt(x,y,str,a){ var t=mk('text',Object.assign({x:x,y:y,'font-size':13,fill:P.muted},a||{})); t.textContent=str; return t; }
+    var pid='hatch'+(++svgSeq);
+    var pat=mk('pattern',{id:pid,width:6,height:6,patternUnits:'userSpaceOnUse',patternTransform:'rotate(45)'},mk('defs',{}));
+    mk('line',{x1:0,y1:0,x2:0,y2:6,stroke:P.hatch,'stroke-width':2},pat);
+    var xl=cx-mid, xr=cx+mid;
+    txt(xl,26,'◀ Britain pushes',{'text-anchor':'end','font-size':18,'font-weight':800,fill:P.fg});
+    txt(xr,26,'Colonists push ▶',{'font-size':18,'font-weight':800,fill:P.fg});
+    mk('rect',{x:xl-lane,y:35,width:lane,height:5,rx:2.5,fill:P.Britain});
+    mk('rect',{x:xr,y:35,width:lane,height:5,rx:2.5,fill:P.Colonists});
+    // the center spine every row hangs from
+    mk('line',{x1:cx,x2:cx,y1:top,y2:Hb-8,stroke:P.grid,'stroke-width':2});
+    var yy=top;
+    EVENTS.forEach(function(e,i){
+      var side=e[3], a=s.avg[i], len=Math.max(2,a*sc), by=yy+rowH/2-13, bh=26;
+      mk('rect',{x:xl+2,y:yy+2,width:mid*2-4,height:rowH-4,rx:7,fill:P.bg,stroke:side==='Clash'?P.Clash:P[side],'stroke-width':2});
+      txt(cx,yy+19,e[1],{'text-anchor':'middle','font-size':16,'font-weight':800,fill:P.fg});
+      txt(cx,yy+35,String(e[2]),{'text-anchor':'middle','font-size':13});
+      function bar(left){
+        var x0=left?xl-6-len:xr+6;
+        mk('rect',{x:x0,y:by,width:len,height:bh,rx:3,fill:P[side]});
+        if(side==='Clash') mk('rect',{x:x0,y:by,width:len,height:bh,rx:3,fill:'url(#'+pid+')'});
+        txt(left?x0-7:x0+len+7,by+19,r1(a),{'text-anchor':left?'end':'start','font-size':18,'font-weight':800,fill:P.fg});
+      }
+      if(side!=='Colonists') bar(true);
+      if(side!=='Britain') bar(false);
+      yy+=rowH;
+      if(i<N-1){
+        var g=gaps[i], gh=gapH[i];
+        mk('path',{d:'M'+(cx-6)+','+(yy+gh/2-4)+'l6,8l6,-8',fill:'none',stroke:P.muted,'stroke-width':2,'stroke-linecap':'round','stroke-linejoin':'round'});
+        [[g[0],true,P.Britain],[g[1],false,P.Colonists]].forEach(function(t){
+          if(!t[0].length || !t[0][0]) return;
+          var h=t[0].length*lh, y0=yy+(gh-h)/2;
+          mk('rect',{x:t[1]?xl-10:xr+7,y:y0,width:3,height:h,rx:1.5,fill:t[2]});
+          t[0].forEach(function(line,k){ txt(t[1]?xl-18:xr+18,y0+lh*k+14.5,line,{'text-anchor':t[1]?'end':'start','font-size':15.5,fill:P.fg}); });
+        });
+        yy+=gh;
+      }
+    });
+    if(!interactive) return svg;
+    svg.removeAttribute('width'); svg.removeAttribute('height');
+    var wrapEl=document.createElement('div'); wrapEl.appendChild(svg);
+    return wrapEl;
+  }
+
   // ---- save charts as PNG (always light, with a title, ready for slides or Canvas)
   function chartImage(s, which){
     var P=PAL.light, sc=2, head=70, foot=26;
-    var svg=chart(s, which, P, false);
+    var svg=chart(s, which, P, false), W=+svg.getAttribute('width'), H=+svg.getAttribute('height');
     var src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(new XMLSerializer().serializeToString(svg));
     return new Promise(function(ok, fail){
       var img=new Image();
@@ -461,10 +560,11 @@
         var face="'Atkinson Hyperlegible Next','Atkinson Hyperlegible',Verdana,sans-serif";
         g.fillStyle=P.fg; g.font='800 22px '+face; g.fillText(viewOf(which).title, 20, 34);
         g.fillStyle=P.muted; g.font='15px '+face;
-        g.fillText('Period '+period+' · '+s.n+' pair'+(s.n>1?'s':'')+' · Understanding Unrest in the Colonies', 20, 58);
+        g.fillText(label()+' · '+s.n+' pair'+(s.n>1?'s':'')+' · Understanding Unrest in the Colonies', 20, 58);
         g.drawImage(img, 0, head, W, H);
         g.font='12px '+face; g.fillText(which==='each' ? 'Bars: class average. Lines: lowest to highest pair. Dashed line: even split (4 points each). Striped: both sides clash.'
           : which==='trend' ? 'Dots: class average for each event. Thick lines: average of each half. Striped: both sides clash.'
+          : which==='back' ? 'Bars: class average, on the side that acted (striped: both sides clash). Between events: what each side did next.'
           : which==='steps' ? 'Each bar: this event’s average minus the event before it.'
           : 'Running total of the class averages; every pair spends 36 points.', 20, H+head+16);
         cv.toBlob(function(b){ b ? ok(b) : fail(new Error('no image')); }, 'image/png');
@@ -484,12 +584,13 @@
     var s=stats(), b=this; if(!s) return;
     chartImage(s, view).then(function(blob){ download(blob, fileName(view,'png')); }, function(){ flash(b,'Could not save the image'); });
   });
-  // All four stacked in one tall image, so it's one download.
+  // Every view stacked in one tall image, so it's one download.
   $('saveAll').addEventListener('click', function(){
     var s=stats(), b=this; if(!s) return;
     Promise.all(VIEWS.map(function(v){ return chartImage(s, v.id).then(createImageBitmap); })).then(function(imgs){
-      var cv=document.createElement('canvas'); cv.width=imgs[0].width; cv.height=imgs.reduce(function(h,im){ return h+im.height; },0);
+      var cv=document.createElement('canvas'); cv.width=Math.max.apply(null, imgs.map(function(im){ return im.width; })); cv.height=imgs.reduce(function(h,im){ return h+im.height; },0);
       var g=cv.getContext('2d'), yy=0;
+      g.fillStyle=PAL.light.bg; g.fillRect(0,0,cv.width,cv.height);
       imgs.forEach(function(im){ g.drawImage(im,0,yy); yy+=im.height; });
       cv.toBlob(function(blob){ download(blob, fileName('all-views','png')); }, 'image/png');
     }).catch(function(){ flash(b,'Could not save the images'); });
@@ -516,14 +617,14 @@
         +(replaces.length ? '\n\nThis replaces the numbers now in Period'+(replaces.length>1?'s ':' ')+replaces.join(', ')+'. Other periods are not changed.' : '');
       if(!confirm(msg)) return;
       ps.forEach(function(p){ store[p]=clean(data.periods[p]); });
-      if(ps.indexOf(period)<0){ period=ps[0]; $('period').value=period; }
+      if(period!==ALL && ps.indexOf(period)<0){ period=ps[0]; $('period').value=period; }
       save(); drawEntry(); drawResults(); flash(btn,'Backup loaded');
     }).catch(function(){ flash(btn,'That file isn’t a class backup'); });
   });
 
   $('copy').addEventListener('click', function(){
     var s=stats(); if(!s){ this.textContent='No complete rows yet'; var b=this; setTimeout(function(){ b.textContent='Copy results as text'; },2000); return; }
-    var lines=['Class unrest average, Period '+period+' ('+s.n+' pairs)'];
+    var lines=['Class unrest average, '+label()+' ('+s.n+' pairs)'];
     EVENTS.forEach(function(e,i){ lines.push(e[0]+' ('+e[2]+', '+e[3]+'): '+r1(s.avg[i])+' (pairs gave '+s.min[i]+'–'+s.max[i]+'), running total '+r1(s.run[i])); });
     lines.push('Average per event, 1763–1767: '+r1(s.early)+'; 1770–1775: '+r1(s.late));
     var text=lines.join('\n'), b=this;
