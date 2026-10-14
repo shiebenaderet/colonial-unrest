@@ -316,10 +316,21 @@
   var synth = window.speechSynthesis;
   /* ADAPTED (2): one best voice per language, looked up when first needed. */
   var voices = {};
+  /* Voices that failed or went silent on this device, by voiceURI. The online
+     voices (Google, Microsoft "Online (Natural)") stream from a server; a school
+     filter or a bad connection blocks them, and Chrome then errors or simply never
+     starts, so the reading ran to the end without a sound. A voice that does that
+     is dropped and the sentence is read again with the next best (usually the
+     device's own, offline) voice. */
+  var badVoices = {};
   function voiceFor(lang) {
     var want = (lang || LANG).split('-')[0];
     if (!(want in voices)) voices[want] = pickVoice(want);
     return voices[want];
+  }
+  function dropVoice(v) {
+    badVoices[v.voiceURI || v.name] = true;
+    voices = {};
   }
   function pickVoice(want) {
     if (!synth) return null;
@@ -327,6 +338,7 @@
     for (var i = 0; i < vs.length; i++) {
       var v = vs[i], l = (v.lang || '').toLowerCase().replace('_', '-');
       if (l.split('-')[0] !== want) continue;
+      if (badVoices[v.voiceURI || v.name]) continue;
       var s = 1;
       if (/natural|online|neural/i.test(v.name)) s += 4;
       if (/google/i.test(v.name)) s += 3;
@@ -347,6 +359,10 @@
   for (var k in AUDIO) if (Object.prototype.hasOwnProperty.call(AUDIO, k)) { hasRec = true; break; }
 
   var items = [], idx = 0, playing = false, token = 0;
+  /* Held here so the browser can't garbage-collect the utterance mid-sentence
+     (Chrome and Safari then never fire onend and the reading stalls). */
+  var utter = null, startTimer = 0;
+  var START_WAIT = 6000;
   var rate = +prefs.rate || 1;
   var useRec = hasRec && prefs.voice !== 'computer';
   var audio = null, audioPart = '';
@@ -354,6 +370,7 @@
   function speakFrom(i) {
     token++;
     var my = token;
+    clearTimeout(startTimer);
     if (synth) synth.cancel();
     if (audio) audio.pause();
     if (i >= items.length) { stop(); return; }
@@ -365,18 +382,39 @@
     mark(it);
     render();
     if (!synth) { stop(); return; }
-    var u = new SpeechSynthesisUtterance(it.text);
+    var u = utter = new SpeechSynthesisUtterance(it.text);
     var voice = voiceFor(it.lang);
     if (voice) u.voice = voice;
     u.lang = voice ? voice.lang : it.lang;
     u.rate = rate;
-    u.onend = function () { if (my === token && playing) speakFrom(idx + 1); };
-    u.onerror = function (e) {
-      if (my !== token) return;
-      if (e && (e.error === 'interrupted' || e.error === 'canceled')) return;
+    var started = false;
+    /* A voice that fails, or never starts, is swapped out and this sentence tried again. */
+    function voiceFailed() {
+      if (my !== token || !playing) return;
+      if (voice) { dropVoice(voice); speakFrom(idx); }
+      else speakFrom(idx + 1);
+    }
+    u.onstart = function () { started = true; clearTimeout(startTimer); };
+    u.onend = function () {
+      if (my !== token || !playing) return;
+      /* Some Chrome network voices "end" at once without speaking when blocked. */
+      if (!started && voice && voice.localService === false) { voiceFailed(); return; }
       speakFrom(idx + 1);
     };
+    u.onerror = function (e) {
+      if (my !== token) return;
+      var err = e && e.error;
+      if (err === 'interrupted' || err === 'canceled') return;
+      /* Speech isn't allowed yet (iPad/iPhone before a tap): stop rather than skip
+         through every sentence; the next tap on Listen starts it. */
+      if (err === 'not-allowed') { pause(); return; }
+      if (voice && !started) { voiceFailed(); return; }
+      speakFrom(idx + 1);
+    };
+    /* Chrome can be left paused (another tab, a sleep), which queues speech silently. */
+    if (synth.paused) synth.resume();
     synth.speak(u);
+    if (voice) startTimer = setTimeout(function () { if (!started) voiceFailed(); }, START_WAIT);
   }
 
   function firstOfPart(i) {
@@ -424,6 +462,7 @@
   function pause() {
     playing = false;
     token++;
+    clearTimeout(startTimer);
     if (synth) synth.cancel();
     if (audio) audio.pause();
     document.documentElement.classList.remove('rt-playing');
