@@ -56,9 +56,22 @@
 
   /* results */
   .results{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;align-items:start}
+  .views{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px}
+  .views button{font:inherit;font-size:15px;font-weight:700;padding:7px 12px;border-radius:999px;cursor:pointer;
+    border:1.5px solid var(--edge);background:transparent;color:var(--fg)}
+  .views button[aria-pressed="true"]{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+  .notice{margin:0 0 6px;font-size:16px}
+  .notice b{color:var(--accent)}
+  .legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px;color:var(--muted);margin:0 0 4px}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .legend i{width:14px;height:14px;border-radius:3px;display:inline-block}
+  .export{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .headline{background:var(--alt);border-left:4px solid var(--accent);border-radius:8px;padding:10px 12px}
+  .headline p{margin:0}
+  .headline .big{font-size:22px;font-weight:800}
   .chart-box{position:relative}
   svg{width:100%;height:auto;display:block}
-  .tip{position:absolute;pointer-events:none;background:var(--mast);color:var(--mast-ink);border-radius:8px;padding:6px 10px;font-size:14px;transform:translate(-50%,-115%);white-space:nowrap}
+  .tip{position:absolute;pointer-events:none;background:var(--mast);color:var(--mast-ink);border-radius:8px;padding:6px 10px;font-size:14px;transform:translate(-50%,-115%);max-width:340px;z-index:2}
   .facts{display:grid;gap:12px}
   .fact h3{margin:0 0 4px;font-size:16px}
   .fact ol{margin:0;padding-left:22px}
@@ -72,6 +85,8 @@
   body.present main{max-width:1400px}
   body.present .eq{font-size:30px}
   body.present .fact{font-size:20px}
+  body.present .notice{font-size:22px}
+  body.present .views button{font-size:18px}
   .empty{padding:24px;text-align:center;color:var(--muted)}
   @media(max-width:900px){ .results{grid-template-columns:1fr} }
   @media (prefers-reduced-motion:no-preference){ .pt{transition:r .15s ease} }
@@ -95,12 +110,15 @@
 
   <section class="card entry">
     <h2>Pair budgets</h2>
-    <p class="hint">Type each pair's points from the “Our pair” column of their tracker, in the row with their pair number. Each row should add up to 36. Saved in this browser, separately for each period.</p>
+    <p class="hint">Type each pair's points from the “Our pair” column of their tracker, in the row with their pair number. Each row should add up to 36. Saved in this browser, separately for each period. <b>Save a backup</b> keeps every period in one small file, to load on another computer or after the browser is cleared.</p>
     <div class="table-wrap"><table id="entry"></table></div>
     <div class="row-actions">
       <button class="btn" id="addRow" type="button">+ Add a pair</button>
       <button class="btn" id="copy" type="button">Copy results as text</button>
       <button class="btn" id="clear" type="button">Clear this period</button>
+      <button class="btn" id="backup" type="button">Save a backup</button>
+      <button class="btn" id="restore" type="button">Load a backup</button>
+      <input type="file" id="restoreFile" accept=".json,application/json" hidden>
     </div>
   </section>
 
@@ -109,7 +127,14 @@
     <p class="hint" id="basis"></p>
     <div class="results">
       <div>
+        <div class="views" id="views" role="group" aria-label="Chart view"></div>
+        <p class="notice" id="notice"></p>
+        <div class="legend" id="legend"></div>
         <div class="chart-box" id="chartBox"></div>
+        <div class="export">
+          <button class="btn" id="saveChart" type="button">Save this chart (PNG)</button>
+          <button class="btn" id="saveAll" type="button">Save all four (PNG)</button>
+        </div>
         <details class="tbl"><summary>Show the numbers as a table</summary><div id="avgTable"></div></details>
       </div>
       <div class="facts" id="facts"></div>
@@ -204,79 +229,303 @@
       min.push(Math.min.apply(null,col)); max.push(Math.max.apply(null,col));
     }
     var run=[], t=0; avg.forEach(function(a){ t+=a; run.push(t); });
-    return {n:good.length, avg:avg, min:min, max:max, run:run};
+    var step=avg.map(function(a,i){ return i ? a-avg[i-1] : null; });
+    // The two halves of the decade: the taxes and laws (1763-1767), then the
+    // clashes and the road to war (1770-1775).
+    var early=[], late=[];
+    EVENTS.forEach(function(e,i){ (e[2]<1770?early:late).push(avg[i]); });
+    var mean=function(a){ return a.reduce(function(x,y){return x+y;},0)/a.length; };
+    return {n:good.length, avg:avg, min:min, max:max, run:run, step:step, early:mean(early), late:mean(late)};
   }
   var r1 = function(x){ return (Math.round(x*10)/10).toFixed(1); };
+  var sgn = function(x){ return (x>=0?'+':'−')+r1(Math.abs(x)); };
+
+  // Who acted, in the placards' colors: checked for colorblind readers (every
+  // pair apart under deutan/protan/tritan), and every bar is also labeled with
+  // its side, with stripes on the clashes, so the color is never the only cue.
+  var PAL = {
+    light:{Britain:'#c23b22', Colonists:'#13866f', Clash:'#d9a521', bg:'#ffffff', fg:'#14110d', muted:'#4a4033', grid:'#e4dccb', edge:'#74674f', accent:'#8f1515', hatch:'rgba(255,255,255,.55)'},
+    dark: {Britain:'#d94a4a', Colonists:'#1f9e80', Clash:'#b59018', bg:'#1e1a14', fg:'#f7f1e4', muted:'#d2c6ad', grid:'#3a3229', edge:'#a8987a', accent:'#ff9a90', hatch:'rgba(30,26,20,.55)'}
+  };
+  var SIDE_NAME = {Britain:'British action', Colonists:'Colonial response', Clash:'Both sides clash'};
+  function pal(){ return window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? PAL.dark : PAL.light; }
+
+  var VIEWS = [
+    {id:'each',  label:'Each event',
+     title:'Class average for each event',
+     notice:function(s){ return 'Which events are <b>above the even-split line</b>? Who acted in those?'; }},
+    {id:'trend', label:'Getting worse?',
+     title:'Did unrest grow over time?',
+     notice:function(s){ return 'Events from 1770 on averaged <b>'+r1(s.late)+'</b>; events before 1770 averaged <b>'+r1(s.early)+'</b>. What changed?'; }},
+    {id:'steps', label:'Step by step',
+     title:'More or less unrest than the event before',
+     notice:function(s){ var b=biggestStep(s); return b<0 ? '' : 'The biggest step up was <b>'+EVENTS[b][0]+'</b> ('+sgn(s.step[b])+'). What happened right before it?'; }},
+    {id:'total', label:'Adding up',
+     title:'How unrest added up, 1763 to 1775',
+     notice:function(s){ return 'Where does the line get <b>steeper</b>? Steeper means more unrest per event.'; }}
+  ];
+  function biggestStep(s){ var b=-1; s.step.forEach(function(d,i){ if(d!==null && (b<0 || d>s.step[b])) b=i; }); return b; }
+  var view = 'each';
+  try { view = localStorage.getItem(KEY+':view') || 'each'; } catch (e) {}
+  if(!VIEWS.some(function(v){ return v.id===view; })) view='each';
+  VIEWS.forEach(function(v){
+    var b=el('button',{type:'button','aria-pressed':String(v.id===view),'data-view':v.id,text:v.label});
+    b.addEventListener('click', function(){
+      view=v.id; try { localStorage.setItem(KEY+':view', view); } catch (e) {}
+      Array.prototype.forEach.call($('views').children, function(x){ x.setAttribute('aria-pressed', String(x.getAttribute('data-view')===view)); });
+      drawResults();
+    });
+    $('views').appendChild(b);
+  });
+  function viewOf(id){ return VIEWS.filter(function(v){ return v.id===id; })[0]; }
 
   function drawResults(){
     var s=stats(), box=$('chartBox'), facts=$('facts'), tbl=$('avgTable');
-    box.textContent=''; facts.textContent=''; tbl.textContent='';
+    box.textContent=''; facts.textContent=''; tbl.textContent=''; $('notice').innerHTML=''; $('legend').textContent='';
+    $('saveChart').disabled = $('saveAll').disabled = !s;
     var all=rows().filter(function(r){ return r.some(function(v){return v!=='';}); }).length;
     if(!s){ $('basis').textContent=''; box.appendChild(el('p',{class:'empty',text:'Results appear here once at least one pair’s row adds up to exactly 36.'})); return; }
     $('basis').textContent = 'Based on '+s.n+' pair'+(s.n>1?'s':'')+(all>s.n ? ' ('+(all-s.n)+' row'+(all-s.n>1?'s':'')+' not counted yet: '+(all-s.n>1?'they don’t':'it doesn’t')+' add up to 36)' : '')+'. Period '+period+'.';
-    box.appendChild(chart(s));
+    var v=viewOf(view), P=pal();
+    $('notice').innerHTML = v.notice(s);
+    if(view==='each' || view==='trend'){
+      ['Britain','Colonists','Clash'].forEach(function(k){
+        var sw=el('i'); sw.style.background = k==='Clash'
+          ? 'repeating-linear-gradient(45deg,'+P.Clash+' 0 4px,'+P.hatch+' 4px 6px),'+P.Clash : P[k];
+        if(k==='Clash') sw.style.backgroundBlendMode='normal';
+        $('legend').appendChild(el('span',{},[sw, SIDE_NAME[k]]));
+      });
+    }
+    if(view==='each'){
+      var dash=el('i'); dash.style.cssText='height:0;border-top:2px dashed '+P.fg+';border-radius:0;width:18px';
+      $('legend').appendChild(el('span',{},[dash,'Even split: 4 points each']));
+    }
+    if(view==='trend'){
+      var bar=el('i'); bar.style.cssText='height:3px;background:'+P.fg+';border-radius:2px;width:18px';
+      $('legend').appendChild(el('span',{},[bar,'Average of each half']));
+    }
+    box.appendChild(chart(s, view, P, true));
+
     // facts
     var order=s.avg.map(function(a,i){return i;}).sort(function(a,b){return s.avg[b]-s.avg[a];});
     var debate=s.avg.map(function(a,i){return i;}).sort(function(a,b){return (s.max[b]-s.min[b])-(s.max[a]-s.min[a]);});
-    var jumps=order[0];
+    var ratio = s.early>0 ? s.late/s.early : 0;
+    facts.appendChild(el('div',{class:'fact headline'},[
+      el('h3',{text:'Getting worse?'}),
+      el('p',{class:'big',text:r1(s.early)+' → '+r1(s.late)}),
+      el('p',{text: s.late>s.early
+        ? 'Each event from 1770 on caused about '+(ratio>=1.5 ? r1(ratio)+' times' : r1(s.late-s.early)+' points')+' more unrest than the events of 1763–1767.'
+        : 'Our class rated the early events about as high as the later ones. Why might that be?'})
+    ]));
     facts.appendChild(el('div',{class:'fact'},[el('h3',{text:'Most unrest (class average)'}), el('ol',{}, order.slice(0,3).map(function(i){ return el('li',{text:EVENTS[i][0]+' ('+EVENTS[i][2]+'): '+r1(s.avg[i])+' points'}); }))]));
-    facts.appendChild(el('div',{class:'fact'},[el('h3',{text:'Biggest jump in the line'}), el('p',{text:EVENTS[jumps][0]+' added the most: the line climbs '+r1(s.avg[jumps])+' points there.'})]));
+    var b=biggestStep(s);
+    if(b>0) facts.appendChild(el('div',{class:'fact'},[el('h3',{text:'Biggest step up'}), el('p',{text:EVENTS[b-1][0]+' → '+EVENTS[b][0]+': '+sgn(s.step[b])+' points.'})]));
     if(s.n>1){
       var top=debate.filter(function(i){ return s.max[i]-s.min[i]>=2; }).slice(0,2);
       facts.appendChild(el('div',{class:'fact'},[el('h3',{text:'Pairs disagreed most about'}),
         top.length ? el('ol',{}, top.map(function(i){ return el('li',{text:EVENTS[i][0]+': from '+s.min[i]+' to '+s.max[i]+' points'}); })) : el('p',{text:'Pairs mostly agreed: No event differed by 2 or more points.'})]));
     }
     // table view
-    var t=el('table',{class:'avg-table'}); t.appendChild(el('thead',{},[el('tr',{},[el('th',{text:'Event'}),el('th',{text:'Year'}),el('th',{text:'Who acted'}),el('th',{text:'Average'}),el('th',{text:'Range'}),el('th',{text:'Running total'})])]));
-    var tb=el('tbody'); EVENTS.forEach(function(e,i){ tb.appendChild(el('tr',{},[el('td',{text:e[0]}),el('td',{text:String(e[2])}),el('td',{text:e[3]}),el('td',{class:'n',text:r1(s.avg[i])}),el('td',{class:'n',text:s.min[i]+'–'+s.max[i]}),el('td',{class:'n',text:r1(s.run[i])})])); });
+    var t=el('table',{class:'avg-table'}); t.appendChild(el('thead',{},[el('tr',{},[el('th',{text:'Event'}),el('th',{text:'Year'}),el('th',{text:'Who acted'}),el('th',{text:'Average'}),el('th',{text:'Range'}),el('th',{text:'Change'}),el('th',{text:'Running total'})])]));
+    var tb=el('tbody'); EVENTS.forEach(function(e,i){ tb.appendChild(el('tr',{},[el('td',{text:e[0]}),el('td',{text:String(e[2])}),el('td',{text:e[3]}),el('td',{class:'n',text:r1(s.avg[i])}),el('td',{class:'n',text:s.min[i]+'–'+s.max[i]}),el('td',{class:'n',text:i?sgn(s.step[i]):''}),el('td',{class:'n',text:r1(s.run[i])})])); });
     t.appendChild(tb); tbl.appendChild(t);
   }
 
-  // Running total of the class average, 0 to 36 across the nine events.
-  function chart(s){
-    var NS='http://www.w3.org/2000/svg', W=760, H=396, L=48, R=20, T=20, B=94;
-    var css=getComputedStyle(document.documentElement);
-    var c=function(v){ return css.getPropertyValue(v).trim(); };
-    var svg=document.createElementNS(NS,'svg'); svg.setAttribute('viewBox','0 0 '+W+' '+H); svg.setAttribute('role','img');
-    svg.setAttribute('aria-label','Line chart: running total of the class average unrest points, from the Proclamation of 1763 to Lexington and Concord, reaching 36.');
-    function mk(tag,a){ var e=document.createElementNS(NS,tag); for(var k in a) e.setAttribute(k,a[k]); svg.appendChild(e); return e; }
-    var x=function(i){ return L + (W-L-R)*(i+0.5)/N; }, y=function(v){ return T + (H-T-B)*(1-v/36); };
-    [0,9,18,27,36].forEach(function(v){
-      mk('line',{x1:L,x2:W-R,y1:y(v),y2:y(v),stroke:c('--grid'),'stroke-width':1});
-      var t=mk('text',{x:L-8,y:y(v)+5,'text-anchor':'end','font-size':14,fill:c('--muted')}); t.textContent=v;
+  // One chart, four views. Colors are passed in (P) so the saved image can be
+  // drawn light whatever the screen uses. interactive adds the hover/focus layer.
+  var NS='http://www.w3.org/2000/svg', W=760, H=400, L=50, R=16, T=28, B=86, svgSeq=0;
+  function chart(s, which, P, interactive){
+    var svg=document.createElementNS(NS,'svg'); svg.setAttribute('viewBox','0 0 '+W+' '+H);
+    svg.setAttribute('width',W); svg.setAttribute('height',H);
+    svg.setAttribute('font-family',"'Atkinson Hyperlegible Next','Atkinson Hyperlegible',Verdana,sans-serif");
+    svg.setAttribute('role','img');
+    svg.setAttribute('aria-label', viewOf(which).title+'. The table below the chart has the numbers.');
+    function mk(tag,a,parent){ var e=document.createElementNS(NS,tag); for(var k in a) e.setAttribute(k,a[k]); (parent||svg).appendChild(e); return e; }
+    function txt(x,y,str,a){ var t=mk('text',Object.assign({x:x,y:y,'font-size':13,fill:P.muted},a||{})); t.textContent=str; return t; }
+    var pid='hatch'+(++svgSeq);
+    var pat=mk('pattern',{id:pid,width:6,height:6,patternUnits:'userSpaceOnUse',patternTransform:'rotate(45)'},mk('defs',{}));
+    mk('line',{x1:0,y1:0,x2:0,y2:6,stroke:P.hatch,'stroke-width':2},pat);
+    var bw=(W-L-R)/N, x=function(i){ return L + bw*(i+0.5); }, ph=H-T-B;
+    var lo=0, hi=8, yT;
+    if(which==='total'){ hi=36; }
+    if(which==='trend'){ hi=9; }
+    if(which==='steps'){   // symmetric, with room for the labels past the longest bar
+      var m=Math.max(2, Math.ceil(Math.max.apply(null, s.step.filter(function(d){return d!==null;}).map(Math.abs))+0.6));
+      lo=-m; hi=m;
+    }
+    var y=function(v){ return T + ph*(1-(v-lo)/(hi-lo)); };
+    var ticks = which==='total' ? [0,9,18,27,36] : which==='steps' ? (function(){ var a=[]; for(var v=lo; v<=hi; v++) a.push(v); return a; })() : [0,2,4,6,8];
+    ticks.forEach(function(v){
+      mk('line',{x1:L,x2:W-R,y1:y(v),y2:y(v),stroke:v===0&&which==='steps'?P.edge:P.grid,'stroke-width':v===0&&which==='steps'?1.5:1});
+      txt(L-8,y(v)+4.5,(which==='steps'&&v>0?'+':'')+v,{'text-anchor':'end'});
     });
-    var yl=mk('text',{x:14,y:T+(H-T-B)/2,'font-size':14,fill:c('--muted'),transform:'rotate(-90 14 '+(T+(H-T-B)/2)+')','text-anchor':'middle'}); yl.textContent='Total unrest points';
-    // area + line
-    var pts=s.run.map(function(v,i){ return x(i)+','+y(v); });
-    mk('polygon',{points:x(0)+','+y(0)+' '+pts.join(' ')+' '+x(N-1)+','+y(0),fill:c('--accent'),'fill-opacity':0.08});
-    mk('polyline',{points:pts.join(' '),fill:'none',stroke:c('--accent'),'stroke-width':2.5,'stroke-linejoin':'round'});
-    // x labels
+    var axisLab = which==='total' ? 'Total unrest points' : which==='steps' ? 'Change from the event before' : 'Average unrest points';
+    txt(14,T+ph/2,axisLab,{transform:'rotate(-90 14 '+(T+ph/2)+')','text-anchor':'middle'});
+    // x labels: name, year, who acted (the side is always spelled out)
     EVENTS.forEach(function(e,i){
-      var t=mk('text',{x:x(i),y:H-B+22,'text-anchor':'middle','font-size':12,fill:c('--fg'),'font-weight':700}); t.textContent=e[1];
-      var t2=mk('text',{x:x(i),y:H-B+40,'text-anchor':'middle','font-size':12,fill:c('--muted')}); t2.textContent=e[2];
-      var t3=mk('text',{x:x(i),y:H-B+56,'text-anchor':'middle','font-size':11,fill:c('--muted'),'font-style':'italic'}); t3.textContent=e[3];
+      txt(x(i),H-B+20,e[1],{'text-anchor':'middle','font-size':12.5,fill:P.fg,'font-weight':700});
+      txt(x(i),H-B+37,String(e[2]),{'text-anchor':'middle','font-size':12});
+      txt(x(i),H-B+54,e[3],{'text-anchor':'middle','font-size':12,'font-weight':700,'font-style':'italic'});
     });
-    // biggest jump label
-    var big=s.avg.indexOf(Math.max.apply(null,s.avg));
-    var lab=mk('text',{x:x(big),y:y(s.run[big])-14,'text-anchor':'middle','font-size':14,'font-weight':800,fill:c('--fg')}); lab.textContent='+'+r1(s.avg[big]);
-    // points with hover
-    var tip=document.createElement('div'); tip.className='tip'; tip.hidden=true;
-    s.run.forEach(function(v,i){
-      var p=mk('circle',{cx:x(i),cy:y(v),r:5.5,fill:c('--accent'),stroke:c('--panel'),'stroke-width':2,class:'pt'});
-      var hit=mk('circle',{cx:x(i),cy:y(v),r:18,fill:'transparent',tabindex:0});
-      var show=function(){ p.setAttribute('r',8); tip.hidden=false; tip.textContent=EVENTS[i][0]+': +'+r1(s.avg[i])+' (total '+r1(v)+')';
-        var bb=svg.getBoundingClientRect(); tip.style.left=(x(i)/W*bb.width)+'px'; tip.style.top=(y(v)/H*bb.height)+'px'; };
-      var hide=function(){ p.setAttribute('r',5.5); tip.hidden=true; };
+    function barPath(cx,w,y0,y1){ // rounded 4px at the data end, square on the baseline
+      var r=Math.min(4,Math.abs(y1-y0)/2), up=y1<y0, xl=cx-w/2, xr=cx+w/2;
+      return up ? 'M'+xl+','+y0+'V'+(y1+r)+'Q'+xl+','+y1+' '+(xl+r)+','+y1+'H'+(xr-r)+'Q'+xr+','+y1+' '+xr+','+(y1+r)+'V'+y0+'Z'
+                : 'M'+xl+','+y0+'V'+(y1-r)+'Q'+xl+','+y1+' '+(xl+r)+','+y1+'H'+(xr-r)+'Q'+xr+','+y1+' '+xr+','+(y1-r)+'V'+y0+'Z';
+    }
+    function sideFill(i){ return P[EVENTS[i][3]]; }
+    function hatchIf(i,d){ if(EVENTS[i][3]==='Clash') mk('path',{d:d,fill:'url(#'+pid+')'}); }
+
+    if(which==='each'){
+      mk('line',{x1:L,x2:W-R,y1:y(4),y2:y(4),stroke:P.fg,'stroke-width':1.5,'stroke-dasharray':'6 5'});
+      s.avg.forEach(function(a,i){
+        var d=barPath(x(i),bw*0.58,y(0),y(a));
+        mk('path',{d:d,fill:sideFill(i)}); hatchIf(i,d);
+        if(s.n>1 && s.max[i]>s.min[i]){
+          mk('line',{x1:x(i),x2:x(i),y1:y(s.min[i]),y2:y(s.max[i]),stroke:P.fg,'stroke-width':1.5,'stroke-opacity':.55});
+          [s.min[i],s.max[i]].forEach(function(v){ mk('line',{x1:x(i)-5,x2:x(i)+5,y1:y(v),y2:y(v),stroke:P.fg,'stroke-width':1.5,'stroke-opacity':.55}); });
+        }
+        txt(x(i),y(Math.max(a, s.n>1?s.max[i]:a))-7,r1(a),{'text-anchor':'middle','font-size':15,'font-weight':800,fill:P.fg});
+      });
+    }
+    if(which==='trend'){
+      var split=EVENTS.filter(function(e){ return e[2]<1770; }).length;   // index of the first 1770s event
+      var xm=L+bw*split;
+      mk('rect',{x:xm,y:T,width:W-R-xm,height:ph,fill:P.accent,'fill-opacity':.06});
+      mk('line',{x1:xm,x2:xm,y1:T,y2:T+ph,stroke:P.edge,'stroke-width':1,'stroke-dasharray':'3 4'});
+      [[0,split,s.early,'1763–1767'],[split,N,s.late,'1770–1775']].forEach(function(seg){
+        var x1=L+bw*seg[0]+8, x2=L+bw*seg[1]-8;
+        mk('line',{x1:x1,x2:x2,y1:y(seg[2]),y2:y(seg[2]),stroke:P.fg,'stroke-width':3,'stroke-linecap':'round','stroke-opacity':.8});
+        txt((x1+x2)/2,T+16,seg[3]+' average: '+r1(seg[2]),{'text-anchor':'middle','font-size':14.5,'font-weight':800,fill:P.fg});
+      });
+      mk('polyline',{points:s.avg.map(function(a,i){ return x(i)+','+y(a); }).join(' '),fill:'none',stroke:P.edge,'stroke-width':2,'stroke-linejoin':'round'});
+      s.avg.forEach(function(a,i){
+        mk('circle',{cx:x(i),cy:y(a),r:7,fill:sideFill(i),stroke:P.bg,'stroke-width':2});
+        if(EVENTS[i][3]==='Clash') mk('circle',{cx:x(i),cy:y(a),r:7,fill:'url(#'+pid+')'});
+        var era = EVENTS[i][2]<1770 ? s.early : s.late, above = a>=era;
+        txt(x(i),above?y(a)-13:y(a)+24,r1(a),{'text-anchor':'middle','font-size':12.5,'font-weight':700,fill:P.fg});
+      });
+    }
+    if(which==='steps'){
+      var big=biggestStep(s);
+      txt(x(0),y(0)-8,'start',{'text-anchor':'middle','font-size':12,'font-style':'italic'});
+      s.step.forEach(function(d,i){
+        if(d===null) return;
+        var up=d>=0, w=bw*0.58;
+        mk('path',{d:barPath(x(i),w,y(0),y(d)),fill:up?P.accent:P.edge,'fill-opacity':i===big?1:(up?.75:.6)});
+        txt(x(i),up?y(d)-7:y(d)+17,sgn(d),{'text-anchor':'middle','font-size':14,'font-weight':800,fill:P.fg});
+      });
+      txt(L+6,T+12,'↑ more unrest than the event before',{'font-size':12.5,'font-weight':700,fill:P.fg});
+      txt(L+6,T+ph-6,'↓ less unrest than the event before',{'font-size':12.5,'font-weight':700,fill:P.fg});
+    }
+    if(which==='total'){
+      var pts=s.run.map(function(v,i){ return x(i)+','+y(v); });
+      mk('polygon',{points:x(0)+','+y(0)+' '+pts.join(' ')+' '+x(N-1)+','+y(0),fill:P.accent,'fill-opacity':0.08});
+      mk('polyline',{points:pts.join(' '),fill:'none',stroke:P.accent,'stroke-width':2.5,'stroke-linejoin':'round'});
+      s.run.forEach(function(v,i){ mk('circle',{cx:x(i),cy:y(v),r:5.5,fill:P.accent,stroke:P.bg,'stroke-width':2}); });
+      var bi=s.avg.indexOf(Math.max.apply(null,s.avg));
+      txt(x(bi),y(s.run[bi])-14,'+'+r1(s.avg[bi]),{'text-anchor':'middle','font-size':14,'font-weight':800,fill:P.fg});
+      txt(x(N-1),y(s.run[N-1])+22,'36',{'text-anchor':'middle','font-size':13,'font-weight':700,fill:P.fg});
+    }
+    if(!interactive) return svg;
+
+    // hover/focus: one column per event, bigger than any mark
+    var tip=document.createElement('div'); tip.className='tip'; tip.hidden=true; tip.style.transform='translate(-50%,0)';
+    var band=mk('rect',{x:0,y:T,width:bw,height:ph,fill:P.fg,'fill-opacity':0,'pointer-events':'none'});
+    EVENTS.forEach(function(e,i){
+      var hit=mk('rect',{x:L+bw*i,y:T,width:bw,height:ph+B-10,fill:'transparent',tabindex:0,role:'img'});
+      var line=e[0]+' ('+e[2]+', '+SIDE_NAME[e[3]]+'): average '+r1(s.avg[i])
+        +(s.n>1?', pairs gave '+s.min[i]+'–'+s.max[i]:'')+(i?', '+sgn(s.step[i])+' from the event before':'')+', total '+r1(s.run[i]);
+      hit.setAttribute('aria-label',line);
+      var show=function(){ band.setAttribute('x',L+bw*i); band.setAttribute('fill-opacity',.06); tip.hidden=false; tip.textContent=line;
+        var bb=svg.getBoundingClientRect(), half=tip.offsetWidth/2, px=x(i)/W*bb.width;
+        tip.style.left=Math.min(Math.max(px,half),bb.width-half)+'px'; tip.style.top=(T/H*bb.height+4)+'px'; };
+      var hide=function(){ band.setAttribute('fill-opacity',0); tip.hidden=true; };
       hit.addEventListener('mouseenter',show); hit.addEventListener('mouseleave',hide); hit.addEventListener('focus',show); hit.addEventListener('blur',hide);
     });
     var wrap=document.createElement('div'); wrap.style.position='relative'; wrap.appendChild(svg); wrap.appendChild(tip);
+    svg.removeAttribute('width'); svg.removeAttribute('height');
     return wrap;
   }
+
+  // ---- save charts as PNG (always light, with a title, ready for slides or Canvas)
+  function chartImage(s, which){
+    var P=PAL.light, sc=2, head=70, foot=26;
+    var svg=chart(s, which, P, false);
+    var src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(new XMLSerializer().serializeToString(svg));
+    return new Promise(function(ok, fail){
+      var img=new Image();
+      img.onload=function(){
+        var cv=document.createElement('canvas'); cv.width=W*sc; cv.height=(H+head+foot)*sc;
+        var g=cv.getContext('2d'); g.scale(sc,sc);
+        g.fillStyle=P.bg; g.fillRect(0,0,W,H+head+foot);
+        var face="'Atkinson Hyperlegible Next','Atkinson Hyperlegible',Verdana,sans-serif";
+        g.fillStyle=P.fg; g.font='800 22px '+face; g.fillText(viewOf(which).title, 20, 34);
+        g.fillStyle=P.muted; g.font='15px '+face;
+        g.fillText('Period '+period+' · '+s.n+' pair'+(s.n>1?'s':'')+' · Understanding Unrest in the Colonies', 20, 58);
+        g.drawImage(img, 0, head, W, H);
+        g.font='12px '+face; g.fillText(which==='each' ? 'Bars: class average. Lines: lowest to highest pair. Dashed line: even split (4 points each). Striped: both sides clash.'
+          : which==='trend' ? 'Dots: class average for each event. Thick lines: average of each half. Striped: both sides clash.'
+          : which==='steps' ? 'Each bar: this event’s average minus the event before it.'
+          : 'Running total of the class averages; every pair spends 36 points.', 20, H+head+16);
+        cv.toBlob(function(b){ b ? ok(b) : fail(new Error('no image')); }, 'image/png');
+      };
+      img.onerror=fail;
+      img.src=src;
+    });
+  }
+  function download(blob, name){
+    var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 5000);
+  }
+  function flash(btn, msg){ var t=btn.textContent; btn.textContent=msg; setTimeout(function(){ btn.textContent=t; }, 2200); }
+  function fileName(which, ext){ return 'unrest-period'+period+'-'+which+'-'+new Date().toISOString().slice(0,10)+'.'+ext; }
+  $('saveChart').addEventListener('click', function(){
+    var s=stats(), b=this; if(!s) return;
+    chartImage(s, view).then(function(blob){ download(blob, fileName(view,'png')); }, function(){ flash(b,'Could not save the image'); });
+  });
+  // All four stacked in one tall image, so it's one download.
+  $('saveAll').addEventListener('click', function(){
+    var s=stats(), b=this; if(!s) return;
+    Promise.all(VIEWS.map(function(v){ return chartImage(s, v.id).then(createImageBitmap); })).then(function(imgs){
+      var cv=document.createElement('canvas'); cv.width=imgs[0].width; cv.height=imgs.reduce(function(h,im){ return h+im.height; },0);
+      var g=cv.getContext('2d'), yy=0;
+      imgs.forEach(function(im){ g.drawImage(im,0,yy); yy+=im.height; });
+      cv.toBlob(function(blob){ download(blob, fileName('all-views','png')); }, 'image/png');
+    }).catch(function(){ flash(b,'Could not save the images'); });
+  });
+
+  // ---- backup: every period in one file, and load it back
+  $('backup').addEventListener('click', function(){
+    var data={app:'unrest-class', version:1, saved:new Date().toISOString(), periods:{}};
+    PERIODS.forEach(function(p){ if(store[p] && store[p].some(function(r){ return r.some(function(v){ return v!==''; }); })) data.periods[p]=store[p]; });
+    if(!Object.keys(data.periods).length){ flash(this,'Nothing to back up yet'); return; }
+    download(new Blob([JSON.stringify(data,null,1)],{type:'application/json'}), 'unrest-class-backup-'+data.saved.slice(0,10)+'.json');
+  });
+  $('restore').addEventListener('click', function(){ $('restoreFile').value=''; $('restoreFile').click(); });
+  $('restoreFile').addEventListener('change', function(){
+    var f=this.files && this.files[0], btn=$('restore'); if(!f) return;
+    f.text().then(function(text){
+      var data=JSON.parse(text);
+      if(!data || data.app!=='unrest-class' || typeof data.periods!=='object') throw new Error('not a backup');
+      var ps=Object.keys(data.periods).filter(function(p){ return PERIODS.indexOf(p)>=0 && Array.isArray(data.periods[p]); });
+      if(!ps.length) throw new Error('empty');
+      var clean=function(rws){ return rws.filter(Array.isArray).map(function(r){ var o=blank(); for(var i=0;i<N;i++){ var n=parseInt(r[i],10); o[i]=(n>=0&&n<=9)?String(n):''; } return o; }); };
+      var replaces=ps.filter(function(p){ return store[p] && store[p].some(function(r){ return r.some(function(v){ return v!==''; }); }); });
+      var msg='Load Period'+(ps.length>1?'s ':' ')+ps.join(', ')+' from the backup saved '+new Date(data.saved).toLocaleString()+'?'
+        +(replaces.length ? '\n\nThis replaces the numbers now in Period'+(replaces.length>1?'s ':' ')+replaces.join(', ')+'. Other periods are not changed.' : '');
+      if(!confirm(msg)) return;
+      ps.forEach(function(p){ store[p]=clean(data.periods[p]); });
+      if(ps.indexOf(period)<0){ period=ps[0]; $('period').value=period; }
+      save(); drawEntry(); drawResults(); flash(btn,'Backup loaded');
+    }).catch(function(){ flash(btn,'That file isn’t a class backup'); });
+  });
 
   $('copy').addEventListener('click', function(){
     var s=stats(); if(!s){ this.textContent='No complete rows yet'; var b=this; setTimeout(function(){ b.textContent='Copy results as text'; },2000); return; }
     var lines=['Class unrest average, Period '+period+' ('+s.n+' pairs)'];
     EVENTS.forEach(function(e,i){ lines.push(e[0]+' ('+e[2]+', '+e[3]+'): '+r1(s.avg[i])+' (pairs gave '+s.min[i]+'–'+s.max[i]+'), running total '+r1(s.run[i])); });
+    lines.push('Average per event, 1763–1767: '+r1(s.early)+'; 1770–1775: '+r1(s.late));
     var text=lines.join('\n'), b=this;
     var done=function(ok){ b.textContent= ok?'Copied':'Copy failed: select the table instead'; setTimeout(function(){ b.textContent='Copy results as text'; },2200); };
     if(navigator.clipboard) navigator.clipboard.writeText(text).then(function(){done(true);},function(){done(false);}); else done(false);
