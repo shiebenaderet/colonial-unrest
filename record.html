@@ -61,6 +61,8 @@
   #bar .label { font-weight:600; margin-right:auto; }
   #status { font-size:14px; color:var(--mute); }
   #status.live { color:var(--rec); font-weight:600; }
+  #micSel { font:inherit; font-size:14px; max-width:220px; padding:6px; border:1px solid var(--line);
+            border-radius:8px; background:#fff; }
   #meter { width:90px; height:10px; background:#e6dece; border-radius:5px; overflow:hidden; }
   #meter i { display:block; height:100%; width:0; background:var(--ok); transition:width .05s; }
   #help { padding:6px 16px; font-size:13px; color:var(--mute); border-bottom:1px solid var(--line); }
@@ -99,6 +101,7 @@
   <section id="main">
     <div id="bar">
       <span class="label" id="now">Pick a reading on the left.</span>
+      <select id="micSel" aria-label="Microphone" title="Microphone"><option value="">Microphone…</option></select>
       <span id="meter" title="Microphone level"><i></i></span>
       <span id="status"></span>
       <button id="recBtn" class="rec" disabled>● Record</button>
@@ -285,26 +288,98 @@
     if (k == null || !cur.items[k]) RT.clearMark(); else RT.mark(cur.items[k]);
   }
 
-  function getMic() {
-    if (stream) return Promise.resolve(stream);
-    return navigator.mediaDevices.getUserMedia({
-      audio: { echoCancellation: false, noiseSuppression: true, autoGainControl: true, channelCount: 1 }
-    }).then(function (s) { stream = s; meter(s); return s; });
+  /* The microphone. A Mac can pick an iPhone (Continuity) or a headset that then
+     drops out, so the choice is a menu, remembered in this browser, and a mic that
+     disconnects mid-take stops the take with a message instead of recording silence. */
+  var MIC_KEY = 'rec:mic';
+  function micPref() { try { return localStorage.getItem(MIC_KEY) || ''; } catch (e) { return ''; } }
+  function dropStream() {
+    if (stream) stream.getTracks().forEach(function (t) { t.onended = null; t.stop(); });
+    stream = null;
   }
+  function getMic() {
+    if (stream && stream.getAudioTracks().some(function (t) { return t.readyState === 'live'; })) {
+      return Promise.resolve(stream);
+    }
+    dropStream();
+    var want = micPref();
+    var opts = { echoCancellation: false, noiseSuppression: true, autoGainControl: true, channelCount: 1 };
+    if (want) opts.deviceId = { exact: want };
+    return navigator.mediaDevices.getUserMedia({ audio: opts }).catch(function (e) {
+      /* The saved mic is gone (phone away, headset unplugged): use the default. */
+      if (want && (e.name === 'OverconstrainedError' || e.name === 'NotFoundError')) {
+        try { localStorage.removeItem(MIC_KEY); } catch (x) {}
+        delete opts.deviceId;
+        return navigator.mediaDevices.getUserMedia({ audio: opts });
+      }
+      throw e;
+    }).then(function (s) {
+      stream = s;
+      var track = s.getAudioTracks()[0];
+      track.onended = micLost;
+      meter(s);
+      listMics(track.getSettings().deviceId);
+      return s;
+    });
+  }
+  function micLost() {
+    var t = (stream || {}).getAudioTracks ? stream.getAudioTracks()[0] : null;
+    var label = (t && t.label) || 'The microphone';
+    dropStream();
+    if (mode === 'rec') {
+      cancelRec();
+      alert(label + ' disconnected, so that take was stopped. Pick a microphone from the menu and record that reading again.');
+    }
+    listMics();
+  }
+  function listMics(activeId) {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
+    navigator.mediaDevices.enumerateDevices().then(function (ds) {
+      var sel = $('micSel'), cur = activeId || sel.value || micPref();
+      var mics = ds.filter(function (d) { return d.kind === 'audioinput' && d.deviceId !== 'default' && d.deviceId !== 'communications'; });
+      sel.innerHTML = '';
+      if (!mics.length || !mics[0].label) {
+        var o = document.createElement('option'); o.value = ''; o.textContent = 'Microphone (press Record to allow)';
+        sel.appendChild(o); return;
+      }
+      mics.forEach(function (d) {
+        var o = document.createElement('option');
+        o.value = d.deviceId; o.textContent = d.label;
+        if (d.deviceId === cur) o.selected = true;
+        sel.appendChild(o);
+      });
+    });
+  }
+  $('micSel').addEventListener('change', function () {
+    try { localStorage.setItem(MIC_KEY, this.value); } catch (e) {}
+    if (mode === 'rec') return;          /* takes effect on the next take */
+    dropStream();
+    getMic().catch(function () {});
+  });
+  if (navigator.mediaDevices && navigator.mediaDevices.addEventListener) {
+    navigator.mediaDevices.addEventListener('devicechange', function () { listMics(); });
+  }
+
+  var ac = null, source = null, analyser = null;
   function meter(s) {
     try {
-      var ac = new (window.AudioContext || window.webkitAudioContext)();
-      var an = ac.createAnalyser(); an.fftSize = 512;
-      ac.createMediaStreamSource(s).connect(an);
-      var buf = new Uint8Array(an.fftSize), bar = $('meter').firstChild;
-      (function tick() {
-        an.getByteTimeDomainData(buf);
-        var peak = 0;
-        for (var i = 0; i < buf.length; i++) peak = Math.max(peak, Math.abs(buf[i] - 128));
-        bar.style.width = Math.min(100, peak / 128 * 140) + '%';
-        bar.style.background = peak > 120 ? 'var(--rec)' : 'var(--ok)';
-        requestAnimationFrame(tick);
-      })();
+      if (!ac) {
+        ac = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = ac.createAnalyser(); analyser.fftSize = 512;
+        var buf = new Uint8Array(analyser.fftSize), bar = $('meter').firstChild;
+        (function tick() {
+          analyser.getByteTimeDomainData(buf);
+          var peak = 0;
+          for (var i = 0; i < buf.length; i++) peak = Math.max(peak, Math.abs(buf[i] - 128));
+          bar.style.width = Math.min(100, peak / 128 * 140) + '%';
+          bar.style.background = peak > 120 ? 'var(--rec)' : 'var(--ok)';
+          requestAnimationFrame(tick);
+        })();
+      }
+      if (ac.state === 'suspended') ac.resume();
+      if (source) source.disconnect();
+      source = ac.createMediaStreamSource(s);
+      source.connect(analyser);
     } catch (e) {}
   }
 
@@ -318,6 +393,8 @@
       rec.onstart = function () { t0 = performance.now(); };
       rec.onstop = function () {
         if (mode !== 'rec') return;   /* cancelled */
+        var tr = s.getAudioTracks()[0];
+        if (!tr || tr.readyState !== 'live') { micLost(); return; }   /* the mic dropped out */
         take = { key: cur.key, blob: new Blob(chunks, { type: rec.mimeType || MIME }), cues: cues.slice(),
                  n: cur.items.length, texts: cur.items.map(function (it) { return it.text; }),
                  at: Date.now(), dur: (performance.now() - t0) / 1000 };
@@ -349,7 +426,7 @@
   function cancelRec() {
     if (mode !== 'rec') return;
     setMode('none');
-    rec.stop();
+    if (rec.state !== 'inactive') rec.stop();
     mark(null);
     setMode(saved[cur.key] ? 'saved' : 'ready');
   }
@@ -444,6 +521,7 @@
         w.document.addEventListener('keydown', onKey);
         buildGrid();
         open(0, 'l0');
+        listMics();
       }
       ready();
     }).catch(function (e) { alert('This browser cannot store recordings: ' + e); });
