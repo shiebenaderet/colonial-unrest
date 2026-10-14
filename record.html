@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Record the Readings</title>
+<!--
+  Mr. B records the 36 English readings (9 placards x 4 levels) here for the
+  "Mr. B" voice in Listen.
+
+  The reading is the real page (index.html?recorder in a frame), so the sentences
+  are exactly the ones Listen reads. Press Space at the end of each sentence while
+  reading; those taps are the cue times that make the highlight follow the voice.
+  Takes are kept in this browser (IndexedDB) until downloaded. "Download all"
+  gives one zip; tools/add-recordings.py turns it into audio/*.mp3 and
+  audio/recordings.js.
+
+  Sign-in: Google, and only ALLOWED_EMAIL gets in. This is a gate on a static
+  page, not real security -- but nothing here can change the site: takes stay in
+  this browser until someone with access to the repo adds them.
+-->
+<style>
+  :root { --bg:#efe9da; --panel:#fbf8f1; --ink:#1a1410; --mute:#6b5f52; --line:#d8cfbd;
+          --accent:#8a2f1d; --ok:#2f6b3a; --rec:#c0281b; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+         font:16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  button { font:inherit; cursor:pointer; border:1px solid var(--line); background:var(--panel);
+           color:var(--ink); border-radius:8px; padding:8px 14px; }
+  button:disabled { opacity:.45; cursor:default; }
+  button.primary { background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600; }
+  button.rec { background:var(--rec); border-color:var(--rec); color:#fff; font-weight:600; }
+  .hidden { display:none !important; }
+
+  #gate { max-width:520px; margin:12vh auto; padding:28px; background:var(--panel);
+          border:1px solid var(--line); border-radius:14px; }
+  #gate h1 { margin:0 0 8px; font-size:24px; }
+  #gate p { color:var(--mute); }
+  #gate .err { color:var(--rec); }
+  #gate code { background:#eee6d5; padding:1px 5px; border-radius:4px; }
+
+  #app { display:grid; grid-template-columns:300px 1fr; height:100vh; }
+  #side { border-right:1px solid var(--line); padding:16px; overflow:auto; background:var(--panel); }
+  #side h1 { font-size:18px; margin:0 0 4px; }
+  #side .who { color:var(--mute); font-size:13px; margin-bottom:12px; }
+  #grid { width:100%; border-collapse:collapse; font-size:13px; }
+  #grid th { text-align:left; font-weight:600; padding:4px 2px; color:var(--mute); }
+  #grid td { padding:2px; }
+  #grid td.title { padding-right:6px; }
+  .cell { width:100%; padding:6px 0; border-radius:6px; font-size:12px; }
+  .cell.done { background:#dcebdc; border-color:#9cc39f; color:var(--ok); font-weight:600; }
+  .cell.now { outline:3px solid var(--accent); outline-offset:-1px; }
+  #count { margin:12px 0; font-weight:600; }
+  #side .tools { display:flex; flex-direction:column; gap:8px; margin-top:8px; }
+  #side .note { color:var(--mute); font-size:13px; }
+
+  #main { display:flex; flex-direction:column; min-width:0; }
+  #bar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:10px 16px;
+         border-bottom:1px solid var(--line); background:var(--panel); }
+  #bar .label { font-weight:600; margin-right:auto; }
+  #status { font-size:14px; color:var(--mute); }
+  #status.live { color:var(--rec); font-weight:600; }
+  #meter { width:90px; height:10px; background:#e6dece; border-radius:5px; overflow:hidden; }
+  #meter i { display:block; height:100%; width:0; background:var(--ok); transition:width .05s; }
+  #help { padding:6px 16px; font-size:13px; color:var(--mute); border-bottom:1px solid var(--line); }
+  kbd { border:1px solid var(--line); border-bottom-width:2px; border-radius:4px; padding:0 5px;
+        background:#fff; font-size:12px; }
+  #frame { flex:1; width:100%; border:0; background:#fff; }
+
+  @media (max-width: 800px) {
+    #app { grid-template-columns:1fr; height:auto; }
+    #frame { height:80vh; }
+  }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <h1>Record the readings</h1>
+  <p>For Mr. B only. Sign in with your district Google account.</p>
+  <div id="gbtn"></div>
+  <p id="gateMsg"></p>
+</div>
+
+<div id="app" class="hidden">
+  <aside id="side">
+    <h1>Record the readings</h1>
+    <div class="who" id="who"></div>
+    <table id="grid"></table>
+    <div id="count"></div>
+    <div class="tools">
+      <button id="dlAll" class="primary">Download all (zip)</button>
+      <span class="note">Recordings stay in this browser until you download them.
+        Upload the zip to the repo, or send it to Claude, to put them on the site.</span>
+      <button id="signOut">Sign out</button>
+    </div>
+  </aside>
+  <section id="main">
+    <div id="bar">
+      <span class="label" id="now">Pick a reading on the left.</span>
+      <span id="meter" title="Microphone level"><i></i></span>
+      <span id="status"></span>
+      <button id="recBtn" class="rec" disabled>● Record</button>
+      <button id="nextBtn" class="primary hidden">Next sentence ⏎</button>
+      <button id="backBtn" class="hidden">Back one</button>
+      <button id="cancelBtn" class="hidden">Cancel take</button>
+      <button id="playBtn" class="hidden">▶ Play back</button>
+      <button id="saveBtn" class="primary hidden">Keep this take</button>
+      <button id="redoBtn" class="hidden">Re-record</button>
+      <button id="delBtn" class="hidden">Delete</button>
+    </div>
+    <div id="help">Press <b>Record</b>, then read the highlighted sentence. Press <kbd>Space</kbd>
+      at the end of each sentence to move on (<kbd>Backspace</kbd> if you pressed too early).
+      After the last sentence, <kbd>Space</kbd> stops. Stumble? <b>Cancel take</b> and start that reading again.</div>
+    <iframe id="frame" title="Reading" src="index.html?recorder"></iframe>
+  </section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- sign-in ----------
+     CLIENT_ID comes from Google Cloud Console: APIs & Services > Credentials >
+     OAuth client ID (Web application), with https://unrest.mrbsocialstudies.org
+     as an Authorized JavaScript origin. */
+  var CLIENT_ID = '';
+  var ALLOWED_EMAIL = 'benaderets885@edmonds.wednet.edu';
+  var SESSION_KEY = 'rec:who';
+
+  var $ = function (id) { return document.getElementById(id); };
+  function gateMsg(text, err) { var m = $('gateMsg'); m.textContent = text; m.className = err ? 'err' : ''; }
+
+  function payloadOf(jwt) {
+    var b = jwt.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(decodeURIComponent(escape(atob(b))));
+  }
+  function allowed(who) {
+    return who && who.email_verified && String(who.email).toLowerCase() === ALLOWED_EMAIL &&
+           who.exp * 1000 > Date.now();
+  }
+  function signedIn(who) {
+    try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(who)); } catch (e) {}
+    $('gate').classList.add('hidden');
+    $('app').classList.remove('hidden');
+    $('who').textContent = 'Signed in as ' + who.email;
+    start();
+  }
+  function gate() {
+    var saved = null;
+    try { saved = JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null'); } catch (e) {}
+    if (allowed(saved)) { signedIn(saved); return; }
+    if (!CLIENT_ID) {
+      gateMsg('Sign-in is not set up yet: this page needs a Google client ID (CLIENT_ID in record.html).', true);
+      return;
+    }
+    var s = document.createElement('script');
+    s.src = 'https://accounts.google.com/gsi/client';
+    s.async = true;
+    s.onerror = function () { gateMsg('Google sign-in could not load. Check the network, then reload.', true); };
+    s.onload = function () {
+      google.accounts.id.initialize({
+        client_id: CLIENT_ID,
+        hd: 'edmonds.wednet.edu',
+        auto_select: true,
+        callback: function (res) {
+          var who;
+          try { who = payloadOf(res.credential); } catch (e) { gateMsg('Sign-in failed. Try again.', true); return; }
+          if (allowed(who)) signedIn(who);
+          else gateMsg('This page is only for Mr. B (' + ALLOWED_EMAIL + '). You signed in as ' + who.email + '.', true);
+        }
+      });
+      google.accounts.id.renderButton($('gbtn'), { theme: 'outline', size: 'large', text: 'signin_with' });
+      google.accounts.id.prompt();
+    };
+    document.head.appendChild(s);
+  }
+  $('signOut').addEventListener('click', function () {
+    try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
+    if (window.google && google.accounts) google.accounts.id.disableAutoSelect();
+    location.reload();
+  });
+
+  /* ---------- takes, kept in IndexedDB ---------- */
+  var db = null;
+  function openDb() {
+    return new Promise(function (ok, fail) {
+      var r = indexedDB.open('unrest-recordings', 1);
+      r.onupgradeneeded = function () { r.result.createObjectStore('takes'); };
+      r.onsuccess = function () { ok(r.result); };
+      r.onerror = function () { fail(r.error); };
+    });
+  }
+  function tx(mode, fn) {
+    return new Promise(function (ok, fail) {
+      var t = db.transaction('takes', mode), store = t.objectStore('takes'), out;
+      out = fn(store);
+      t.oncomplete = function () { ok(out && out.result); };
+      t.onerror = function () { fail(t.error); };
+    });
+  }
+  var saved = {};   /* key -> take, everything in the store */
+  function loadAll() {
+    return new Promise(function (ok) {
+      var t = db.transaction('takes'), req = t.objectStore('takes').openCursor();
+      req.onsuccess = function () {
+        var c = req.result;
+        if (c) { saved[c.key] = c.value; c.continue(); } else ok();
+      };
+    });
+  }
+
+  /* ---------- the reading frame ---------- */
+  var frame = $('frame'), R = null, RT = null;
+  var cur = null;        /* {i, level, key, title, items} */
+
+  function buildGrid() {
+    var g = $('grid');
+    g.innerHTML = '';
+    var head = g.insertRow();
+    head.appendChild(document.createElement('th'));
+    R.levels.forEach(function (l) {
+      var th = document.createElement('th'); th.textContent = l.label.replace('Level ', 'L'); head.appendChild(th);
+    });
+    R.events.forEach(function (ev, i) {
+      var row = g.insertRow();
+      var t = row.insertCell(); t.className = 'title'; t.textContent = (i + 1) + '. ' + ev.title;
+      R.levels.forEach(function (l) {
+        var key = ev.id + '-' + l.key;
+        var b = document.createElement('button');
+        b.className = 'cell' + (saved[key] ? ' done' : '') + (cur && cur.key === key ? ' now' : '');
+        b.textContent = saved[key] ? '✓' : '○';
+        b.title = ev.title + ', ' + l.label + (saved[key] ? ' (recorded)' : '');
+        b.setAttribute('aria-label', b.title);
+        b.addEventListener('click', function () { if (mode !== 'rec') open(i, l.key); });
+        row.insertCell().appendChild(b);
+      });
+    });
+    var n = Object.keys(saved).length;
+    $('count').textContent = n + ' of ' + (R.events.length * R.levels.length) + ' recorded';
+    $('dlAll').disabled = !n;
+  }
+
+  function open(i, level) {
+    stopPlay();
+    var ev = R.events[i];
+    var items = R.show(i, level);
+    var lab = R.levels.filter(function (l) { return l.key === level; })[0].label;
+    cur = { i: i, level: level, key: ev.id + '-' + level, title: ev.title + ' · ' + lab, items: items };
+    take = null;
+    $('now').textContent = cur.title + ' (' + items.length + ' sentences)';
+    frame.contentWindow.scrollTo(0, 0);
+    setMode(saved[cur.key] ? 'saved' : 'ready');
+    buildGrid();
+  }
+
+  /* ---------- recording ---------- */
+  var mode = 'none';     /* none | ready | rec | review | saved */
+  var stream = null, rec = null, chunks = [], t0 = 0, cues = [], at = 0, take = null;
+  var MIME = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4'].filter(function (m) {
+    return window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(m);
+  })[0] || '';
+
+  function setMode(m) {
+    mode = m;
+    var show = {
+      recBtn: m === 'ready', nextBtn: m === 'rec', backBtn: m === 'rec', cancelBtn: m === 'rec',
+      playBtn: m === 'review' || m === 'saved', saveBtn: m === 'review',
+      redoBtn: m === 'review' || m === 'saved', delBtn: m === 'saved'
+    };
+    for (var id in show) $(id).classList.toggle('hidden', !show[id]);
+    $('recBtn').disabled = !cur;
+    var st = $('status');
+    st.className = m === 'rec' ? 'live' : '';
+    st.textContent = m === 'rec' ? 'Recording… sentence ' + (at + 1) + ' of ' + cur.items.length
+      : m === 'review' ? 'Listen back, then keep it or re-record.'
+      : m === 'saved' ? 'Recorded ' + new Date(saved[cur.key].at).toLocaleDateString() + '.'
+      : '';
+  }
+
+  function mark(k) {
+    if (!RT) return;
+    if (k == null || !cur.items[k]) RT.clearMark(); else RT.mark(cur.items[k]);
+  }
+
+  function getMic() {
+    if (stream) return Promise.resolve(stream);
+    return navigator.mediaDevices.getUserMedia({
+      audio: { echoCancellation: false, noiseSuppression: true, autoGainControl: true, channelCount: 1 }
+    }).then(function (s) { stream = s; meter(s); return s; });
+  }
+  function meter(s) {
+    try {
+      var ac = new (window.AudioContext || window.webkitAudioContext)();
+      var an = ac.createAnalyser(); an.fftSize = 512;
+      ac.createMediaStreamSource(s).connect(an);
+      var buf = new Uint8Array(an.fftSize), bar = $('meter').firstChild;
+      (function tick() {
+        an.getByteTimeDomainData(buf);
+        var peak = 0;
+        for (var i = 0; i < buf.length; i++) peak = Math.max(peak, Math.abs(buf[i] - 128));
+        bar.style.width = Math.min(100, peak / 128 * 140) + '%';
+        bar.style.background = peak > 120 ? 'var(--rec)' : 'var(--ok)';
+        requestAnimationFrame(tick);
+      })();
+    } catch (e) {}
+  }
+
+  function startRec() {
+    if (!cur || !cur.items.length) return;
+    if (!window.MediaRecorder) { alert('This browser cannot record. Use Chrome or Edge.'); return; }
+    getMic().then(function (s) {
+      chunks = []; cues = [0]; at = 0;
+      rec = new MediaRecorder(s, MIME ? { mimeType: MIME, audioBitsPerSecond: 96000 } : undefined);
+      rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+      rec.onstart = function () { t0 = performance.now(); };
+      rec.onstop = function () {
+        if (mode !== 'rec') return;   /* cancelled */
+        take = { key: cur.key, blob: new Blob(chunks, { type: rec.mimeType || MIME }), cues: cues.slice(),
+                 n: cur.items.length, texts: cur.items.map(function (it) { return it.text; }),
+                 at: Date.now(), dur: (performance.now() - t0) / 1000 };
+        mark(null);
+        setMode('review');
+      };
+      t0 = performance.now();
+      rec.start(1000);
+      mark(0);
+      setMode('rec');
+    }).catch(function (e) {
+      alert('The microphone is blocked. Allow it from the icon in the address bar, then try again.\n(' + e.name + ')');
+    });
+  }
+  function nextSentence() {
+    if (mode !== 'rec') return;
+    if (at >= cur.items.length - 1) { rec.stop(); return; }
+    /* Taps land a little after the sentence ends; start the next cue slightly earlier. */
+    var t = Math.max(cues[cues.length - 1] + 0.2, (performance.now() - t0) / 1000 - 0.15);
+    cues.push(+t.toFixed(2));
+    at++;
+    mark(at);
+    setMode('rec');
+  }
+  function backOne() {
+    if (mode !== 'rec' || at === 0) return;
+    cues.pop(); at--; mark(at); setMode('rec');
+  }
+  function cancelRec() {
+    if (mode !== 'rec') return;
+    setMode('none');
+    rec.stop();
+    mark(null);
+    setMode(saved[cur.key] ? 'saved' : 'ready');
+  }
+
+  /* ---------- play back, with the highlight following the cues ---------- */
+  var player = null;
+  function stopPlay() {
+    if (player) { player.pause(); URL.revokeObjectURL(player.src); player = null; }
+    $('playBtn').textContent = '▶ Play back';
+    if (RT) RT.clearMark();
+  }
+  function play() {
+    if (player) { stopPlay(); return; }
+    var t = mode === 'review' ? take : saved[cur.key];
+    if (!t) return;
+    player = new Audio(URL.createObjectURL(t.blob));
+    var last = -1;
+    player.ontimeupdate = function () {
+      var w = 0;
+      for (var c = 0; c < t.cues.length; c++) if (t.cues[c] <= player.currentTime + 0.05) w = c;
+      if (w !== last) { last = w; mark(w); }
+    };
+    player.onended = stopPlay;
+    player.play();
+    $('playBtn').textContent = '■ Stop';
+  }
+
+  function keep() {
+    var t = take;
+    tx('readwrite', function (s) { return s.put(t, t.key); }).then(function () {
+      saved[t.key] = t; take = null; stopPlay(); setMode('saved'); buildGrid();
+    }).catch(function (e) { alert('Could not save the take in this browser: ' + e); });
+  }
+  function del() {
+    if (!confirm('Delete the recording of ' + cur.title + '?')) return;
+    var key = cur.key;
+    tx('readwrite', function (s) { return s.delete(key); }).then(function () {
+      delete saved[key]; stopPlay(); setMode('ready'); buildGrid();
+    });
+  }
+
+  /* ---------- download everything as one zip ---------- */
+  function downloadAll() {
+    if (!window.JSZip) { alert('The zip tool did not load. Check the network, then reload.'); return; }
+    var zip = new JSZip(), meta = {};
+    Object.keys(saved).sort().forEach(function (key) {
+      var t = saved[key];
+      var ext = /mp4/.test(t.blob.type) ? 'm4a' : 'webm';
+      zip.file(key + '.' + ext, t.blob);
+      meta[key] = { file: key + '.' + ext, cues: t.cues, n: t.n, texts: t.texts,
+                    recorded: new Date(t.at).toISOString(), seconds: +t.dur.toFixed(1) };
+    });
+    zip.file('recordings.json', JSON.stringify(meta, null, 1));
+    zip.generateAsync({ type: 'blob' }).then(function (blob) {
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'unrest-recordings-' + new Date().toISOString().slice(0, 10) + '.zip';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 5000);
+    });
+  }
+
+  /* ---------- wiring ---------- */
+  $('recBtn').addEventListener('click', startRec);
+  $('nextBtn').addEventListener('click', nextSentence);
+  $('backBtn').addEventListener('click', backOne);
+  $('cancelBtn').addEventListener('click', cancelRec);
+  $('playBtn').addEventListener('click', play);
+  $('saveBtn').addEventListener('click', keep);
+  $('redoBtn').addEventListener('click', function () { stopPlay(); take = null; setMode('ready'); startRec(); });
+  $('delBtn').addEventListener('click', del);
+  $('dlAll').addEventListener('click', downloadAll);
+
+  function onKey(e) {
+    if (mode !== 'rec') return;
+    if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); nextSentence(); }
+    else if (e.key === 'Backspace') { e.preventDefault(); backOne(); }
+    else if (e.key === 'Escape') { e.preventDefault(); cancelRec(); }
+  }
+  document.addEventListener('keydown', onKey);
+
+  var started = false;
+  function start() {
+    if (started) return;
+    started = true;
+    openDb().then(function (d) { db = d; return loadAll(); }).then(function () {
+      function ready() {
+        var w = frame.contentWindow;
+        if (!w || !w.UNREST_RECORDER || !w.READER_TOOLS) { setTimeout(ready, 200); return; }
+        R = w.UNREST_RECORDER; RT = w.READER_TOOLS;
+        /* Space inside the reading should advance too, not scroll it. */
+        w.document.addEventListener('keydown', onKey);
+        buildGrid();
+        open(0, 'l0');
+      }
+      ready();
+    }).catch(function (e) { alert('This browser cannot store recordings: ' + e); });
+  }
+
+  gate();
+})();
+</script>
+</body>
+</html>

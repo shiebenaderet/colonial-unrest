@@ -55,6 +55,12 @@ Progress is saved per device. A student who switches Chromebooks loads their bac
 - **Screen readers** get the point total, status messages, and a data table of the chart. The rating control and timeline work fully from the keyboard.
 - **Reduced motion** is respected.
 
+## Recording the readings (Mr. B's voice)
+
+`record.html` (not linked anywhere, hidden from search engines) records the 36 English readings, 9 placards × 4 levels, for a **Mr. B** voice in Listen. Only `benaderets885@edmonds.wednet.edu` can sign in with Google. The page shows the real placard. Press **Record**, read the highlighted sentence, and press **Space** at the end of each one. Those taps time the highlight, so it follows your voice when students play it back. Listen back, keep the take or redo it. Takes stay in that browser until **Download all** saves them as one zip. `python3 tools/add-recordings.py <zip>` turns the zip into `audio/*.mp3` and `audio/recordings.js`. Readings without a recording, the translations, and any reading whose text changed after it was recorded keep the computer voice.
+
+Sign-in needs a Google OAuth client ID (Web application, authorized JavaScript origin `https://unrest.mrbsocialstudies.org`) pasted into `CLIENT_ID` in `record.html`. The sign-in only keeps the page private. Nothing on it can change the site.
+
 ## Printable readings
 
 `readings.html` (`unrest.mrbsocialstudies.org/readings.html`) is every reading at all four levels, plus Level 0 in each language, with a Print button. `canvas/unrest-readings.pdf` is the same page as a PDF. Both are generated from the text in `index.html` by `node tools/build-readings.js` (needs Playwright); rerun it after editing any reading so the print copy never drifts from the app. `canvas/` also holds the paste-ready Canvas assignment page and the tracker PDF.

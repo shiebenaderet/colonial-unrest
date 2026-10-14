@@ -11,6 +11,9 @@
      3. READER_TOOLS.reset() stops reading and forgets the sentence list; the
         activity calls it whenever it redraws a screen.
      4. Text size zooms the activity, whose styles are in px, not rem.
+     5. A recording covers whatever the activity marks data-audio-part="<key>"
+        (a placard's title and reading), and carries n, the number of sentences it
+        was cued for. record.html makes them; tools/add-recordings.py adds them.
 
 
    Loaded by the colonial-regions and columbian-exchange reading pages, which the
@@ -38,7 +41,8 @@
    offers "Mr. B" and that part plays the recording instead, highlighting by the
    cue times (seconds, one per sentence, in the page's own sentence order). Parts
    with no recording fall back to the computer voice, so a half-recorded reading
-   still plays straight through. tools/align-audio.py writes the cues.
+   still plays straight through. Here the cues are tapped in while recording, on
+   record.html; in ams-planning, tools/align-audio.py writes them.
 
    FONT
    Typeface, size and spacing, saved per browser. The menu says "Font", not
@@ -266,6 +270,9 @@
      recording of "The land and the weather" starts with "New England Colonies"
      rather than that title needing a four-second file of its own. */
   function partOf(el) {
+    /* ADAPTED (5): the activity names a recording's text outright. */
+    var named = el.closest('[data-audio-part]');
+    if (named) return named.getAttribute('data-audio-part');
     var heads = document.querySelectorAll('[data-listen] h2, [data-listen] h3[id]');
     var id = '', pendingH2 = false;
     for (var i = 0; i < heads.length; i++) {
@@ -357,6 +364,15 @@
   var AUDIO = window.READER_AUDIO || {};
   var hasRec = false;
   for (var k in AUDIO) if (Object.prototype.hasOwnProperty.call(AUDIO, k)) { hasRec = true; break; }
+  /* ADAPTED (5): a recording made for a different version of the text (n, the
+     sentence count it was cued for, no longer matches) is skipped, so a later
+     edit to a reading falls back to the computer voice instead of drifting. */
+  function recFor(part) {
+    var rec = AUDIO[part];
+    if (!rec) return null;
+    if (typeof rec.n === 'number' && partItems(part).length !== rec.n) return null;
+    return rec;
+  }
 
   var items = [], idx = 0, playing = false, token = 0;
   /* Held here so the browser can't garbage-collect the utterance mid-sentence
@@ -378,7 +394,7 @@
     playing = true;
     document.documentElement.classList.add('rt-playing');
     var it = items[i];
-    if (useRec && AUDIO[it.part]) { playRecording(it.part, i, my); return; }
+    if (useRec && recFor(it.part)) { playRecording(it.part, i, my); return; }
     mark(it);
     render();
     if (!synth) { stop(); return; }
@@ -417,10 +433,12 @@
     if (voice) startTimer = setTimeout(function () { if (!started) voiceFailed(); }, START_WAIT);
   }
 
-  function firstOfPart(i) {
-    var p = items[i].part;
-    while (i > 0 && items[i - 1].part === p) i--;
-    return i;
+  /* The item indexes in a part, in order. A part need not be one unbroken run:
+     a block outside it (read by the computer voice) can sit between its blocks. */
+  function partItems(part) {
+    var out = [];
+    for (var j = 0; j < items.length; j++) if (items[j].part === part) out.push(j);
+    return out;
   }
 
   /* One recording per part. Sentence n of the part starts at cues[n]. */
@@ -431,14 +449,13 @@
       audio.addEventListener('timeupdate', onTime);
       audio.addEventListener('ended', function () {
         if (!playing) return;
-        var j = idx;
-        while (j < items.length && items[j].part === audioPart) j++;
-        speakFrom(j);
+        var own = partItems(audioPart);
+        speakFrom(own.length ? own[own.length - 1] + 1 : idx + 1);
       });
     }
     if (audioPart !== part) { audio.src = rec.src; audioPart = part; }
     audio.playbackRate = rate;
-    var cue = rec.cues[i - firstOfPart(i)];
+    var cue = rec.cues[partItems(part).indexOf(i)];
     audio.currentTime = typeof cue === 'number' ? cue : 0;
     mark(items[i]);
     render();
@@ -453,10 +470,10 @@
   function onTime() {
     if (!playing || !audio || !AUDIO[audioPart] || !items[idx]) return;
     var cues = AUDIO[audioPart].cues, t = audio.currentTime;
-    var first = firstOfPart(idx), w = 0;
+    var own = partItems(audioPart), w = 0;
     for (var c = 0; c < cues.length; c++) if (cues[c] <= t + 0.05) w = c;
-    var j = first + w;
-    if (j !== idx && j < items.length && items[j].part === audioPart) { idx = j; mark(items[j]); }
+    var j = own[w];
+    if (j !== undefined && j !== idx) { idx = j; mark(items[j]); }
   }
 
   function pause() {
@@ -582,7 +599,7 @@
     speedSel.addEventListener('change', function () {
       rate = +speedSel.value; prefs.rate = rate; savePrefs(prefs);
       if (audio) audio.playbackRate = rate;
-      if (playing && !(useRec && AUDIO[items[idx].part])) speakFrom(idx);
+      if (playing && !(useRec && recFor(items[idx].part))) speakFrom(idx);
     });
     player.appendChild(ppBtn);
     player.appendChild(stopBtn);
@@ -640,5 +657,7 @@
   /* For tests and the console. */
   /* ADAPTED (3): the activity calls reset() each time it redraws a screen. */
   function reset() { if (player && (playing || player.classList.contains('rt-on'))) stop(); items = []; idx = 0; }
-  window.READER_TOOLS = { split: split, collect: collect, reset: reset };
+  /* ADAPTED (5): the teacher's recording page (record.html) uses mark/clearMark to
+     highlight the sentence being recorded, from the same sentence list Listen uses. */
+  window.READER_TOOLS = { split: split, collect: collect, reset: reset, mark: mark, clearMark: clearMark };
 })();

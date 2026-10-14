@@ -980,6 +980,9 @@
 <script>
 // ----- Config -----
 const STORAGE_KEY = 'unrest-simple-v1';
+// record.html shows the readings in a frame with ?recorder: a fresh state that is
+// never saved, so recording can't touch the teacher's own progress in this browser.
+const RECORDER = new URLSearchParams(location.search).has('recorder');
 const EVENTS = [
   {id:'A', title:'Proclamation of 1763', year:1763, side:'british', img:'images/proclamation-1763.jpg',
    wiki:'https://en.wikipedia.org/wiki/Royal_Proclamation_of_1763',
@@ -1160,6 +1163,7 @@ function defaultState(){
   };
 }
 function load(){
+  if(RECORDER) return defaultState();
   try{ const raw = localStorage.getItem(STORAGE_KEY); if(!raw) return defaultState();
     const st = JSON.parse(raw); // basic shape guard
     const def = defaultState();
@@ -1190,7 +1194,7 @@ function load(){
     return st;
   }catch{ return defaultState(); }
 }
-function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+function save(){ if(RECORDER) return; localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 
 // Add debouncing for save operations
 let saveTimeout;
@@ -2093,6 +2097,10 @@ function renderPlacardsSection(){
   // reading column
   const tagLang = (row.level==='l0' && SIDE.british[state.l0lang]) ? state.l0lang : 'en';
   const reading = h('div',{class:'event-reading fm-reading', id:'reading-panel', tabindex:'0'});
+  // A recording of this reading (audio/recordings.js) covers the title and the
+  // text, in English only; see reader-tools.js and record.html.
+  const audioPart = (row.level!=='l0' || state.l0lang==='en') ? `${e.id}-${row.level}` : null;
+  if(audioPart) reading.setAttribute('data-audio-part', audioPart);
   reading.setAttribute('aria-label', `Reading: ${e.title}`);
   const fig = elEventFigure(e);
   fig.classList.add('fm-figure');
@@ -2100,11 +2108,13 @@ function renderPlacardsSection(){
   fillReading(reading, e, row.level);
   // The year is left off when the title already says it (Proclamation of 1763).
   const yearEl = e.title.includes(String(e.year)) ? null : span(String(e.year),'fm-year');
+  const titleEl = h('h2',{}, e.title, yearEl ? ' ' : null, yearEl);
+  if(audioPart) titleEl.setAttribute('data-audio-part', audioPart);
   const whoLabel = span(SIDE.who[tagLang] || SIDE.who.en, 'fm-who-label');
   if(tagLang!=='en'){ whoLabel.setAttribute('lang', LANG_TAG[tagLang]); whoLabel.setAttribute('translate','no'); }
   const readCol = h('article',{class:'fm-pane fm-read'},
     h('div',{class:'fm-pane-h fm-read-h'},
-      h('h2',{}, e.title, yearEl ? ' ' : null, yearEl),
+      titleEl,
       elListenButton(),
       h('div',{class:'fm-who'}, whoLabel, elSideTag(e, tagLang, true)),
       tabs),
@@ -3721,8 +3731,22 @@ if(translateSelEl && translateGoEl){
 
 attachHeaderListeners();
 render();
+// For record.html: open any placard at any level, and list that reading's sentences.
+if(RECORDER) window.UNREST_RECORDER = {
+  events: EVENTS.map(e=>({id:e.id, title:e.title})),
+  levels: LEVELS.map(l=>({key:l.key, label:l.label})),
+  show(i, level){
+    state.answers.name = 'Mr. B'; state.answers.period = '0';   // the placards need a sign-in
+    state.phase = 'cards'; state.current = i; state.l0lang = 'en';
+    state.rows[EVENTS[i].id].level = level;
+    render();
+    const part = `${EVENTS[i].id}-${level}`;
+    return READER_TOOLS.collect().filter(it=>it.part===part);
+  }
+};
 </script>
-<script src="reader-tools.js?v=20261014"></script>
+<script src="audio/recordings.js?v=20261014"></script>
+<script src="reader-tools.js?v=20261014b"></script>
 <script>
 // Group each Font-panel row's buttons so the row can be label + options (see the
 // header .rt-panel .rt-row rule). The buttons keep their handlers.
