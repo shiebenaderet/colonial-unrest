@@ -370,7 +370,7 @@
     t.appendChild(tb); tbl.appendChild(t);
   }
 
-  // One chart, four views (Push and push back has its own, below). Colors are passed in (P) so the saved image can be
+  // One chart for four of the views (Push and push back has its own, below). Colors are passed in (P) so the saved image can be
   // drawn light whatever the screen uses. interactive adds the hover/focus layer.
   var NS='http://www.w3.org/2000/svg', W=760, H=400, L=50, R=16, T=28, B=86, svgSeq=0;
   function chart(s, which, P, interactive){
@@ -580,7 +580,7 @@
     setTimeout(function(){ URL.revokeObjectURL(a.href); }, 5000);
   }
   function flash(btn, msg){ var t=btn.textContent; btn.textContent=msg; setTimeout(function(){ btn.textContent=t; }, 2200); }
-  function fileName(which, ext){ return 'unrest-period'+period+'-'+which+'-'+new Date().toISOString().slice(0,10)+'.'+ext; }
+  function fileName(which, ext){ return 'unrest-'+(period===ALL ? 'all-periods' : 'period'+period)+'-'+which+'-'+new Date().toISOString().slice(0,10)+'.'+ext; }
   $('saveChart').addEventListener('click', function(){
     var s=stats(), b=this; if(!s) return;
     chartImage(s, view).then(function(blob){ download(blob, fileName(view,'png')); }, function(){ flash(b,'Could not save the image'); });
