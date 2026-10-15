@@ -1085,14 +1085,15 @@ const STEPS = [
   {id:'questions', label:'Reflection', anchor:'section-questions'}
 ];
 
-// Reading levels, matching the course's readings. Names and blurbs describe the
-// text, never the reader: Quick, Clear, Full, Deep (formerly Level 0-3). Only
+// Reading levels, matching the course's readings (READING-LEVELS.md). Names and
+// blurbs describe the text, never the reader: Quick, Clear, Full, Deep (formerly
+// Level 0-3); the blurbs are the canonical ones, word for word. Only
 // the labels changed; the keys stay, so saved work and recordings still match.
 const LEVELS = [
-  {key:'l0',   label:'Quick', blurb:'Short sentences. Also in Español, Português, Русский, 中文.'},
-  {key:'ss',   label:'Clear', blurb:'Short paragraphs. Plain words.'},
-  {key:'core', label:'Full',  blurb:'Grade-level reading.'},
-  {key:'adv',  label:'Deep',  blurb:'Longer reading with real quotes from the time.'}
+  {key:'l0',   label:'Quick', blurb:'Short sentences. Key words explained. Also in Español, Português, Русский, 中文.'},
+  {key:'ss',   label:'Clear', blurb:'Plain words, a little more detail.'},
+  {key:'core', label:'Full',  blurb:'The grade-level reading.'},
+  {key:'adv',  label:'Deep',  blurb:'Adds real quotes from the time and what historians argue.'}
 ];
 const LEVEL_KEYS = LEVELS.map(l => l.key);
 const levelLabel = key => (LEVELS.find(l => l.key===key) || LEVELS[2]).label;

@@ -20,7 +20,7 @@ Work saves in the browser on that computer. **Save a backup** (placard screens a
 
 ### Reading levels
 
-Reading levels are named Quick, Clear, Full, Deep (formerly Level 0–3). The names describe the text, never the reader. Only the labels changed: the data keys (`l0`, `ss`, `core`, `adv`), saved work, and Mr. B's recordings are untouched, so work saved before the rename still loads.
+Reading levels are named Quick, Clear, Full, Deep (formerly Level 0–3). What each level means, and the measured limits every site keeps, is in [READING-LEVELS.md](READING-LEVELS.md); `node tools/check-levels.js` checks the labels, blurbs and how hard each placard's text measures. The names describe the text, never the reader. Only the labels changed: the data keys (`l0`, `ss`, `core`, `adv`), saved work, and Mr. B's recordings are untouched, so work saved before the rename still loads.
 
 | Reading | The text | Notes |
 |---|---|---|
