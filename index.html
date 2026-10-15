@@ -1085,13 +1085,14 @@ const STEPS = [
   {id:'questions', label:'Reflection', anchor:'section-questions'}
 ];
 
-// Reading levels, matching the course's Level 0-3 readings. Blurbs describe the
-// text, never the reader.
+// Reading levels, matching the course's readings. Names and blurbs describe the
+// text, never the reader: Quick, Clear, Full, Deep (formerly Level 0-3). Only
+// the labels changed; the keys stay, so saved work and recordings still match.
 const LEVELS = [
-  {key:'l0',   label:'Level 0', blurb:'Short sentences. Also in Español, Português, Русский, 中文.'},
-  {key:'ss',   label:'Level 1', blurb:'Short paragraphs. Plain words.'},
-  {key:'core', label:'Level 2', blurb:'Grade-level reading.'},
-  {key:'adv',  label:'Level 3', blurb:'Longer reading with real quotes from the time.'}
+  {key:'l0',   label:'Quick', blurb:'Short sentences. Also in Español, Português, Русский, 中文.'},
+  {key:'ss',   label:'Clear', blurb:'Short paragraphs. Plain words.'},
+  {key:'core', label:'Full',  blurb:'Grade-level reading.'},
+  {key:'adv',  label:'Deep',  blurb:'Longer reading with real quotes from the time.'}
 ];
 const LEVEL_KEYS = LEVELS.map(l => l.key);
 const levelLabel = key => (LEVELS.find(l => l.key===key) || LEVELS[2]).label;
@@ -1692,7 +1693,7 @@ function validateRow(r){ return rationaleProblem(r) === null; }
 function buildWorkText(){
   const A = state.answers, L = [];
   const lvl = state.readLevel ? levelLabel(state.readLevel) : 'not chosen';
-  const lang = state.readLevel==='l0' && state.l0lang!=='en' ? ` (${(L0_LANGS.find(([k])=>k===state.l0lang)||[])[1]})` : '';
+  const lang = state.readLevel==='l0' && state.l0lang!=='en' ? ` in ${(L0_LANGS.find(([k])=>k===state.l0lang)||[])[1]}` : '';
   L.push('UNREST IN THE COLONIES');
   L.push(`${A.name||'(no name)'} · Period ${A.period||'?'}${A.group ? ' · Pair '+A.group : ''} · Starting reading level: ${lvl}${lang}`);
   L.push('');

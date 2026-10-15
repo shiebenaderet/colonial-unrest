@@ -225,7 +225,7 @@
     var head = g.insertRow();
     head.appendChild(document.createElement('th'));
     R.levels.forEach(function (l) {
-      var th = document.createElement('th'); th.textContent = l.label.replace('Level ', 'L'); head.appendChild(th);
+      var th = document.createElement('th'); th.textContent = l.label; head.appendChild(th);
     });
     R.events.forEach(function (ev, i) {
       var row = g.insertRow();
