@@ -11,8 +11,8 @@ printed tracker is `canvas/unrest-tracker.pdf`, and the printable readings are
 - Nine events, 1763 to 1775, one placard each: Proclamation of 1763,
   Quartering Act, Stamp Act, Townshend Acts, Boston Massacre, Boston Tea
   Party, Intolerable Acts, First Continental Congress, Lexington & Concord.
-- Students read each one at their level, rate the unrest it caused from 1 to 8,
-  and write why. Then, with a partner, they spend exactly 36 points across the
+- Students read each one in the reading they pick (Quick, Clear, Full, or
+  Deep), rate the unrest it caused from 1 to 8, and write why. Then, with a partner, they spend exactly 36 points across the
   nine events. Then they answer three reflection questions and turn in on
   Canvas.
 - The unit question it builds toward: *How did loyal British subjects turn
@@ -78,11 +78,11 @@ action, what did colonists do, and how did Britain answer?
 ## 5. Modeling placard 1 (what to click, in order)
 
 1. **Sign in**: first name, last initial, period, reading level. Each level
-   card shows the same sentence at that level. Level can be changed on any
-   placard with the Level 0 to 3 tabs.
+   card shows the same sentence at that level. The reading can be changed on any
+   placard with the Quick, Clear, Full, Deep tabs (formerly Level 0 to 3).
 2. **Listen**: there is now a headphones **Listen** button beside the level
    tabs on every placard. It reads the whole screen aloud and highlights each
-   sentence. Level 0 can be read in Spanish, Portuguese, Russian, or Chinese
+   sentence. Quick can be read in Spanish, Portuguese, Russian, or Chinese
    from the "Read in" menu, and Listen reads it in that language.
 3. **Rate**: tap a number 1 to 8. The meaning appears under the squares.
 4. **Why**: the question is "Why did this event cause N out of 8 unrest?"
@@ -90,7 +90,7 @@ action, what did colonists do, and how did Britain answer?
    **Start with** chips. One chip on every placard asks for **Britain's
    side**, for example "Britain thought this would ___, but colonists saw it
    as ___ because ___." Model using it once so they know Britain's reasons
-   count as evidence too. Level 0 adds a tap-to-insert word bank.
+   count as evidence too. Quick adds a tap-to-insert word bank.
 5. **Tracker**: write the same rating and a few words on paper. Draw who
    pushed in the box.
 6. **Save & next**. At the end of class, **Save a backup** (top right). On a
@@ -135,7 +135,7 @@ app shows a Canvas logo beside the turn-in heading so they know where it goes.
 - **Listen** on every placard; **Font** (Atkinson, Lexend, OpenDyslexic,
   Verdana, size, spacing); **Settings** has light/dark, "Shorter answers OK,"
   backups, and start over.
-- Level 0 translations exist for the readings, key terms, the who-pushed tags,
+- Quick translations exist for the readings, key terms, the who-pushed tags,
   and the scale. **Caveat:** the translated scale meanings are still the older
   action-based wording until a native speaker checks the drafts in
   `TRANSLATIONS-TO-CHECK.md`. English readers see the new wording.
@@ -152,7 +152,7 @@ app shows a Canvas logo beside the turn-in heading so they know where it goes.
 5. Who pushed: The three pills (Colonists ← Britain, Colonists → Britain, Colonists →← Britain), and the tracker box (arrow or X).
 6. Model placard 1 (live in the app, or screenshots of: header with tag and
    Listen, the 1 to 8 squares with the key open, the Start with chips).
-7. Your tracker (the PDF, annotated: level at top, the who-pushed box, rating, why).
+7. Your tracker (the PDF, annotated: reading circled at top, the who-pushed box, rating, why).
 8. Save a backup (end of Monday and Tuesday).
 9. Wednesday: Pairs, 36 points, the green Continue.
 10. The class chart (class.html, Present mode).

@@ -10,7 +10,7 @@ language from this file.
 The English prompt and the eight meanings were rewritten so the scale measures
 how angry people were and how many of them, not which action they took. The
 translations in `index.html` still carry the older action-based meanings, so a
-Level 0 reader in these languages sees the old key until this is done.
+student reading Quick in these languages sees the old key until this is done.
 
 ### English (what is live, for reference)
 
@@ -89,8 +89,8 @@ Prompt: *想象你住在殖民地。这件事会让人们多生气？有多少�
 
 ## Who-acted tag on the placards (Oct 2026)
 
-These ARE live (in `SIDE` in `index.html`, shown to Level 0 readers in that
-language). Please confirm or correct them; the English is the reference.
+These ARE live (in `SIDE` in `index.html`, shown to students reading Quick in
+that language). Please confirm or correct them; the English is the reference.
 
 | English | Español | Português | Русский | 中文 |
 |---|---|---|---|---|
