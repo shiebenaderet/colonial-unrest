@@ -640,6 +640,9 @@
   .cd-british{--cd:#d94a4a} .cd-colonial{--cd:#1f9e80} .cd-clash{--cd:#b59018}
   body.light .cd-british{--cd:#c23b22} body.light .cd-colonial{--cd:#13866f} body.light .cd-clash{--cd:#d9a521}
   .cd-link{display:inline-block;text-decoration:none;margin:2px 0 0}
+  .class-data .english-version{margin-top:12px}
+  .q-translation{margin:0 0 6px;font-weight:600;color:var(--muted)}
+  .starter-gloss{display:block;font-size:.9em;opacity:.85;margin-top:2px}
   .cd-steps{margin:0;padding-left:1.4em;display:grid;gap:6px;line-height:1.5}
   .cd-model{margin:10px 0 0;padding:8px 10px;border-left:4px solid var(--accent);background:var(--panel);border-radius:6px}
   @media(max-width:640px){ .cd-row{grid-template-columns:1fr auto;} .cd-track{grid-column:1 / -1;order:3} .cd-side{text-align:right} }
@@ -1649,7 +1652,7 @@ const REFLECTION_STARTERS_SIMPLE = {
 // Question 3 panel and its hints are built from these numbers.
 const CLASS_DATA = {
   slides:'https://docs.google.com/presentation/d/13CegoBj5ImlE9K1z1sA__QOEXiZV50I4iaSDMgxrutU/edit?usp=sharing',
-  when:'Oct 14', pairs:41,
+  date:'2026-10-14', pairs:41,
   // The slides' before/after-1770 averages, worked from the unrounded numbers;
   // copied so the page and the slides match (blank: worked out from avg).
   early:3.2, late:4.7,
@@ -2507,10 +2510,16 @@ function renderQuestionsSection(){
     const starters = state.relaxRationale && lvl!=='l0' ? REFLECTION_STARTERS_SIMPLE[key] : cfg[lvl];
     const label = h('label',{}, `${i+1}) ${cfg.q}`);
     label.setAttribute('for', input.id);
-    const mkSupports = ()=> elSupports({ look:cfg.look, starters:(starters||[]).map(fillLinkTokens), bank: lvl==='l0' ? cfg.bank : null, push: lvl==='adv' ? cfg.push : null }, input, v=>{ state.answers[key]=v; updateMissing(); });
+    // Question 3 for a Level 0 reader in another language: the question and
+    // "Look at" in that language, and each starter's translation under it
+    // (the English starter is what goes into the answer).
+    const tl = key==='q5' ? q5Lang() : 'en', T = CD_I18N[tl];
+    const mkSupports = ()=> elSupports({ look: tl!=='en' ? T.look : cfg.look, lookLang: tl, starters:(starters||[]).map(fillLinkTokens), glosses: tl!=='en' && lvl==='l0' ? T.starters : null, bank: lvl==='l0' ? cfg.bank : null, push: lvl==='adv' ? cfg.push : null }, input, v=>{ state.answers[key]=v; updateMissing(); });
     let supports = mkSupports();
     const pickers = cfg.pick ? elLinkPickers(()=>{ const fresh = mkSupports(); supports.replaceWith(fresh); supports = fresh; }) : null;
-    return h('div',{class:'reflection-q'}, label, pickers, key==='q5' ? elClassData() : null, supports, input);
+    const qTr = tl!=='en' ? h('p',{class:'q-translation', lang:LANG_TAG[tl]}, T.q) : null;
+    if(qTr) qTr.setAttribute('translate','no');
+    return h('div',{class:'reflection-q'}, label, qTr, pickers, key==='q5' ? elClassData() : null, supports, input);
   });
 
   // Turn in: copy everything (ratings, every reason, reflections) as plain text
@@ -2570,6 +2579,88 @@ function renderQuestionsSection(){
 // Question 3's evidence: the grade's class averages as a small bar list in
 // the who-acted colors, a link to the class slides, and how to turn the
 // numbers into an answer about escalation and each side's response.
+// Level 0 readers see it in their "Read in" language, with "Show this in
+// English" under it; event names stay in English so they match the slides.
+// {A}…{I} are "event name (points)"; key words keep the English beside them.
+// Translations are drafts awaiting a native speaker (TRANSLATIONS-TO-CHECK.md).
+const CD_I18N = {
+  en:{ title:'Use our class data',
+       lead:'These are the averages for all {pairs} pairs from every period ({when}). Every pair spent 36 points, so 4 points is an average event. More points means more unrest.',
+       link:'Open our class slides ↗', how:'How to use the numbers',
+       esc:'<strong>Escalation</strong> means each side answers the other a little harder, so things keep getting worse. Use the numbers to show it.',
+       steps:['<strong>Did unrest grow?</strong> Events before 1770 averaged {early} points. Events from 1770 on averaged {late}. What does that tell you?',
+              '<strong>What did Britain do?</strong> Look at the red rows. Britain went from a line on a map, {A}, to taxes like the {C}, to punishing all of Boston with the {G}. How did Britain’s actions change?',
+              '<strong>How did colonists answer?</strong> Look at the green rows. Colonists answered with boycotts, then the {F}, then all the colonies meeting together at the {H}. Were their answers getting stronger?',
+              '<strong>What happened when they clashed?</strong> The gold rows, the {E} and {I}, got the most points. The biggest jump on the chart was from {from} to {to}. Why did fighting cause so much more unrest?',
+              '<strong>Put it together.</strong> Make a claim, give a number, then explain what the number means.'],
+       model:'<strong>Using a number:</strong> “Our class gave {top} {topn} points, the most of any event. This shows that ___.”',
+       sides:{british:'Britain acted', colonial:'Colonists acted', clash:'Both sides clashed'} },
+  es:{ title:'Usa los datos de nuestra clase',
+       lead:'Estos son los promedios de las {pairs} parejas de todos los periodos ({when}). Cada pareja repartió 36 puntos, así que 4 puntos es un evento promedio. Más puntos quiere decir más descontento (<em>unrest</em>).',
+       link:'Abrir las diapositivas de la clase ↗', how:'Cómo usar los números',
+       esc:'<strong>Escalada</strong> (<em>escalation</em>) quiere decir que cada lado le responde al otro un poco más fuerte, y las cosas se ponen cada vez peor. Usa los números para mostrarlo.',
+       steps:['<strong>¿Creció el descontento?</strong> Los eventos antes de 1770 tuvieron un promedio de {early} puntos. Los eventos desde 1770 tuvieron un promedio de {late}. ¿Qué te dice eso?',
+              '<strong>¿Qué hizo Gran Bretaña?</strong> Mira las filas rojas. Gran Bretaña pasó de una línea en un mapa, {A}, a impuestos como {C}, y después a castigar a todo Boston con {G}. ¿Cómo cambiaron las acciones de Gran Bretaña?',
+              '<strong>¿Cómo respondieron los colonos?</strong> Mira las filas verdes. Los colonos respondieron con boicots (<em>boycotts</em>), después con {F}, y después todas las colonias se reunieron en {H}. ¿Sus respuestas eran cada vez más fuertes?',
+              '<strong>¿Qué pasó cuando los dos lados chocaron?</strong> Las filas doradas, {E} y {I}, tuvieron más puntos. El salto más grande fue de {from} a {to}. ¿Por qué la lucha causó mucho más descontento?',
+              '<strong>Júntalo todo.</strong> Di tu idea, da un número y explica qué quiere decir ese número.'],
+       model:'<strong>Usa un número:</strong> “Nuestra clase le dio {topn} puntos a {top}, más que a cualquier otro evento. Esto muestra que ___.”',
+       sides:{british:'Gran Bretaña actuó', colonial:'Los colonos actuaron', clash:'Los dos lados chocaron'},
+       q:'¿Cómo es que unos súbditos británicos leales se convirtieron en revolucionarios en apenas una década?',
+       look:'Mira: “Usa los datos de nuestra clase”, justo arriba. ¿Crecieron los números? ¿Qué hizo cada lado y qué pasó cuando chocaron?',
+       starters:['Los colonos se pusieron en contra de Gran Bretaña porque ___. El salto más grande fue ___.', 'Antes de 1770 eran ___ puntos. Después de 1770 eran ___ puntos.'] },
+  pt:{ title:'Use os dados da nossa turma',
+       lead:'Estas são as médias das {pairs} duplas de todos os períodos ({when}). Cada dupla distribuiu 36 pontos, então 4 pontos é um evento médio. Mais pontos quer dizer mais insatisfação (<em>unrest</em>).',
+       link:'Abrir os slides da turma ↗', how:'Como usar os números',
+       esc:'<strong>Escalada</strong> (<em>escalation</em>) quer dizer que cada lado responde ao outro um pouco mais forte, e as coisas ficam cada vez piores. Use os números para mostrar isso.',
+       steps:['<strong>A insatisfação cresceu?</strong> Os eventos antes de 1770 tiveram média de {early} pontos. Os eventos a partir de 1770 tiveram média de {late}. O que isso mostra?',
+              '<strong>O que a Grã-Bretanha fez?</strong> Olhe as linhas vermelhas. A Grã-Bretanha passou de uma linha no mapa, {A}, para impostos como {C}, e depois para o castigo de toda a cidade de Boston com {G}. Como as ações da Grã-Bretanha mudaram?',
+              '<strong>Como os colonos responderam?</strong> Olhe as linhas verdes. Os colonos responderam com boicotes (<em>boycotts</em>), depois com {F}, e depois todas as colônias se reuniram em {H}. As respostas deles ficaram mais fortes?',
+              '<strong>O que aconteceu quando os dois lados entraram em choque?</strong> As linhas douradas, {E} e {I}, tiveram mais pontos. O maior salto foi de {from} para {to}. Por que a luta causou muito mais insatisfação?',
+              '<strong>Junte tudo.</strong> Diga sua ideia, dê um número e explique o que esse número quer dizer.'],
+       model:'<strong>Use um número:</strong> “Nossa turma deu {topn} pontos para {top}, mais do que para qualquer outro evento. Isso mostra que ___.”',
+       sides:{british:'A Grã-Bretanha agiu', colonial:'Os colonos agiram', clash:'Os dois lados entraram em choque'},
+       q:'Como súditos britânicos leais se tornaram revolucionários em apenas uma década?',
+       look:'Olhe: “Use os dados da nossa turma”, logo acima. Os números cresceram? O que cada lado fez, e o que aconteceu quando eles entraram em choque?',
+       starters:['Os colonos ficaram contra a Grã-Bretanha porque ___. O maior salto foi ___.', 'Antes de 1770 eram ___ pontos. Depois de 1770 eram ___ pontos.'] },
+  ru:{ title:'Используй данные нашего класса',
+       lead:'Это средние баллы всех пар из всех классов (всего пар: {pairs}; {when}). Каждая пара распределила 36 баллов, поэтому 4 балла — это среднее событие. Больше баллов значит больше недовольства (<em>unrest</em>).',
+       link:'Открыть слайды класса ↗', how:'Как использовать числа',
+       esc:'<strong>Эскалация</strong> (<em>escalation</em>) значит, что каждая сторона отвечает другой немного сильнее, и всё становится хуже и хуже. Покажи это с помощью чисел.',
+       steps:['<strong>Росло ли недовольство?</strong> События до 1770 года в среднем получили {early} балла. События с 1770 года в среднем получили {late}. Что это показывает?',
+              '<strong>Что делала Британия?</strong> Посмотри на красные строки. Британия начала с линии на карте — {A}, потом ввела налоги, например {C}, а потом наказала весь Бостон — {G}. Как менялись действия Британии?',
+              '<strong>Как отвечали колонисты?</strong> Посмотри на зелёные строки. Сначала колонисты ответили бойкотами (<em>boycotts</em>), потом — {F}, а потом все колонии собрались вместе — {H}. Становились ли их ответы сильнее?',
+              '<strong>Что случилось, когда стороны столкнулись?</strong> Золотые строки — {E} и {I} — получили больше всего баллов. Самый большой скачок был от {from} к {to}. Почему борьба вызвала гораздо больше недовольства?',
+              '<strong>Собери всё вместе.</strong> Скажи свою мысль, приведи число и объясни, что это число значит.'],
+       model:'<strong>Используй число:</strong> «Наш класс дал событию {top} {topn} балла — больше, чем любому другому событию. Это показывает, что ___.»',
+       sides:{british:'Действовала Британия', colonial:'Действовали колонисты', clash:'Стороны столкнулись'},
+       q:'Как верные британские подданные всего за десять лет стали революционерами?',
+       look:'Посмотри: «Используй данные нашего класса» чуть выше. Росли ли числа? Что делала каждая сторона и что случилось, когда они столкнулись?',
+       starters:['Колонисты выступили против Британии, потому что ___. Самый большой скачок был ___.', 'До 1770 года было ___ баллов. После 1770 года было ___ баллов.'] },
+  zh:{ title:'用我们班的数据',
+       lead:'这是所有班级共 {pairs} 组搭档的平均分（{when}）。每组搭档都分配了 36 分，所以 4 分是一个普通的事件。分数越高，表示不满（<em>unrest</em>）越大。',
+       link:'打开我们班的幻灯片 ↗', how:'怎样使用这些数字',
+       esc:'<strong>升级</strong>（<em>escalation</em>）的意思是：每一方都比上一次更强硬地回应对方，所以情况越来越糟。用数字来说明这一点。',
+       steps:['<strong>不满增加了吗？</strong>1770 年以前的事件平均 {early} 分。从 1770 年开始的事件平均 {late} 分。这说明了什么？',
+              '<strong>英国做了什么？</strong>看红色的行。英国从在地图上画一条线：{A}，到收税：{C}，再到惩罚整个波士顿：{G}。英国的行动有什么变化？',
+              '<strong>殖民地居民怎样回应？</strong>看绿色的行。殖民地居民先用抵制（<em>boycotts</em>）来回应，然后是 {F}，再后来所有殖民地一起开会：{H}。他们的回应越来越强烈了吗？',
+              '<strong>双方冲突时发生了什么？</strong>金色的行，{E} 和 {I}，得分最高。图上最大的一次跳升是从 {from} 到 {to}。为什么打起来会带来多得多的不满？',
+              '<strong>把它们放在一起。</strong>先说出你的观点，再给出一个数字，然后解释这个数字说明了什么。'],
+       model:'<strong>用一个数字：</strong>“我们班给了 {top} {topn} 分，比其他任何事件都多。这说明 ___。”',
+       sides:{british:'英国采取了行动', colonial:'殖民地居民采取了行动', clash:'双方发生冲突'},
+       q:'忠诚的英国臣民是怎样在短短十年里变成革命者的？',
+       look:'看：上面的“用我们班的数据”。数字增加了吗？每一方做了什么？双方冲突时发生了什么？',
+       starters:['殖民地居民开始反对英国，因为 ___。最大的跳升是 ___。', '1770 年以前是 ___ 分。1770 年以后是 ___ 分。'] }
+};
+// The language Question 3's supports show in: a Level 0 reader's "Read in" choice.
+function q5Lang(){ return supportLevel()==='l0' && CD_I18N[state.l0lang] ? state.l0lang : 'en'; }
+// Inline HTML from our own strings, with {tokens} filled in (escaped).
+function htmlLine(tag, cls, str, tokens={}){
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const el = h(tag, cls ? {class:cls} : {});
+  el.innerHTML = str.replace(/\{(\w+)\}/g, (m,k) => k in tokens ? esc(tokens[k]) : m);
+  return el;
+}
 function elClassData(){
   const D = CLASS_DATA, avg = id => D.avg[id], f = n => n.toFixed(1);
   const ev = id => EVENTS.find(e => e.id === id);
@@ -2577,32 +2668,39 @@ function elClassData(){
   const early = D.early ?? mean(EVENTS.filter(e=>e.year<1770).map(e=>avg(e.id))), late = D.late ?? mean(EVENTS.filter(e=>e.year>=1770).map(e=>avg(e.id)));
   const top = EVENTS.slice().sort((a,b)=>avg(b.id)-avg(a.id))[0];
   let jump = 1; EVENTS.forEach((e,i)=>{ if(i && avg(e.id)-avg(EVENTS[i-1].id) > avg(EVENTS[jump].id)-avg(EVENTS[jump-1].id)) jump = i; });
-  const SIDE = {british:'Britain acted', colonial:'Colonists acted', clash:'Both sides clashed'};
   const name = e => shortTitle(e);
   const pts = id => `${name(ev(id))} (${f(avg(id))})`;
+  const lang = q5Lang(), T = CD_I18N[lang], EN = CD_I18N.en;
+  const [y, m, d] = D.date.split('-').map(Number);
+  const when = l => new Date(y, m-1, d).toLocaleDateString(LANG_TAG[l] || 'en', {month:'long', day:'numeric'});
+  const tok = l => ({ pairs:D.pairs, when:when(l), early:f(early), late:f(late), top:name(top), topn:f(avg(top.id)),
+    from:pts(EVENTS[jump-1].id), to:pts(EVENTS[jump].id), ...Object.fromEntries('ACEFGHI'.split('').map(k => [k, pts(k)])) });
+  const steps = (t, l) => h('ol',{class:'cd-steps'}, ...t.steps.map(s => htmlLine('li', '', s, tok(l))));
   const rows = h('ol',{class:'cd-bars', ariaLabel:'Class average points for each event, in order'},
     ...EVENTS.map(e => h('li',{class:'cd-row cd-'+e.side},
-      h('span',{class:'cd-name'}, name(e), name(e).includes(String(e.year)) ? null : [' ', h('span',{class:'cd-year'}, String(e.year))]),
+      h('span',{class:'cd-name', lang:'en'}, name(e), name(e).includes(String(e.year)) ? null : [' ', h('span',{class:'cd-year'}, String(e.year))]),
       h('span',{class:'cd-track'}, h('span',{class:'cd-bar', style:`width:${Math.min(100, avg(e.id)/8*100)}%`}), h('span',{class:'cd-num'}, f(avg(e.id)))),
-      h('span',{class:'cd-side'}, SIDE[e.side])
+      h('span',{class:'cd-side'}, T.sides[e.side])
     )));
-  const link = h('a',{class:'btn cd-link', href:D.slides, target:'_blank', rel:'noopener noreferrer'}, 'Open our class slides ↗');
-  return h('div',{class:'class-data'},
-    h('h4',{}, 'Use our class data'),
-    p(`These are the averages for all ${D.pairs} pairs from every period (${D.when}). Every pair spent 36 points, so 4 points is an average event. More points means more unrest.`, 'cd-lead'),
+  const link = h('a',{class:'btn cd-link', href:D.slides, target:'_blank', rel:'noopener noreferrer'}, T.link);
+  const box = h('div',{class:'class-data'},
+    h('h4',{}, T.title),
+    htmlLine('p', 'cd-lead', T.lead, tok(lang)),
     rows,
     link,
-    h('h5',{}, 'How to use the numbers'),
-    p([strong('Escalation'), ' means each side answers the other a little harder, so things keep getting worse. Use the numbers to show it.'], 'cd-lead'),
-    h('ol',{class:'cd-steps'},
-      h('li',{}, strong('Did unrest grow? '), `Events before 1770 averaged ${f(early)} points. Events from 1770 on averaged ${f(late)}. What does that tell you?`),
-      h('li',{}, strong('What did Britain do? '), `Look at the red rows. Britain went from a line on a map, ${pts('A')}, to taxes like the ${pts('C')}, to punishing all of Boston with the ${pts('G')}. How did Britain’s actions change?`),
-      h('li',{}, strong('How did colonists answer? '), `Look at the green rows. Colonists answered with boycotts, then the ${pts('F')}, then all the colonies meeting together at the ${pts('H')}. Were their answers getting stronger?`),
-      h('li',{}, strong('What happened when they clashed? '), `The gold rows, the ${pts('E')} and ${pts('I')}, got the most points. The biggest jump on the chart was from ${pts(EVENTS[jump-1].id)} to ${pts(EVENTS[jump].id)}. Why did fighting cause so much more unrest?`),
-      h('li',{}, strong('Put it together. '), 'Make a claim, give a number, then explain what the number means.')
-    ),
-    h('p',{class:'cd-model'}, strong('Using a number: '), `“Our class gave ${name(top)} ${f(avg(top.id))} points, the most of any event. This shows that ___.”`)
+    h('h5',{}, T.how),
+    htmlLine('p', 'cd-lead', T.esc),
+    steps(T, lang),
+    htmlLine('p', 'cd-model', T.model, tok(lang))
   );
+  box.setAttribute('lang', LANG_TAG[lang] || 'en');
+  if(lang!=='en'){
+    box.setAttribute('translate','no');
+    const det = h('details',{class:'english-version', lang:'en'}, h('summary',{}, 'Show this in English'),
+      htmlLine('p', 'cd-lead', EN.lead, tok('en')), h('h5',{}, EN.how), htmlLine('p', 'cd-lead', EN.esc), steps(EN, 'en'), htmlLine('p', 'cd-model', EN.model, tok('en')));
+    box.append(det);
+  }
+  return box;
 }
 
 function prefersReducedMotion(){
@@ -2913,12 +3011,12 @@ function elCanvasMark(){
   return w;
 }
 // Builds the support block for one question: Look at, starters, (word bank), (push).
-function elSupports({look, starters, bank, push}, input, onChange){
+function elSupports({look, lookLang='en', starters, glosses, bank, push}, input, onChange){
   const box = h('div',{class:'supports'});
-  if(look) box.appendChild(p(look, 'support-look'));
+  if(look){ const l = p(look, 'support-look'); if(lookLang!=='en'){ l.setAttribute('lang', LANG_TAG[lookLang]); l.setAttribute('translate','no'); } box.appendChild(l); }
   if(starters && starters.length){
     box.appendChild(span('Start with:','support-label'));
-    box.appendChild(createStarterChips(text=>{ input.value = text; onChange(text); input.focus(); }, starters));
+    box.appendChild(createStarterChips(text=>{ input.value = text; onChange(text); input.focus(); }, starters, glosses, lookLang));
   }
   if(bank && bank.length){
     box.appendChild(span('Word bank (tap a word to add it):','support-label'));
@@ -2938,9 +3036,10 @@ function rationaleSupports(eventId, level, input, onChange, lookHint=''){
     push: rationalePush(level, idx) }, input, onChange);
 }
 
-function createStarterChips(onSelect, list){
-  return h('div',{class:'starter-grid'}, list.map(text=>{
+function createStarterChips(onSelect, list, glosses, glossLang){
+  return h('div',{class:'starter-grid'}, list.map((text, i)=>{
     const chip = h('button',{class:'starter-pill',type:'button'}, text);
+    if(glosses && glosses[i]){ const g = h('span',{class:'starter-gloss', lang:LANG_TAG[glossLang]||'en'}, glosses[i]); g.setAttribute('translate','no'); chip.append(g); }
     chip.addEventListener('click',()=>{
       onSelect(text);
       debouncedSave();
