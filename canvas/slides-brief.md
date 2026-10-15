@@ -108,10 +108,14 @@ action, what did colonists do, and how did Britain answer?
 - Pairs write the agreed points in **Our Pair's Points (1–8)** on the tracker.
 - You open **https://unrest.mrbsocialstudies.org/class.html**, pick the
   period, and type each pair's nine numbers into the row with their pair
-  number. The page shows the class average per event, a running-total line
-  from 1763 to 1775 with who pushed under each event, the biggest jump, and
-  which events pairs disagreed on most. **Present** mode is for projecting.
+  number. The page charts the class average five ways (Each event, Push and
+  push back, Getting worse?, Step by step, Adding up), with the before and
+  after 1770 averages, the biggest step up, and which events pairs disagreed
+  on most. **Present** mode is for projecting; **Show → All periods** pools
+  every period; **Export as slides** downloads a deck with how-to-read steps.
   Data stays in your browser, one set per period.
+- The grade's averages (Oct 14, 41 pairs) also appear on the student
+  reflection screen above question 3, with a link to the class slides.
 
 ## 7. Reflection and turn-in (three questions)
 

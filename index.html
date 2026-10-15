@@ -623,6 +623,26 @@
   .bank-word{font:inherit;font-size:.9rem;padding:6px 12px;min-height:36px;border-radius:999px;border:1px dashed var(--accent);background:var(--panel);color:var(--fg);cursor:pointer}
   .bank-word:hover,.bank-word:focus-visible{background:var(--surface-alt);outline:2px solid var(--accent);outline-offset:1px}
   .reflection-q{padding:12px 0;border-bottom:1px solid var(--border)}
+  /* Question 3: the grade's class data, in the class page's who-acted colors */
+  .class-data{margin:8px 0 10px;padding:12px 14px;border:1px solid var(--border);border-left:4px solid var(--gold);border-radius:10px;background:var(--surface-alt)}
+  .class-data h4{margin:0 0 4px;font-size:1.05rem}
+  .class-data h5{margin:14px 0 4px;font-size:1rem}
+  .class-data .cd-lead{margin:0 0 8px;color:var(--fg)}
+  .cd-bars{list-style:none;margin:0 0 10px;padding:0;display:grid;gap:4px}
+  .cd-row{display:grid;grid-template-columns:minmax(9em,14em) minmax(0,24em) auto;gap:4px 10px;align-items:center;font-size:.95rem}
+  .cd-name{font-weight:700}
+  .cd-year{font-weight:400;color:var(--muted);font-size:.85rem}
+  .cd-track{display:flex;align-items:center;gap:6px;min-width:0}
+  .cd-bar{display:block;height:16px;border-radius:3px;background:var(--cd)}
+  .cd-clash .cd-bar{background:repeating-linear-gradient(45deg,var(--cd) 0 5px,rgba(255,255,255,.45) 5px 7px)}
+  .cd-num{font-weight:800;font-variant-numeric:tabular-nums}
+  .cd-side{font-size:.85rem;color:var(--muted);font-style:italic}
+  .cd-british{--cd:#d94a4a} .cd-colonial{--cd:#1f9e80} .cd-clash{--cd:#b59018}
+  body.light .cd-british{--cd:#c23b22} body.light .cd-colonial{--cd:#13866f} body.light .cd-clash{--cd:#d9a521}
+  .cd-link{display:inline-block;text-decoration:none;margin:2px 0 0}
+  .cd-steps{margin:0;padding-left:1.4em;display:grid;gap:6px;line-height:1.5}
+  .cd-model{margin:10px 0 0;padding:8px 10px;border-left:4px solid var(--accent);background:var(--panel);border-radius:6px}
+  @media(max-width:640px){ .cd-row{grid-template-columns:1fr auto;} .cd-track{grid-column:1 / -1;order:3} .cd-side{text-align:right} }
   .reflection-q > label{font-weight:700;font-size:1.05rem;display:block;margin-bottom:2px}
   .turn-in{border:2px solid var(--accent);border-radius:12px;padding:14px 16px;background:var(--surface)}
   .turn-in h3{margin:0 0 6px}
@@ -1621,7 +1641,19 @@ function elKeyTerms(eventId, level){
 const REFLECTION_STARTERS_SIMPLE = {
   q3: ['I changed ___ because ___.', 'I gave ___ more points because ___.', 'I gave ___ fewer points because ___.'],
   q4: ['The most important event was {A}.', '{A} led to {B} because ___.', '{A} mattered most because ___.'],
-  q5: ['With more time, ___ because ___.', 'Slower change would ___.', 'It would still matter because ___.']
+  q5: ['Colonists turned against Britain because ___.', 'Unrest went from ___ to ___ points because ___.', 'When Britain ___, colonists ___.']
+};
+
+// The whole grade's Day 6 results (every pair, every period), from the class
+// page's slides. Update avg, pairs and when after a new class average; the
+// Question 3 panel and its hints are built from these numbers.
+const CLASS_DATA = {
+  slides:'https://docs.google.com/presentation/d/13CegoBj5ImlE9K1z1sA__QOEXiZV50I4iaSDMgxrutU/edit?usp=sharing',
+  when:'Oct 14', pairs:41,
+  // The slides' before/after-1770 averages, worked from the unrounded numbers;
+  // copied so the page and the slides match (blank: worked out from avg).
+  early:3.2, late:4.7,
+  avg:{A:2.6, B:3.3, C:3.6, D:3.2, E:5.4, F:3.8, G:4.0, H:3.2, I:6.8}
 };
 
 const EVENT_ART = {
@@ -2478,7 +2510,7 @@ function renderQuestionsSection(){
     const mkSupports = ()=> elSupports({ look:cfg.look, starters:(starters||[]).map(fillLinkTokens), bank: lvl==='l0' ? cfg.bank : null, push: lvl==='adv' ? cfg.push : null }, input, v=>{ state.answers[key]=v; updateMissing(); });
     let supports = mkSupports();
     const pickers = cfg.pick ? elLinkPickers(()=>{ const fresh = mkSupports(); supports.replaceWith(fresh); supports = fresh; }) : null;
-    return h('div',{class:'reflection-q'}, label, pickers, supports, input);
+    return h('div',{class:'reflection-q'}, label, pickers, key==='q5' ? elClassData() : null, supports, input);
   });
 
   // Turn in: copy everything (ratings, every reason, reflections) as plain text
@@ -2533,6 +2565,44 @@ function renderQuestionsSection(){
   card.append(reflectionCard);
   section.append(card);
   return section;
+}
+
+// Question 3's evidence: the grade's class averages as a small bar list in
+// the who-acted colors, a link to the class slides, and how to turn the
+// numbers into an answer about escalation and each side's response.
+function elClassData(){
+  const D = CLASS_DATA, avg = id => D.avg[id], f = n => n.toFixed(1);
+  const ev = id => EVENTS.find(e => e.id === id);
+  const mean = a => a.reduce((x,y)=>x+y,0)/a.length;
+  const early = D.early ?? mean(EVENTS.filter(e=>e.year<1770).map(e=>avg(e.id))), late = D.late ?? mean(EVENTS.filter(e=>e.year>=1770).map(e=>avg(e.id)));
+  const top = EVENTS.slice().sort((a,b)=>avg(b.id)-avg(a.id))[0];
+  let jump = 1; EVENTS.forEach((e,i)=>{ if(i && avg(e.id)-avg(EVENTS[i-1].id) > avg(EVENTS[jump].id)-avg(EVENTS[jump-1].id)) jump = i; });
+  const SIDE = {british:'Britain acted', colonial:'Colonists acted', clash:'Both sides clashed'};
+  const name = e => shortTitle(e);
+  const pts = id => `${name(ev(id))} (${f(avg(id))})`;
+  const rows = h('ol',{class:'cd-bars', ariaLabel:'Class average points for each event, in order'},
+    ...EVENTS.map(e => h('li',{class:'cd-row cd-'+e.side},
+      h('span',{class:'cd-name'}, name(e), name(e).includes(String(e.year)) ? null : [' ', h('span',{class:'cd-year'}, String(e.year))]),
+      h('span',{class:'cd-track'}, h('span',{class:'cd-bar', style:`width:${Math.min(100, avg(e.id)/8*100)}%`}), h('span',{class:'cd-num'}, f(avg(e.id)))),
+      h('span',{class:'cd-side'}, SIDE[e.side])
+    )));
+  const link = h('a',{class:'btn cd-link', href:D.slides, target:'_blank', rel:'noopener noreferrer'}, 'Open our class slides ↗');
+  return h('div',{class:'class-data'},
+    h('h4',{}, 'Use our class data'),
+    p(`These are the averages for all ${D.pairs} pairs from every period (${D.when}). Every pair spent 36 points, so 4 points is an average event. More points means more unrest.`, 'cd-lead'),
+    rows,
+    link,
+    h('h5',{}, 'How to use the numbers'),
+    p([strong('Escalation'), ' means each side answers the other a little harder, so things keep getting worse. Use the numbers to show it.'], 'cd-lead'),
+    h('ol',{class:'cd-steps'},
+      h('li',{}, strong('Did unrest grow? '), `Events before 1770 averaged ${f(early)} points. Events from 1770 on averaged ${f(late)}. What does that tell you?`),
+      h('li',{}, strong('What did Britain do? '), `Look at the red rows. Britain went from a line on a map, ${pts('A')}, to taxes like the ${pts('C')}, to punishing all of Boston with the ${pts('G')}. How did Britain’s actions change?`),
+      h('li',{}, strong('How did colonists answer? '), `Look at the green rows. Colonists answered with boycotts, then the ${pts('F')}, then all the colonies meeting together at the ${pts('H')}. Were their answers getting stronger?`),
+      h('li',{}, strong('What happened when they clashed? '), `The gold rows, the ${pts('E')} and ${pts('I')}, got the most points. The biggest jump on the chart was from ${pts(EVENTS[jump-1].id)} to ${pts(EVENTS[jump].id)}. Why did fighting cause so much more unrest?`),
+      h('li',{}, strong('Put it together. '), 'Make a claim, give a number, then explain what the number means.')
+    ),
+    h('p',{class:'cd-model'}, strong('Using a number: '), `“Our class gave ${name(top)} ${f(avg(top.id))} points, the most of any event. This shows that ___.”`)
+  );
 }
 
 function prefersReducedMotion(){
@@ -2779,14 +2849,14 @@ const REFLECTION_QS = {
         adv:['{A} changed what happened next the most: it led to {B}, and without it ___.', '___ caused the most anger in the moment, but {A} mattered more in the long run because ___.', '{A} changed history, but it worked because ___ was already moving.'],
         push:'Going further: The event that caused the most anger at the time may not be the one with the biggest effect later. Which is yours?' },
   // Unit 2 supporting essential question, verbatim from the Unit 2 Content Brief.
-  // Evidence: the class unrest chart built on Day 5 (class.html) and the tracker.
+  // Evidence: the grade's class averages from Day 6 (CLASS_DATA, shown above the question) and the tracker.
   q5: { q:'How did loyal British subjects turn into revolutionaries in barely a decade?',
-        look:'Look at: The class unrest chart. Where does the line climb fastest? Which events did your class give the most points?',
-        l0:['Colonists turned against Britain because ___. The biggest jump was ___.'], bank:['loyal','angry','tax','punish','together','fight','because','so'],
-        ss:['Colonists went from loyal to rebels because ___.', 'The class chart shows the biggest jump at ___, because ___.'],
-        core:['Loyal colonists became revolutionaries because ___.', 'Our class gave the most points to ___, which shows ___.'],
-        adv:['The change came from ___, not just one event: the class chart shows ___.', 'Some colonists stayed loyal because ___, but most ___ because ___.'],
-        push:'Going further: Was there one turning point, or did anger build step by step? Use the shape of the class chart.' }
+        look:'Look at: “Use our class data” just above. Did the numbers grow? What did each side do, and what happened when they clashed?',
+        l0:['Colonists turned against Britain because ___. The biggest jump was ___.', 'Before 1770 it was ___ points. After 1770 it was ___ points.'], bank:['loyal','angry','tax','punish','together','fight','points','because','so'],
+        ss:['Colonists went from loyal to rebels because ___.', 'Unrest grew from ___ points to ___ points because ___.', 'When Britain ___, colonists answered by ___.'],
+        core:['Loyal colonists became revolutionaries because ___.', 'Unrest escalated: events before 1770 averaged ___ points, but events after averaged ___, because ___.', 'When Britain ___ (___ points), colonists answered with ___ (___ points), which shows ___.'],
+        adv:['The change came from ___, not just one event: our class data shows ___.', 'Each side answered the other harder: ___ (___ points) led to ___ (___ points), which shows ___.', 'Some colonists stayed loyal because ___, but most ___ because ___.'],
+        push:'Going further: Was there one turning point, or did anger build step by step? Use the numbers in our class data.' }
 };
 function supportLevel(){ return state.readLevel || 'core'; }
 // Insert a word at the cursor of a textarea (word bank chips).
