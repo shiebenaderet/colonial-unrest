@@ -1,4 +1,4 @@
-/* Builds readings.html (all nine readings at every level, plus the Level 0
+/* Builds readings.html (all nine readings at every level, plus the Quick
    translations) and canvas/unrest-readings.pdf from the live text in
    index.html, so the printed readings can never drift from the app.
    Run after editing any reading:   node tools/build-readings.js
@@ -24,16 +24,18 @@ const paras = html => html.trim().split(/\n\s*\n/).map(p => `<p>${p.trim().repla
       terms: (GLOSSARY[e.id] || []).map(g => ({ t: g.t, d: g.d, u: !!g.u })) }))
   }));
 
-  const LEVEL_NOTE = { l0: 'Level 0: Short sentences, key words explained in the text',
-    ss: 'Level 1: Below grade, plain words', core: 'Level 2: At grade', adv: 'Level 3: Above grade, with primary sources' };
+  // Headings name the text, never the reader (Quick, Clear, Full, Deep; formerly Level 0-3).
+  const LEVEL_NOTE = { l0: 'Quick: Short sentences, key words explained in the text',
+    ss: 'Clear: Plain words, a little more detail', core: 'Full: The grade-level reading',
+    adv: 'Deep: Adds real quotes from the time and what historians argue' };
   const order = ['l0', 'ss', 'core', 'adv'];
 
   let body = `
 <header class="top">
   <h1>Unrest in the Colonies · The readings</h1>
-  <p class="sub">Nine events on the road to the American Revolution, 1763 to 1775, at four reading levels. The same facts at every level. These are the readings from <a href="https://unrest.mrbsocialstudies.org">unrest.mrbsocialstudies.org</a>, printed.</p>
+  <p class="sub">Nine events on the road to the American Revolution, 1763 to 1775, at four reading levels: Quick, Clear, Full, and Deep. The same facts at every level. These are the readings from <a href="https://unrest.mrbsocialstudies.org">unrest.mrbsocialstudies.org</a>, printed.</p>
   <button type="button" class="print no-print" onclick="window.print()">Print or save as PDF</button>
-  <nav class="toc no-print"><strong>Jump to:</strong> ${d.events.map(e => `<a href="#ev-${e.id}">${esc(e.title)}</a>`).join(' · ')} · ${d.langs.filter(([k]) => k !== 'en').map(([k, l]) => `<a href="#lang-${k}">Level 0 in ${esc(l)}</a>`).join(' · ')}</nav>
+  <nav class="toc no-print"><strong>Jump to:</strong> ${d.events.map(e => `<a href="#ev-${e.id}">${esc(e.title)}</a>`).join(' · ')} · ${d.langs.filter(([k]) => k !== 'en').map(([k, l]) => `<a href="#lang-${k}">Quick in ${esc(l)}</a>`).join(' · ')}</nav>
   <div class="scale"><strong>The unrest scale students use:</strong> ${d.scale.map(s => `${s.n} ${esc(s.name)}`).join(' · ')}.<br>Each number means how angry people were and how many of them, from 1 (${esc(d.scale[0].desc)}) to 8 (${esc(d.scale[7].desc)}).</div>
 </header>`;
 
@@ -50,8 +52,8 @@ const paras = html => html.trim().split(/\n\s*\n/).map(p => `<p>${p.trim().repla
   for (const [k, label] of d.langs) {
     if (k === 'en') continue;
     body += `\n<section class="lang" id="lang-${k}" lang="${d.tags[k]}" translate="no">
-  <h2 class="lang-h">Level 0 in ${esc(label)}</h2>
-  <p class="sub" lang="en">The Level 0 readings, translated. Key unit terms keep the English word beside the translation.</p>`;
+  <h2 class="lang-h">Quick in ${esc(label)}</h2>
+  <p class="sub" lang="en">The Quick readings, translated. Key unit terms keep the English word beside the translation.</p>`;
     d.events.forEach((e, i) => { body += `\n  <h3>${i + 1}. ${esc(e.title)} <span class="year">${e.year}</span></h3>\n${paras(e.l0[k])}`; });
     body += `\n</section>`;
   }
@@ -84,6 +86,7 @@ const paras = html => html.trim().split(/\n\s*\n/).map(p => `<p>${p.trim().repla
   .year{font-weight:400;color:var(--muted);font-size:13pt}
   .side{display:inline-block;font-size:9.5pt;font-weight:700;color:var(--accent);border:1.5px solid var(--accent);border-radius:999px;padding:0 .12in;vertical-align:middle;margin-left:.08in}
   .level{break-inside:avoid-page}
+  .level h3{text-transform:none;letter-spacing:0;font-size:12pt}
   .terms{margin-top:.2in;background:var(--tint);padding:.08in .15in;border-radius:6px;font-size:10.5pt}
   .terms ul{margin:0;padding-left:1.2em} .terms li{margin:0 0 .03in} .unit{color:var(--accent);font-style:normal;font-weight:700}
   .lang h3{text-transform:none;letter-spacing:0;font-size:13pt;color:var(--ink);margin-top:.25in}
