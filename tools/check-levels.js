@@ -30,7 +30,7 @@ function syllables(word) {
 
 function fkGrade(html) {
   const text = String(html || '').replace(/<[^>]+>/g, ' ').replace(/\([^)]*\)/g, ' ');
-  const sentences = text.split(/[.!?]+(?=\s|$)/).filter(s => s.trim().split(/\s+/).length > 2);
+  const sentences = text.split(/[.!?]+["”’')]*(?=\s|$)/).filter(s => s.trim().split(/\s+/).length > 2);
   const words = text.split(/\s+/).filter(w => /[a-z]/i.test(w));
   if (!sentences.length || !words.length) return { grade: 0, wordsPerSentence: 0 };
   const syl = words.reduce((a, w) => a + syllables(w), 0);
@@ -70,7 +70,6 @@ const KNOWN = [
   'A Proclamation of 1763: Quick measures 5.2 (limit 5)',
   'F Boston Tea Party: Full measures 11.4 (limit 10.5)',
   'F Boston Tea Party: Deep (10.9) does not measure harder than Full (11.4)',
-  'G Intolerable (Coercive) Acts: Quick measures 5.1 (limit 5)',
   'H First Continental Congress: Quick measures 5.5 (limit 5)',
   'I Lexington & Concord: Quick measures 5.1 (limit 5)'
 ];
@@ -108,6 +107,8 @@ const SITE_EXTRA = { Quick: ' Also in Español, Português, Русский, 中�
   const known = problems.filter(p => KNOWN.indexOf(p) !== -1);
   const fresh = problems.filter(p => KNOWN.indexOf(p) === -1);
   if (known.length) console.log('\nKnown, left as is (see KNOWN): ' + known.length);
+  const stale = KNOWN.filter(k => problems.indexOf(k) === -1 && known.indexOf(k) === -1);
+  if (stale.length) console.log('These KNOWN entries now pass; remove them: ' + stale.join('; '));
   problems.length = 0; problems.push(...fresh);
   if (problems.length) { console.log('\n' + problems.length + ' problem(s):\n  ' + problems.join('\n  ')); process.exit(1); }
   console.log('\nLevels match READING-LEVELS.md.');
