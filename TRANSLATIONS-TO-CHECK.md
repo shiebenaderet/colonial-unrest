@@ -1,6 +1,7 @@
 # Translations to check
 
-Drafts waiting for a native speaker. Nothing here is live. Once a language is
+Drafts waiting for a native speaker. Nothing here is live, except the
+Question 3 section at the end, which is live as a draft. Once a language is
 checked, paste its lines into `SCALE_I18N` in `index.html` (the `prompt` and the
 second string of each `items` pair; the names stay as they are) and delete that
 language from this file.
@@ -100,3 +101,15 @@ language). Please confirm or correct them; the English is the reference.
 | Both Sides Clash | Choque de ambos lados | Choque dos dois lados | Столкновение сторон | 双方冲突 |
 | Colonists (on the pill) | Colonos | Colonos | Колонисты | 殖民地居民 |
 | Britain (on the pill) | Gran Bretaña | Grã-Bretanha | Британия | 英国 |
+
+
+## Question 3: class data and starters (Oct 2026, LIVE as drafts)
+
+These are live so Level 0 readers can use the class data on Wednesday's
+reflection, but no native speaker has checked them yet. They are in `CD_I18N`
+in `index.html` (Spanish, Portuguese, Russian, Chinese): the question, the
+"Look at" line, the two Level 0 starters (shown under the English starter,
+which is what goes into the answer), and the "Use our class data" box (title,
+intro, the five steps, the model sentence, and the who-acted labels). Event
+names stay in English to match the class slides. When checking, read each
+line against the `en` entry in the same object; fix the line in place.
