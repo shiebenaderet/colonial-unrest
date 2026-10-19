@@ -14,6 +14,8 @@
      5. A recording covers whatever the activity marks data-audio-part="<key>"
         (a placard's title and reading), and carries n, the number of sentences it
         was cued for. record.html makes them; tools/add-recordings.py adds them.
+     6. Sentences with no letters or digits (an ellipsis standing for skipped
+        text) are not read.
 
 
    Loaded by the colonial-regions and columbian-exchange reading pages, which the
@@ -205,6 +207,9 @@
         for (var s = 0; s < sents.length; s++) {
           var said = spoken(text, sents[s][0], sents[s][1], skip);
           if (!said) continue;
+          /* ADAPTED (6): skip "sentences" with no letters or digits, such as the
+             "…" that marks a skipped stretch of a quoted passage. */
+          if (!/[\p{L}\p{N}]/u.test(said)) continue;
           out.push({ el: el, start: sents[s][0], end: sents[s][1],
                      text: said, part: partOf(el), lang: lang });
         }

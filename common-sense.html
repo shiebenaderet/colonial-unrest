@@ -35,7 +35,7 @@
   --ok:#8fd19a; --ok-tint:#1f3424; --on-accent:#1a0b09;
   --mast:#0f0b0a; --mast-ink:#fff8ee; --mast-edge:#7d6a62; color-scheme:dark}
 *{box-sizing:border-box}
-html{scroll-padding-top:84px}
+html{scroll-padding-top:72px}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55}
 h1,h2,h3{font-family:var(--display);color:var(--deep);margin:0;text-wrap:balance;line-height:1.15}
 p{margin:0}
@@ -59,14 +59,15 @@ button,input,select,textarea{font:inherit;color:inherit}
 #rtools .rt-panel .rt-row{display:grid;grid-template-columns:76px 1fr;gap:10px;align-items:center;margin:0 0 14px}
 #rtools .rt-panel .rt-row:last-child{margin:0}
 #rtools .rt-panel .rt-opts{display:flex;flex-wrap:wrap;gap:8px}
-.settings{position:relative}
-.settings-panel{position:absolute;top:calc(100% + 8px);right:0;width:min(300px,90vw);z-index:30;background:var(--panel);color:var(--ink);border:1px solid var(--rule);border-radius:10px;padding:14px;box-shadow:0 10px 30px rgba(0,0,0,.3);display:grid;gap:10px}
-.settings-panel h3{font-family:var(--body);font-size:15px;color:var(--muted)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .seg{display:flex;flex-wrap:wrap;gap:6px}
 .seg button{min-height:40px;padding:6px 12px;border-radius:8px;border:1.5px solid var(--rule);background:var(--bg);cursor:pointer}
 .seg button[aria-pressed="true"]{border:2px solid var(--accent);font-weight:700;background:var(--tint)}
 
 main.wrap{max-width:1180px;margin:0 auto;padding:22px 16px 64px;display:grid;gap:26px}
+main.wrap > *,.finish > *,.q-card > *,.who > *,.psg-body > *,.think > *{min-width:0}
+[tabindex="-1"]:focus{outline:none}
+[tabindex="-1"]:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
 
 /* ---- Buttons ---- */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 18px;border-radius:9px;border:0;background:var(--accent);color:var(--on-accent);font-weight:800;font-size:16px;cursor:pointer;text-decoration:none}
@@ -111,6 +112,11 @@ main.wrap{max-width:1180px;margin:0 auto;padding:22px 16px 64px;display:grid;gap
 .more a{display:grid;gap:4px;text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--rule);border-left:6px solid var(--gold);border-radius:12px;padding:16px 18px}
 .more a b{font-family:var(--display);font-size:21px;color:var(--deep)}
 .more a span{color:var(--muted)}
+.index summary{cursor:pointer;font-family:var(--display);font-size:24px;font-weight:700;color:var(--deep);min-height:44px;display:flex;align-items:center;gap:8px}
+.index .cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 22px;margin-top:14px}
+.index h3{font-size:17px;font-family:var(--body);color:var(--muted);margin-bottom:6px}
+.index ol{margin:0;padding-left:22px;display:grid;gap:4px}
+.index li a{text-decoration-thickness:1px;text-underline-offset:3px}
 
 /* ---- Reader ---- */
 .path-top{display:grid;gap:12px}
@@ -119,12 +125,12 @@ main.wrap{max-width:1180px;margin:0 auto;padding:22px 16px 64px;display:grid;gap
 .chip{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:999px;background:var(--tint);color:var(--deep);font-weight:700;font-size:15px}
 .dots{display:flex;flex-wrap:wrap;gap:6px}
 .dots a{min-width:40px;min-height:40px;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;border:2px solid var(--rule);background:var(--panel);color:var(--ink);text-decoration:none;font-weight:700;font-size:15px}
-.dots a.done{background:var(--ok);border-color:var(--ok);color:#fff}
+.dots a.done{background:var(--ok);border-color:var(--ok);color:var(--bg)}
 .dots a.end{padding:0 12px}
 .psg{background:var(--panel);border:1px solid var(--rule);border-radius:16px;overflow:hidden}
 .psg-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px;padding:18px 22px 12px;border-bottom:1px solid var(--rule)}
 .psg-head .sec{color:var(--muted);font-weight:700;font-size:15px}
-.psg-head h2{font-size:clamp(26px,3.4vw,34px)}
+.psg-head h2,.psg-head h1{font-size:clamp(26px,3.4vw,34px)}
 .psg-head .tools{display:flex;flex-wrap:wrap;gap:8px}
 .psg-body{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr)}
 .orig{padding:20px 26px 24px;font-family:var(--orig);font-size:19px;line-height:1.8}
@@ -148,6 +154,7 @@ html[data-rt-font]:not([data-rt-font="atkinson"]) .orig{font-family:var(--rt-fon
 .starter{color:var(--muted)}
 .starter b{color:var(--ink)}
 .frame{background:var(--bg);border:1px dashed var(--rule);border-radius:8px;padding:10px 12px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.frame p{min-width:0}
 .bank{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .bank span{font-weight:700;color:var(--muted);font-size:15px}
 .bank button{min-height:40px;padding:4px 12px;border-radius:999px;border:1.5px solid var(--accent);background:var(--panel);color:var(--deep);font-weight:700;cursor:pointer}
@@ -164,21 +171,21 @@ textarea:focus{border-color:var(--accent)}
 .finish{display:grid;gap:18px}
 .finish h2{font-size:32px}
 .q-card{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:18px 20px;display:grid;gap:10px}
-.q-card h3{font-size:22px}
+.q-card h3,.q-card h2{font-size:22px}
 .ext-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .ext{text-align:left;padding:14px;border-radius:12px;border:2px solid var(--rule);background:var(--bg);cursor:pointer;display:grid;gap:4px}
 .ext b{font-family:var(--display);font-size:19px;color:var(--deep)}
 .ext[aria-checked="true"]{border-color:var(--accent);background:var(--tint)}
 .who{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}
 .who label{display:grid;gap:4px;font-weight:700}
-.who input,.who select{min-height:44px;padding:8px 10px;border:1.5px solid var(--rule);border-radius:8px;background:var(--bg)}
+.who input,.who select{min-height:44px;padding:8px 10px;border:1.5px solid var(--rule);border-radius:8px;background:var(--bg);width:100%;min-width:0}
 .send-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .msg{font-weight:700;min-height:1.4em}
 
 /* ---- Word pop-up ---- */
-.vpop-bubble{position:absolute;z-index:40;max-width:min(320px,calc(100vw - 24px));background:var(--panel);color:var(--ink);border:2px solid var(--accent);border-radius:10px;padding:10px 38px 10px 12px;box-shadow:0 10px 26px rgba(0,0,0,.25);font-family:var(--body);font-size:16px;line-height:1.45}
+.vpop-bubble{position:absolute;z-index:40;max-width:min(320px,calc(100vw - 24px));background:var(--panel);color:var(--ink);border:2px solid var(--accent);border-radius:10px;padding:10px 44px 10px 12px;box-shadow:0 10px 26px rgba(0,0,0,.25);font-family:var(--body);font-size:16px;line-height:1.45}
 .vpop-bubble b{display:block;color:var(--deep);font-size:17px}
-.vpop-bubble .x{position:absolute;top:4px;right:4px;width:32px;height:32px;border:0;background:none;font-size:22px;line-height:1;cursor:pointer;color:var(--muted);border-radius:6px}
+.vpop-bubble .x{position:absolute;top:2px;right:2px;width:40px;height:40px;border:0;background:none;font-size:22px;line-height:1;cursor:pointer;color:var(--muted);border-radius:6px}
 
 .toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:9px;font-weight:700;z-index:50}
 footer.credits{color:var(--muted);font-size:14px;line-height:1.5;border-top:1px solid var(--rule);padding-top:16px}
@@ -196,6 +203,7 @@ footer.credits{color:var(--muted);font-size:14px;line-height:1.5;border-top:1px 
   .opt-row .hint{grid-column:1;margin-top:-8px}
 }
 @media (max-width:560px){
+  .index .cols{grid-template-columns:1fr}
   .facts,.levels{grid-template-columns:1fr}
   .who{grid-template-columns:1fr 1fr}
   .who label:first-child{grid-column:1 / -1}
@@ -204,6 +212,13 @@ footer.credits{color:var(--muted);font-size:14px;line-height:1.5;border-top:1px 
   .psg-head{padding:16px 16px 10px}
   .brand{font-size:18px}
 }
+@media (max-width:480px){
+  .mast .in{gap:6px 8px;padding:8px 12px}
+  .brand{font-size:17px}
+  .mbtn,.mast #rtools .rt-btn{padding:6px 10px;font-size:14px;min-height:38px}
+  .mbtn .long{display:none}
+}
+@media (max-width:900px){.index .cols{grid-template-columns:1fr 1fr}}
 @media print{.mast,.next-row,.send-row,.bank,.frame button,.reveal,.tools,.dots{display:none!important}.psg{break-inside:avoid}}
 </style>
 </head>
@@ -213,23 +228,13 @@ footer.credits{color:var(--muted);font-size:14px;line-height:1.5;border-top:1px 
   <div class="in">
     <a class="brand" href="#" id="home">Common Sense</a>
     <span class="spacer"></span>
-    <button class="mbtn" id="lvlBtn" type="button" hidden>Reading: Full</button>
+    <button class="mbtn" id="lvlBtn" type="button" aria-label="Reading: Full. Change it." hidden><span class="long">Reading: </span><span id="lvlName">Full</span></button>
     <div id="rtools" role="group" aria-label="Listen and font"></div>
-    <div class="settings">
-      <button class="mbtn" id="setBtn" type="button" aria-expanded="false" aria-controls="setPanel">Settings</button>
-      <div class="settings-panel" id="setPanel" hidden>
-        <h3>Light or Dark</h3>
-        <div class="seg" id="themeSeg">
-          <button type="button" data-v="light">Light</button>
-          <button type="button" data-v="dark">Dark</button>
-          <button type="button" data-v="auto">Match My Computer</button>
-        </div>
-      </div>
-    </div>
   </div>
 </header>
 
-<main class="wrap" id="app" aria-live="off"></main>
+<main class="wrap" id="app"></main>
+<div class="sr" id="vsay" aria-live="polite"></div>
 
 <div class="vpop-bubble" id="vpop" role="dialog" aria-label="Word help" hidden>
   <button class="x" type="button" aria-label="Close word help">×</button>
@@ -272,10 +277,14 @@ function applyTheme(){
   document.querySelectorAll('#themeSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === t)));
 }
 applyTheme();
-document.querySelectorAll('#themeSeg button').forEach(b => b.addEventListener('click', () => { S.theme = b.dataset.v; save(); applyTheme(); }));
-const setBtn = document.getElementById('setBtn'), setPanel = document.getElementById('setPanel');
-setBtn.addEventListener('click', e => { e.stopPropagation(); const open = setPanel.hidden; setPanel.hidden = !open; setBtn.setAttribute('aria-expanded', String(open)); });
-document.addEventListener('click', e => { if (!setPanel.hidden && !e.target.closest('.settings')) { setPanel.hidden = true; setBtn.setAttribute('aria-expanded','false'); } });
+
+/* Jump links land under the sticky header unless the page knows how tall it is
+   (it wraps to two rows on narrow phones). */
+const mast = document.querySelector('.mast');
+function setScrollPad(){ document.documentElement.style.scrollPaddingTop = (mast.offsetHeight + 12) + 'px'; }
+window.addEventListener('resize', setScrollPad);
+window.addEventListener('load', setScrollPad);
+setScrollPad();
 
 /* ---------- helpers ---------- */
 function el(tag, attrs, ...kids){
@@ -302,6 +311,45 @@ function linkFor(id, withLevel){
   return u.toString();
 }
 function ask(item, l){ return (l === 'q' && item.ask.q) ? item.ask.q : item.ask.all; }
+/* A frame's blanks, read as "blank" rather than six underscores. */
+function frameNodes(text){
+  const out = [];
+  text.split('______').forEach((part, i) => {
+    if (i) out.push(el('span', {class:'blank', 'aria-label':'blank', text:'______'}));
+    if (part) out.push(part);
+  });
+  return out;
+}
+/* Radio-group keyboard behaviour for a row of role=radio buttons: arrow keys move
+   and choose, and only the chosen one is in the tab order. */
+function radioKeys(group, sel){
+  function items(){ return Array.from(group.querySelectorAll(sel)); }
+  function roving(){
+    const all = items();
+    const on = all.find(b => b.getAttribute('aria-checked') === 'true') || all[0];
+    all.forEach(b => b.tabIndex = (b === on ? 0 : -1));
+  }
+  group.addEventListener('keydown', e => {
+    const all = items(); const i = all.indexOf(document.activeElement);
+    if (i < 0) return;
+    let j = null;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') j = (i + 1) % all.length;
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') j = (i - 1 + all.length) % all.length;
+    if (j === null) return;
+    e.preventDefault(); all[j].click(); all[j].focus();
+  });
+  group.addEventListener('click', () => requestAnimationFrame(roving));
+  roving();
+  return roving;
+}
+/* After a view changes, put keyboard focus on its title so screen readers and
+   keyboard users start at the top of the new page, not wherever focus was. */
+let navigated = false;
+function focusTitle(node){
+  if (!node) return;
+  node.tabIndex = -1;
+  node.focus({preventScroll: true});
+}
 
 /* ---------- vocabulary: first appearance of each term in a passage ---------- */
 const VOCAB = CS.vocab.map(([pat, def]) => {
@@ -372,9 +420,12 @@ document.addEventListener('click', e => {
     if (vOpen === b) { closeV(false); return; }
     closeV(false);
     vOpen = b; b.setAttribute('aria-expanded', 'true');
-    document.getElementById('vpopTerm').textContent = b.textContent.replace(/^'/, '');
+    const term = b.textContent.replace(/^'/, '');
+    document.getElementById('vpopTerm').textContent = term;
     document.getElementById('vpopDef').textContent = b.dataset.def;
     vpop.hidden = false;
+    const say = document.getElementById('vsay'); say.textContent = '';
+    setTimeout(() => { say.textContent = term + ': ' + b.dataset.def; }, 50);
     const r = b.getBoundingClientRect(), w = vpop.offsetWidth;
     let left = r.left + window.scrollX;
     left = Math.max(12 + window.scrollX, Math.min(left, window.scrollX + document.documentElement.clientWidth - w - 12));
@@ -392,7 +443,7 @@ window.addEventListener('resize', () => closeV(false));
 function thinkBox(item, l, store, opts){
   opts = opts || {};
   const box = el('div', {class: opts.cls || 'think'});
-  if (opts.heading) box.append(el('h3', {text: opts.heading}));
+  if (opts.heading) box.append(el(opts.htag || 'h3', {text: opts.heading}));
   box.append(el('p', {class:'ask', text: ask(item, l)}));
   const ta = el('textarea', {'aria-label': ask(item, l), placeholder: 'Type your answer here.'});
   const rec = store[item.id] || {};
@@ -401,7 +452,7 @@ function thinkBox(item, l, store, opts){
   if (l === 'q') {
     const useBtn = el('button', {type:'button', class:'btn ghost small', text:'Use This Frame', 'data-no-listen':''});
     useBtn.addEventListener('click', () => { if (!ta.value.trim() || confirm('Replace what you wrote with the frame?')) { ta.value = item.frame; ta.dispatchEvent(new Event('input')); ta.focus(); const i = ta.value.indexOf('______'); if (i >= 0) ta.setSelectionRange(i, i + 6); } });
-    box.append(el('div', {class:'frame'}, el('p', {}, el('b', {text:'Fill in: '}), item.frame), useBtn));
+    box.append(el('div', {class:'frame'}, el('p', {}, el('b', {text:'Fill in: '}), frameNodes(item.frame)), useBtn));
     const bank = el('div', {class:'bank', 'data-no-listen':''}, el('span', {text:'Word bank:'}));
     item.bank.forEach(w => bank.append(el('button', {type:'button', text:w, onclick: () => {
       const blank = ta.value.indexOf('______');
@@ -411,9 +462,9 @@ function thinkBox(item, l, store, opts){
       const nb = ta.value.indexOf('______'); if (nb >= 0) ta.setSelectionRange(nb, nb + 6);
     }})));
     box.append(bank);
-  } else {
-    box.append(el('p', {class:'starter'}, el('b', {text:'Start with: '}), item.st[l]));
   }
+  /* No sentence starters above Quick (Mr. B's rule, Oct 2026): the frame and word
+     bank are Quick's; Clear, Full and Deep answer the question on their own. */
   box.append(ta, saved);
   let t;
   ta.addEventListener('input', () => {
@@ -425,7 +476,7 @@ function thinkBox(item, l, store, opts){
     const fta = el('textarea', {'aria-label':'Going Further', placeholder:'Optional.'});
     fta.value = rec.x || '';
     fta.addEventListener('input', () => { store[item.id] = Object.assign(store[item.id] || {}, {x: fta.value}); save(); });
-    const det = el('details', {class:'further'}, el('summary', {text:'Going Further (optional)'}), el('p', {text: item.further}), fta);
+    const det = el('details', {class:'further'}, el('summary', {text:'Going Further (Optional)'}), el('p', {text: item.further}), fta);
     if (rec.x) det.open = true;
     box.append(det);
   }
@@ -442,7 +493,7 @@ function passageCard(p, l, n, total, single){
   }});
   art.append(el('div', {class:'psg-head'},
     el('div', {}, el('p', {class:'sec', text: sec.label + (sec.label !== sec.title ? ': ' + sec.title : '') + (n ? '  ·  Passage ' + n + ' of ' + total : '')}),
-                  el('h2', {id:'h-' + p.id, text: p.title})),
+                  el(single ? 'h1' : 'h2', {id:'h-' + p.id, text: p.title})),
     el('div', {class:'tools', 'data-no-listen':''}, copy)));
 
   const paras = origParas(p, l);
@@ -450,7 +501,7 @@ function passageCard(p, l, n, total, single){
   const orig = el('div', {class:'orig'}, el('p', {class:'lab', text:"Paine's Words, 1776"}));
   paras.forEach((t, i) => orig.append(renderPara(t, marks[i])));
 
-  const plain = el('aside', {class:'plain', 'aria-label':'Plain English'});
+  const plain = el('aside', {class:'plain', 'aria-label':'Plain English: ' + p.title});
   const pt = el('div', {}, el('p', {class:'lab', text: l === 'd' ? 'In Plain Words' : 'In Plain English'}), el('p', {class:'pt', text: p.plain[l]}));
   if (S.hidePlain) {
     pt.hidden = true;
@@ -461,7 +512,7 @@ function passageCard(p, l, n, total, single){
   if (rank(l) >= 2) plain.append(el('div', {class:'closer'}, el('b', {text:'Look Closer'}), el('p', {text: p.note})));
   if (l === 'd') plain.append(el('a', {class:'full-link', href:'common-sense-full.html#' + p.id, text:'See it in the whole pamphlet'}));
   art.append(el('div', {class:'psg-body'}, orig, plain));
-  art.append(thinkBox(p, l, S.ans, {heading:'Stop and Think', onSave: updateDots}));
+  art.append(thinkBox(p, l, S.ans, {heading:'Stop and Think', onSave: updateDots, htag: single ? 'h2' : 'h3'}));
   return art;
 }
 
@@ -469,14 +520,30 @@ function passageCard(p, l, n, total, single){
 const app = document.getElementById('app');
 const lvlBtn = document.getElementById('lvlBtn');
 lvlBtn.addEventListener('click', () => { location.hash = 'start'; });
+let cur = {view: '', level: ''};   // what is on screen now
+
+function jumpTo(id){
+  const target = document.getElementById(id);
+  if (!target) return false;
+  target.scrollIntoView();
+  focusTitle(target.querySelector('h1, h2, h3') || target);
+  return true;
+}
 
 function setView(){
   closeV(false);
+  const h = decodeURIComponent(location.hash.replace(/^#/, ''));
+  /* Already on the reading page and the link points inside it: scroll, don't
+     rebuild (a rebuild of 19 cards is slow on a Chromebook and stops Listen). */
+  if (cur.view === 'reader' && cur.level === S.level && S.level) {
+    if ((h.startsWith('p-') && PASS[h.slice(2)]) || h === 'finish') { if (jumpTo(h)) return; }
+    if (h === 'read') { window.scrollTo(0, 0); focusTitle(app.querySelector('h1')); return; }
+  }
   if (window.READER_TOOLS) READER_TOOLS.reset();
   app.classList.toggle('no-vocab', !S.wordHelp);
   LV.forEach(l => app.classList.toggle('lv-' + l, S.level === l));
-  const h = decodeURIComponent(location.hash.replace(/^#/, ''));
   app.innerHTML = '';
+  cur = {view: '', level: ''};
   if (PASS[h]) return single(PASS[h]);
   if (h === 'read' && S.level) return reader();
   if (h.startsWith('p-') && PASS[h.slice(2)] && S.level) return reader(h);
@@ -496,7 +563,7 @@ function landing(focusLevels){
         el('a', {class:'btn ghost', href:'common-sense-quiz.html', text:'Take the Quiz: Do You Have Common Sense?'}))),
     el('div', {class:'pics'},
       el('figure', {class:'portrait'}, el('img', {src:'images/paine-portrait.jpg', width:'640', height:'862', alt:'Painted portrait of Thomas Paine, a middle-aged man with gray hair in a dark red coat and white neckcloth, smiling slightly.'}),
-        el('figcaption', {text:'Thomas Paine, after a portrait by George Romney.'})),
+        el('figcaption', {text:"Thomas Paine, painted in 1876 from an engraving of George Romney's 1792 portrait."})),
       el('figure', {class:'title-page'}, el('img', {src:'images/common-sense-title-page.jpg', width:'510', height:'800', alt:'The title page of Common Sense, printed in Philadelphia by R. Bell in 1776. It lists the four subjects of the pamphlet.'}),
         el('figcaption', {text:'The first edition, Philadelphia, 1776.'}))));
 
@@ -510,6 +577,7 @@ function landing(focusLevels){
   const chosen = S.level || 'f';
   const lv = el('div', {class:'levels', role:'radiogroup', 'aria-label':'Reading'});
   const startBtn = el('a', {class:'btn', href:'#read', text:'Start Reading'});
+  let roving;
   LV.forEach((l, i) => {
     const n = pathFor(l).length;
     const b = el('button', {type:'button', class:'lvl', role:'radio', 'aria-checked': String(l === chosen)},
@@ -517,10 +585,11 @@ function landing(focusLevels){
       el('span', {class:'bars', 'aria-hidden':'true'}, LV.map((x, k) => el('i', {class: k <= i ? 'on' : ''}))),
       el('span', {class:'bl', text: LV_BLURB[l]}),
       el('span', {class:'ct', text: (l === 'q' ? n + ' short passages' : n + ' passages') + ', ' + LV_TIME[l] + '.'}));
-    b.addEventListener('click', () => { S.level = l; save(); lv.querySelectorAll('.lvl').forEach(x => x.setAttribute('aria-checked', String(x === b))); });
+    b.addEventListener('click', () => { S.level = l; save(); lv.querySelectorAll('.lvl').forEach(x => x.setAttribute('aria-checked', String(x === b))); if (roving) roving(); });
     lv.append(b);
   });
   if (!S.level) { S.level = 'f'; save(); }
+  roving = radioKeys(lv, '.lvl');
 
   /* Text options */
   const segPlain = el('div', {class:'seg'},
@@ -529,12 +598,17 @@ function landing(focusLevels){
   const segWords = el('div', {class:'seg'},
     el('button', {type:'button', 'data-v':'on', text:'On'}),
     el('button', {type:'button', 'data-v':'off', text:'Off'}));
+  const segTheme = el('div', {class:'seg', id:'themeSeg'},
+    el('button', {type:'button', 'data-v':'light', text:'Light'}),
+    el('button', {type:'button', 'data-v':'dark', text:'Dark'}),
+    el('button', {type:'button', 'data-v':'auto', text:'Match My Computer'}));
   function syncOpts(){
     segPlain.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.v === 'hide') === !!S.hidePlain)));
     segWords.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.v === 'on') === !!S.wordHelp)));
   }
   segPlain.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; S.hidePlain = b.dataset.v === 'hide'; save(); syncOpts(); });
   segWords.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; S.wordHelp = b.dataset.v === 'on'; save(); syncOpts(); });
+  segTheme.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; S.theme = b.dataset.v; save(); applyTheme(); });
   syncOpts();
 
   const pick = el('section', {class:'block', id:'start', 'aria-labelledby':'pickH'},
@@ -546,24 +620,38 @@ function landing(focusLevels){
         el('p', {class:'hint', text:'Want a challenge? Hide it, read Paine first, then tap to check yourself.'})),
       el('div', {class:'opt-row'}, el('span', {class:'lab', text:'Word Help'}), segWords,
         el('p', {class:'hint', text:'Tap an underlined word to see what it means.'})),
-      el('div', {class:'opt-row'}, el('span', {class:'lab', text:'Listen and Font'}), el('p', {text:'Use Listen at the top to hear any page read aloud. Use Font to change the letters, size, and spacing.'}))),
+      el('div', {class:'opt-row'}, el('span', {class:'lab', text:'Light or Dark'}), segTheme)),
     el('div', {class:'start-row'}, startBtn, el('span', {class:'starter', text:'Your answers save on this computer as you type.'})));
+
+  /* Every passage, for opening one on the projector or sending one link. */
+  const cols = el('div', {class:'cols'});
+  CS.sections.forEach(sec => {
+    const ps = CS.passages.filter(p => p.sec === sec.id);
+    if (!ps.length) return;
+    cols.append(el('div', {}, el('h3', {text: sec.label === sec.title ? sec.title : sec.label + ': ' + sec.title}),
+      el('ol', {start: String(CS.passages.indexOf(ps[0]) + 1)}, ps.map(p => el('li', {}, el('a', {href:'#' + p.id, text: p.title}))))));
+  });
+  const index = el('details', {class:'block index'}, el('summary', {text:'All 19 Passages'}),
+    el('p', {class:'sub', style:'margin-top:8px', text:'Open any one passage on its own, at the reading you pick there.'}), cols);
 
   const more = el('section', {class:'more', 'aria-label':'More'},
     el('a', {href:'common-sense-quiz.html'}, el('b', {text:'Do You Have Common Sense?'}), el('span', {text:'Ten questions. Find out how much you agree with Thomas Paine.'})),
     el('a', {href:'common-sense-full.html'}, el('b', {text:'The Whole Pamphlet'}), el('span', {text:'Every word of Common Sense, with links back to the passages you can read here.'})));
 
   const credits = el('footer', {class:'credits'},
-    el('p', {text:'The text of Common Sense is from the 1776 third edition (Project Gutenberg). The portrait of Paine (National Portrait Gallery, London) and the title page are public domain, from Wikimedia Commons. The plain-English versions, notes, and questions were written for this page.'}));
+    el('p', {text:"The text of Common Sense is from the 1776 third edition (Project Gutenberg). The portrait of Paine (Auguste Millière, 1876, after William Sharp's engraving of George Romney's portrait; National Portrait Gallery, London) and the title page are public domain, from Wikimedia Commons. The plain-English versions, notes, and questions were written for this page."}));
 
-  app.append(hero, facts, pick, more, credits);
+  app.append(hero, facts, pick, index, more, credits);
+  cur = {view: 'landing', level: ''};
   if (focusLevels) { pick.scrollIntoView(); lv.querySelector('[aria-checked="true"]').focus({preventScroll:true}); }
+  else if (navigated) { window.scrollTo(0, 0); focusTitle(hero.querySelector('h1')); }
 }
 
 function reader(scrollTo){
   const l = S.level;
   const path = pathFor(l);
-  lvlBtn.hidden = false; lvlBtn.textContent = 'Reading: ' + LV_NAME[l];
+  lvlBtn.hidden = false; document.getElementById('lvlName').textContent = LV_NAME[l];
+  lvlBtn.setAttribute('aria-label', 'Reading: ' + LV_NAME[l] + '. Change it.');
   document.title = 'Common Sense: ' + LV_NAME[l];
   const dots = el('nav', {class:'dots', 'aria-label':'Passages'});
   path.forEach((p, i) => dots.append(el('a', {href:'#p-' + p.id, 'data-id': p.id, title: p.title, 'aria-label': 'Passage ' + (i + 1) + ': ' + p.title, text: String(i + 1)})));
@@ -585,10 +673,9 @@ function reader(scrollTo){
   });
   app.append(finishSection(l, path));
   updateDots();
-  if (scrollTo) {
-    const target = document.getElementById(scrollTo);
-    if (target) requestAnimationFrame(() => target.scrollIntoView());
-  } else window.scrollTo(0, 0);
+  cur = {view: 'reader', level: l};
+  if (scrollTo) requestAnimationFrame(() => jumpTo(scrollTo));
+  else { window.scrollTo(0, 0); if (navigated) focusTitle(top.querySelector('h1')); }
 }
 
 function single(p){
@@ -604,7 +691,9 @@ function single(p){
   app.append(passageCard(p, l, 0, 0, true));
   app.append(sendBlock(l, [p], true));
   app.append(el('p', {}, el('a', {href:'#', text:'See all the passages'}), '  ·  ', el('a', {href:'common-sense-quiz.html', text:'Take the quiz'})));
+  cur = {view: 'single', level: l};
   window.scrollTo(0, 0);
+  if (navigated) focusTitle(app.querySelector('h1'));
 }
 
 function updateDots(){
@@ -640,6 +729,7 @@ function finishSection(l, path){
   extTa.addEventListener('input', () => { S.ext.a = extTa.value; save(); });
   extCard.append(grid, extTask, extTa);
   showExt();
+  radioKeys(grid, '.ext');
   sec.append(extCard);
   sec.append(sendBlock(l, path, false));
   return sec;
@@ -661,7 +751,7 @@ function sendBlock(l, list, single){
     else { const ta = el('textarea', {readonly:''}); ta.value = text; msg.textContent = 'Select the text below and copy it.'; msg.after(ta); ta.select(); }
   });
   return el('div', {class:'q-card', 'data-no-listen':''},
-    el('h3', {text: single ? 'Send Your Answer' : 'Turn It In'}),
+    el(single ? 'h2' : 'h3', {text: single ? 'Send Your Answer' : 'Turn It In'}),
     el('p', {text: single ? 'Type your name, then send.' : 'This is extra credit. Send it when you are done, even if you did not answer every passage.'}),
     el('div', {class:'who'},
       el('label', {for:'fn'}, 'First name', fn), el('label', {for:'li'}, 'Last initial', li), el('label', {for:'per'}, 'Period', per)),
@@ -720,12 +810,12 @@ function sendToMrB(payload, btn, msgEl, fnInput){
   form.submit();
 }
 
-window.addEventListener('hashchange', setView);
-document.getElementById('home').addEventListener('click', e => { e.preventDefault(); if (location.hash) location.hash = ''; else setView(); window.scrollTo(0, 0); });
+window.addEventListener('hashchange', () => { navigated = true; setView(); });
+document.getElementById('home').addEventListener('click', e => { e.preventDefault(); navigated = true; if (location.hash) location.hash = ''; else setView(); window.scrollTo(0, 0); });
 setView();
 })();
 </script>
-<script src="reader-tools.js?v=20261014b"></script>
+<script src="reader-tools.js?v=20261019"></script>
 <script>
 /* Group each Font-panel row's buttons so the row is label + options (as on index.html). */
 window.addEventListener('load', function(){

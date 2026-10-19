@@ -160,7 +160,7 @@ const QS = [
   { s: 'A group that sticks together is stronger than a group that is just big.', paine: true, id: 'unity',
     quote: 'It is not in numbers, but in unity, that our great strength lies',
     why: 'Paine said no colony could win alone, but together they could.' },
-  { s: 'When people fight for freedom in one country, it matters to people everywhere.', paine: true, id: 'cause',
+  { s: 'A fight for freedom in one country matters to people everywhere.', paine: true, id: 'cause',
     quote: 'The cause of America is in a great measure the cause of all mankind.',
     why: "Paine said America's fight was about rights that belong to every person on earth." }
 ];
@@ -211,7 +211,7 @@ function intro(){
         el('button', {class:'btn', type:'button', text: resume ? 'Keep Going' : 'Start', onclick: () => question(resume ? S.a.findIndex(x => !x) : 0)}),
         resume ? el('button', {class:'btn ghost', type:'button', text:'Start Over', onclick: () => { S.a = []; save(); question(0); }}) : null)),
     el('figure', {}, el('img', {src:'images/paine-portrait.jpg', width:'640', height:'862', alt:'Painted portrait of Thomas Paine, smiling slightly, in a dark red coat.'}),
-      el('figcaption', {text:'Thomas Paine, after a portrait by George Romney.'}))));
+      el('figcaption', {text:"Thomas Paine, painted in 1876 from an engraving of George Romney's 1792 portrait."}))));
   app.querySelector('.btn').focus();
 }
 
@@ -223,7 +223,7 @@ function question(i){
   const wrap = el('section', {class:'qwrap', 'aria-labelledby':'stmt'});
   wrap.append(el('div', {class:'progress'},
     el('p', {text:'Question ' + (i + 1) + ' of ' + QS.length}),
-    el('div', {class:'bar', role:'progressbar', 'aria-valuemin':'0', 'aria-valuemax': String(QS.length), 'aria-valuenow': String(i)}, el('i', {style:'width:' + (i / QS.length * 100) + '%'}))));
+    el('div', {class:'bar', role:'progressbar', 'aria-label':'Progress', 'aria-valuemin':'0', 'aria-valuemax': String(QS.length), 'aria-valuenow': String(i)}, el('i', {style:'width:' + (i / QS.length * 100) + '%'}))));
   wrap.append(el('h1', {class:'statement', id:'stmt', text: q.s}));
   const ch = el('div', {class:'choices', role:'group', 'aria-labelledby':'stmt'});
   CHOICES.forEach(c => ch.append(el('button', {type:'button', class:'choice ' + c.cls, 'aria-pressed': String(S.a[i] === c.v), onclick: (e) => {
@@ -285,7 +285,7 @@ function result(){
 if (S.a.filter(Boolean).length === QS.length) result(); else intro();
 })();
 </script>
-<script src="reader-tools.js?v=20261014b"></script>
+<script src="reader-tools.js?v=20261019"></script>
 <script>
 window.addEventListener('load', function(){
   document.querySelectorAll('#rtools .rt-row').forEach(function(row){
