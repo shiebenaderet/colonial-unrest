@@ -70,3 +70,17 @@ Sign-in needs a Google OAuth client ID (Web application, authorized JavaScript o
 ## Images
 
 Event illustrations live locally in `images/` (public-domain works from Wikimedia Commons), so the activity works offline.
+
+## Common Sense, annotated (extra credit)
+
+`common-sense.html` (**unrest.mrbsocialstudies.org/common-sense.html**) is Thomas Paine's *Common Sense* with help built in. The landing page has the Paine portrait and the 1776 title page, a few quick facts, and the reading picker (Quick, Clear, Full, Deep, with the standard blurbs). Text options: show or hide the plain-English side (hide it for a challenge), and word help on or off. Listen and Font sit in the header, from `reader-tools.js`.
+
+- **Reading page.** Paine's words on the left two-thirds (in Caslon, or in whatever face the student picks under Font), plain English at the student's reading on the right third, stacked on phones. Underlined words open a definition on tap. Full and Deep add a **Look Closer** note. Each passage ends with a **Stop and Think** question: Quick gets a fill-in frame and word bank, Clear/Full/Deep get a sentence starter, Deep adds an optional **Going Further** prompt.
+- **How much each reading sees.** Quick: 4 single passages. Clear: 7. Full: 12 longer chunks. Deep: all 19 at full length, plus **common-sense-full.html**, the whole pamphlet with every passage shaded and linked back. Passages are trimmed with "…" where a reading skips Paine's words.
+- **Finish Up.** Two reflections, one extension (Paine in a Post, The Loyalist Writes Back, Then and Now, A New Cover for Teens), then **Send to Mr. B** (same Apps Script as the Fast Finisher Menu; the email subject starts "Fast Finisher · Common Sense") or **Copy My Work**. Answers save in the browser as students type.
+- **Direct links to one passage.** `common-sense.html#<id>` opens one passage on its own, with a reading switcher and its own Send button. Add `?level=quick|clear|full|deep` to set the reading: `common-sense.html?level=clear#ass-lion`. Every passage card has a **Copy Link** button. Ids, in order: `cause`, `society`, `tree`, `simple`, `ass-lion`, `ruffian`, `honest-man`, `sun`, `milk`, `parent`, `time-to-part`, `island`, `house-burnt`, `law-is-king`, `o-ye`, `unity`, `seed-time`, `putting-off`, `begin-again`. `?level=` also works on the main page (`common-sense.html?level=quick#read`).
+- **Content** lives in `common-sense-data.js` (passages, plain English, notes, questions, vocabulary). `node tools/check-common-sense.js` measures every plain-English version against READING-LEVELS.md. After editing, rerun `python3 tools/build-common-sense-full.py` so the whole-pamphlet page links still match.
+
+`common-sense-quiz.html` (**unrest.mrbsocialstudies.org/common-sense-quiz.html**), *Do You Have Common Sense?*, is the whole-class opener: 10 agree/disagree statements (for example, "A person should get to be a leader because of who their parents are"), then a Paine-o-meter score from Loyalist to Pure Common Sense and a "You vs. Paine" list with Paine's own words and a link to each passage. Nothing is sent; results stay on the student's screen for discussion.
+
+Sources: text from the Project Gutenberg edition (Bradford third edition, 1776), kept in `tools/common-sense-1776.txt`. Portrait (after George Romney) and title page from Wikimedia Commons, public domain. The Send button needs the mailer redeployed with `Common Sense` added to `ACTIVITIES` (Deploy > Manage deployments > edit > New version).

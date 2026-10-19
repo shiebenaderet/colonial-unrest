@@ -1,5 +1,6 @@
 /**
- * Fast Finisher Menu mailer (unrest.mrbsocialstudies.org/fast-finisher.html)
+ * Fast Finisher Menu mailer (unrest.mrbsocialstudies.org/fast-finisher.html,
+ * and the annotated Common Sense at unrest.mrbsocialstudies.org/common-sense.html)
  *
  * Emails Mr. B one message per submission:
  *   Subject: Fast Finisher · <Activity> · <Student> · P<period>
@@ -29,7 +30,7 @@
  */
 
 const TO = 'benaderets885@edmonds.wednet.edu';
-const ACTIVITIES = ["Liberty's Kids", 'Engraving Detective', 'Mission US', 'Boston 1770 Breakout'];
+const ACTIVITIES = ["Liberty's Kids", 'Engraving Detective', 'Mission US', 'Boston 1770 Breakout', 'Common Sense'];
 const ALLOWED_DOMAINS = ['edmonds15.org', 'edmonds.wednet.edu'];
 const MAX_CHARS = 8000;   // a long answer is fine; a pasted essay-bomb is not
 

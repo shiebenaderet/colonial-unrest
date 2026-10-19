@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Common Sense, Annotated</title>
+<meta name="description" content="Thomas Paine's Common Sense (1776) with plain-English help at four reading levels, word help, and questions.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap">
+<link rel="stylesheet" href="fonts/atkinson.css?v=20261005">
+<style>
+/* Unit 2 (Revolution: Ideas & Voices): Playfair Display headings, brick red.
+   Body and every control: Atkinson Hyperlegible Next. Paine's own words: Libre
+   Caslon Text (Caslon is the typeface his printers used), unless the student picks
+   another face in the Font menu, which then wins for the original too. */
+:root{
+  --bg:#f6f1e8; --panel:#fffdf9; --ink:#1f2124; --muted:#5a4f45; --rule:#d6cfc3;
+  --deep:#7a2a28; --accent:#b23a34; --tint:#f6e7e4; --gold:#9a7536; --band:#f1e6d8;
+  --ok:#2c6b37; --ok-tint:#e4f1e6; --on-accent:#ffffff;
+  --mast:#3d1413; --mast-ink:#fff8ee; --mast-edge:#b88f86;
+  --display:'Playfair Display',Georgia,'Times New Roman',serif;
+  --body:'Atkinson Hyperlegible Next','Atkinson Hyperlegible',Verdana,system-ui,sans-serif;
+  --orig:'Libre Caslon Text',Georgia,'Times New Roman',serif;
+  --card:var(--panel);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1a1614; --panel:#241f1c; --ink:#f3ece3; --muted:#c9bcae; --rule:#40362f;
+  --deep:#f0a59c; --accent:#e9827a; --tint:#3a2421; --gold:#d9b46a; --band:#2e2622;
+  --ok:#8fd19a; --ok-tint:#1f3424; --on-accent:#1a0b09;
+  --mast:#0f0b0a; --mast-ink:#fff8ee; --mast-edge:#7d6a62; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1a1614; --panel:#241f1c; --ink:#f3ece3; --muted:#c9bcae; --rule:#40362f;
+  --deep:#f0a59c; --accent:#e9827a; --tint:#3a2421; --gold:#d9b46a; --band:#2e2622;
+  --ok:#8fd19a; --ok-tint:#1f3424; --on-accent:#1a0b09;
+  --mast:#0f0b0a; --mast-ink:#fff8ee; --mast-edge:#7d6a62; color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:84px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55}
+h1,h2,h3{font-family:var(--display);color:var(--deep);margin:0;text-wrap:balance;line-height:1.15}
+p{margin:0}
+a{color:var(--accent);font-weight:700}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+
+/* ---- Header: one slim masthead bar ---- */
+.mast{position:sticky;top:0;z-index:20;background:var(--mast);color:var(--mast-ink);border-bottom:3px solid var(--gold)}
+.mast .in{max-width:1180px;margin:0 auto;padding:8px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.brand{font-family:var(--display);font-weight:800;font-size:21px;color:var(--mast-ink);text-decoration:none;white-space:nowrap}
+.mast .spacer{flex:1 1 auto}
+.mbtn{min-height:40px;padding:6px 14px;border-radius:8px;border:2px solid var(--mast-edge);background:transparent;color:var(--mast-ink);font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.mbtn:hover{background:rgba(255,255,255,.08)}
+.mast #rtools{position:relative;margin:0;flex-wrap:nowrap}
+#rtools .rt-btn{min-height:40px;padding:6px 14px;border-radius:8px;font-size:15px;font-weight:700;background:transparent;color:var(--mast-ink);border:2px solid var(--mast-edge)}
+#rtools .rt-btn.rt-primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+#rtools .rt-panel{position:absolute;top:calc(100% + 8px);right:0;width:min(360px,90vw);z-index:30;box-shadow:0 10px 30px rgba(0,0,0,.3);color:var(--ink)}
+#rtools .rt-panel .rt-row{display:grid;grid-template-columns:76px 1fr;gap:10px;align-items:center;margin:0 0 14px}
+#rtools .rt-panel .rt-row:last-child{margin:0}
+#rtools .rt-panel .rt-opts{display:flex;flex-wrap:wrap;gap:8px}
+.settings{position:relative}
+.settings-panel{position:absolute;top:calc(100% + 8px);right:0;width:min(300px,90vw);z-index:30;background:var(--panel);color:var(--ink);border:1px solid var(--rule);border-radius:10px;padding:14px;box-shadow:0 10px 30px rgba(0,0,0,.3);display:grid;gap:10px}
+.settings-panel h3{font-family:var(--body);font-size:15px;color:var(--muted)}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{min-height:40px;padding:6px 12px;border-radius:8px;border:1.5px solid var(--rule);background:var(--bg);cursor:pointer}
+.seg button[aria-pressed="true"]{border:2px solid var(--accent);font-weight:700;background:var(--tint)}
+
+main.wrap{max-width:1180px;margin:0 auto;padding:22px 16px 64px;display:grid;gap:26px}
+
+/* ---- Buttons ---- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 18px;border-radius:9px;border:0;background:var(--accent);color:var(--on-accent);font-weight:800;font-size:16px;cursor:pointer;text-decoration:none}
+.btn:hover{filter:brightness(1.07)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--rule)}
+.btn.small{min-height:38px;padding:6px 12px;font-size:15px}
+.btn:disabled{opacity:.55;cursor:default}
+
+/* ---- Landing ---- */
+.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:28px;align-items:center}
+.hero h1{font-size:clamp(42px,7vw,72px);line-height:1}
+.hero .lead{font-size:clamp(18px,2.1vw,21px);margin-top:14px;max-width:34em}
+.hero .cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.pics{position:relative;min-height:440px}
+.pics figure{margin:0;position:absolute;background:var(--panel);padding:10px 10px 8px;border:1px solid var(--rule);border-radius:6px;box-shadow:0 14px 34px rgba(40,10,5,.22)}
+.pics img{display:block;width:100%;height:auto;border-radius:3px}
+.pics figcaption{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.35}
+.pics .portrait{width:58%;left:0;top:10px;transform:rotate(-2.5deg);z-index:2}
+.pics .title-page{width:50%;right:0;top:56px;transform:rotate(3deg)}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.fact{background:var(--panel);border:1px solid var(--rule);border-top:5px solid var(--accent);border-radius:10px;padding:14px 16px}
+.fact b{display:block;font-family:var(--display);color:var(--deep);font-size:22px;line-height:1.15;margin-bottom:4px}
+.block{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:22px}
+.block > h2{font-size:28px;margin-bottom:6px}
+.block > .sub{color:var(--muted);margin-bottom:16px}
+.levels{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.lvl{text-align:left;display:grid;gap:6px;align-content:start;padding:16px;border-radius:12px;border:2px solid var(--rule);background:var(--bg);cursor:pointer;min-height:150px}
+.lvl:hover{border-color:var(--accent)}
+.lvl[aria-checked="true"]{border-color:var(--accent);background:var(--tint);box-shadow:0 0 0 2px var(--accent) inset}
+.lvl .nm{font-family:var(--display);font-size:26px;font-weight:800;color:var(--deep)}
+.lvl .bl{font-weight:600}
+.lvl .ct{color:var(--muted);font-size:15px}
+.lvl .bars{display:flex;gap:4px;margin-top:2px}
+.lvl .bars i{display:block;height:6px;flex:1;border-radius:3px;background:var(--rule)}
+.lvl .bars i.on{background:var(--accent)}
+.opts{display:grid;gap:14px;margin-top:18px}
+.opt-row{display:grid;grid-template-columns:200px 1fr;gap:12px;align-items:center}
+.opt-row .lab{font-weight:700}
+.opt-row .hint{grid-column:2;color:var(--muted);font-size:15px;margin-top:-6px}
+.start-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:20px}
+.more{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.more a{display:grid;gap:4px;text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--rule);border-left:6px solid var(--gold);border-radius:12px;padding:16px 18px}
+.more a b{font-family:var(--display);font-size:21px;color:var(--deep)}
+.more a span{color:var(--muted)}
+
+/* ---- Reader ---- */
+.path-top{display:grid;gap:12px}
+.path-top h1{font-size:clamp(32px,5vw,46px)}
+.path-meta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;color:var(--muted)}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:999px;background:var(--tint);color:var(--deep);font-weight:700;font-size:15px}
+.dots{display:flex;flex-wrap:wrap;gap:6px}
+.dots a{min-width:40px;min-height:40px;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;border:2px solid var(--rule);background:var(--panel);color:var(--ink);text-decoration:none;font-weight:700;font-size:15px}
+.dots a.done{background:var(--ok);border-color:var(--ok);color:#fff}
+.dots a.end{padding:0 12px}
+.psg{background:var(--panel);border:1px solid var(--rule);border-radius:16px;overflow:hidden}
+.psg-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px;padding:18px 22px 12px;border-bottom:1px solid var(--rule)}
+.psg-head .sec{color:var(--muted);font-weight:700;font-size:15px}
+.psg-head h2{font-size:clamp(26px,3.4vw,34px)}
+.psg-head .tools{display:flex;flex-wrap:wrap;gap:8px}
+.psg-body{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr)}
+.orig{padding:20px 26px 24px;font-family:var(--orig);font-size:19px;line-height:1.8}
+html[data-rt-font]:not([data-rt-font="atkinson"]) .orig{font-family:var(--rt-font)}
+.orig .lab,.plain .lab{font-family:var(--body);font-weight:800;font-size:15px;color:var(--muted);margin-bottom:8px}
+.orig p + p{margin-top:14px}
+.orig .gap{color:var(--muted);font-family:var(--body)}
+.vw{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;cursor:pointer;text-decoration:underline dotted var(--accent) 2px;text-underline-offset:4px;border-radius:3px}
+.vw:hover,.vw[aria-expanded="true"]{background:var(--tint)}
+.no-vocab .vw{text-decoration:none;cursor:text;pointer-events:none}
+.plain{padding:20px 22px 24px;background:var(--tint);border-left:5px solid var(--accent);display:grid;gap:16px;align-content:start}
+.plain .pt{font-size:18px;line-height:1.6}
+.lv-q .plain .pt,.lv-c .plain .pt{font-size:20px;line-height:1.65}
+.reveal{justify-self:start}
+.closer{border-top:1px dashed var(--accent);padding-top:12px;font-size:16px}
+.closer b{display:block;color:var(--deep);font-family:var(--display);font-size:19px;margin-bottom:4px}
+.full-link{font-size:15px}
+.think{padding:20px 22px 24px;border-top:1px solid var(--rule);display:grid;gap:10px;background:var(--panel)}
+.think h3{font-size:22px}
+.think .ask{font-size:18px;font-weight:700}
+.starter{color:var(--muted)}
+.starter b{color:var(--ink)}
+.frame{background:var(--bg);border:1px dashed var(--rule);border-radius:8px;padding:10px 12px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.bank{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.bank span{font-weight:700;color:var(--muted);font-size:15px}
+.bank button{min-height:40px;padding:4px 12px;border-radius:999px;border:1.5px solid var(--accent);background:var(--panel);color:var(--deep);font-weight:700;cursor:pointer}
+textarea{width:100%;min-height:110px;padding:10px 12px;border:1.5px solid var(--rule);border-radius:9px;background:var(--bg);line-height:1.5;resize:vertical}
+textarea:focus{border-color:var(--accent)}
+.saved{font-size:14px;color:var(--ok);min-height:1.2em}
+.further{border-top:1px dashed var(--rule);padding-top:10px;display:grid;gap:8px}
+.further summary{cursor:pointer;font-weight:800;color:var(--deep);min-height:40px;display:flex;align-items:center}
+.next-row{display:flex;justify-content:flex-end;padding:0 22px 20px;gap:10px;flex-wrap:wrap}
+.single-note{background:var(--tint);border-left:5px solid var(--accent);border-radius:10px;padding:14px 16px;display:grid;gap:10px}
+.single-note .seg button{background:var(--panel)}
+
+/* ---- Finish ---- */
+.finish{display:grid;gap:18px}
+.finish h2{font-size:32px}
+.q-card{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:18px 20px;display:grid;gap:10px}
+.q-card h3{font-size:22px}
+.ext-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.ext{text-align:left;padding:14px;border-radius:12px;border:2px solid var(--rule);background:var(--bg);cursor:pointer;display:grid;gap:4px}
+.ext b{font-family:var(--display);font-size:19px;color:var(--deep)}
+.ext[aria-checked="true"]{border-color:var(--accent);background:var(--tint)}
+.who{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}
+.who label{display:grid;gap:4px;font-weight:700}
+.who input,.who select{min-height:44px;padding:8px 10px;border:1.5px solid var(--rule);border-radius:8px;background:var(--bg)}
+.send-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.msg{font-weight:700;min-height:1.4em}
+
+/* ---- Word pop-up ---- */
+.vpop-bubble{position:absolute;z-index:40;max-width:min(320px,calc(100vw - 24px));background:var(--panel);color:var(--ink);border:2px solid var(--accent);border-radius:10px;padding:10px 38px 10px 12px;box-shadow:0 10px 26px rgba(0,0,0,.25);font-family:var(--body);font-size:16px;line-height:1.45}
+.vpop-bubble b{display:block;color:var(--deep);font-size:17px}
+.vpop-bubble .x{position:absolute;top:4px;right:4px;width:32px;height:32px;border:0;background:none;font-size:22px;line-height:1;cursor:pointer;color:var(--muted);border-radius:6px}
+
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:9px;font-weight:700;z-index:50}
+footer.credits{color:var(--muted);font-size:14px;line-height:1.5;border-top:1px solid var(--rule);padding-top:16px}
+
+/* ---- Narrow screens ---- */
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr}
+  .pics{min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .pics figure{position:static;width:auto;transform:none}
+  .facts,.levels{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .psg-body{grid-template-columns:1fr}
+  .plain{border-left:0;border-top:5px solid var(--accent)}
+  .more,.ext-grid{grid-template-columns:1fr}
+  .opt-row{grid-template-columns:1fr}
+  .opt-row .hint{grid-column:1;margin-top:-8px}
+}
+@media (max-width:560px){
+  .facts,.levels{grid-template-columns:1fr}
+  .who{grid-template-columns:1fr 1fr}
+  .who label:first-child{grid-column:1 / -1}
+  .orig{padding:16px;font-size:18px}
+  .plain,.think{padding:16px}
+  .psg-head{padding:16px 16px 10px}
+  .brand{font-size:18px}
+}
+@media print{.mast,.next-row,.send-row,.bank,.frame button,.reveal,.tools,.dots{display:none!important}.psg{break-inside:avoid}}
+</style>
+</head>
+<body>
+
+<header class="mast">
+  <div class="in">
+    <a class="brand" href="#" id="home">Common Sense</a>
+    <span class="spacer"></span>
+    <button class="mbtn" id="lvlBtn" type="button" hidden>Reading: Full</button>
+    <div id="rtools" role="group" aria-label="Listen and font"></div>
+    <div class="settings">
+      <button class="mbtn" id="setBtn" type="button" aria-expanded="false" aria-controls="setPanel">Settings</button>
+      <div class="settings-panel" id="setPanel" hidden>
+        <h3>Light or Dark</h3>
+        <div class="seg" id="themeSeg">
+          <button type="button" data-v="light">Light</button>
+          <button type="button" data-v="dark">Dark</button>
+          <button type="button" data-v="auto">Match My Computer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap" id="app" aria-live="off"></main>
+
+<div class="vpop-bubble" id="vpop" role="dialog" aria-label="Word help" hidden>
+  <button class="x" type="button" aria-label="Close word help">×</button>
+  <b id="vpopTerm"></b><span id="vpopDef"></span>
+</div>
+
+<script src="common-sense-data.js?v=20261019"></script>
+<script>
+(function(){
+'use strict';
+const CS = window.COMMON_SENSE;
+const LV = ['q','c','f','d'];
+const LV_NAME = {q:'Quick', c:'Clear', f:'Full', d:'Deep'};
+const LV_SLUG = {quick:'q', clear:'c', full:'f', deep:'d'};
+/* Student-facing blurbs, word for word from READING-LEVELS.md. */
+const LV_BLURB = {q:'Short sentences. Key words explained.', c:'Plain words, a little more detail.', f:'The grade-level reading.', d:'Adds real quotes from the time and what historians argue.'};
+const LV_TIME = {q:'about 20 minutes', c:'about 30 minutes', f:'about 45 minutes', d:'about an hour, plus the whole pamphlet'};
+const rank = l => LV.indexOf(l);
+const SEC = {}; CS.sections.forEach(s => SEC[s.id] = s);
+const PASS = {}; CS.passages.forEach(p => PASS[p.id] = p);
+const pathFor = l => CS.passages.filter(p => rank(p.min) <= rank(l));
+
+/* ---------- storage: optional; the page works without it ---------- */
+const KEY = 'cs-annotated-v1';
+let S = {};
+try { S = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { S = {}; }
+S.ans = S.ans || {}; S.refl = S.refl || {}; S.ext = S.ext || {};
+if (S.wordHelp === undefined) S.wordHelp = true;
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+
+/* ?level=quick|clear|full|deep in a link sets the reading (Mr. B can send it). */
+const qp = new URLSearchParams(location.search).get('level');
+if (qp && LV_SLUG[qp.toLowerCase()]) { S.level = LV_SLUG[qp.toLowerCase()]; save(); }
+
+/* ---------- theme ---------- */
+function applyTheme(){
+  const t = S.theme || 'auto';
+  if (t === 'auto') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', t);
+  document.querySelectorAll('#themeSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === t)));
+}
+applyTheme();
+document.querySelectorAll('#themeSeg button').forEach(b => b.addEventListener('click', () => { S.theme = b.dataset.v; save(); applyTheme(); }));
+const setBtn = document.getElementById('setBtn'), setPanel = document.getElementById('setPanel');
+setBtn.addEventListener('click', e => { e.stopPropagation(); const open = setPanel.hidden; setPanel.hidden = !open; setBtn.setAttribute('aria-expanded', String(open)); });
+document.addEventListener('click', e => { if (!setPanel.hidden && !e.target.closest('.settings')) { setPanel.hidden = true; setBtn.setAttribute('aria-expanded','false'); } });
+
+/* ---------- helpers ---------- */
+function el(tag, attrs, ...kids){
+  const e = document.createElement(tag);
+  if (attrs) for (const k in attrs) {
+    const v = attrs[k];
+    if (v == null || v === false) continue;
+    if (k === 'class') e.className = v;
+    else if (k === 'text') e.textContent = v;
+    else if (k === 'html') e.innerHTML = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v === true ? '' : v);
+  }
+  kids.flat().forEach(k => { if (k != null && k !== false) e.append(k); });
+  return e;
+}
+function toast(t){ const d = el('div', {class:'toast', role:'status', text:t}); document.body.append(d); setTimeout(() => d.remove(), 2200); }
+async function copyText(text, onFail){
+  try { await navigator.clipboard.writeText(text); return true; }
+  catch (e) { if (onFail) onFail(); return false; }
+}
+function linkFor(id, withLevel){
+  const u = new URL(location.href); u.hash = id; u.search = withLevel && S.level ? '?level=' + ({q:'quick',c:'clear',f:'full',d:'deep'})[S.level] : '';
+  return u.toString();
+}
+function ask(item, l){ return (l === 'q' && item.ask.q) ? item.ask.q : item.ask.all; }
+
+/* ---------- vocabulary: first appearance of each term in a passage ---------- */
+const VOCAB = CS.vocab.map(([pat, def]) => {
+  const longest = Math.max(...pat.split('|').map(s => s.replace(/\\/g,'').length));
+  return { re: new RegExp('(?<![A-Za-z])(?:' + pat + ')(?![A-Za-z])', 'i'), def, longest };
+}).sort((a, b) => b.longest - a.longest);
+
+function markVocab(paras){
+  /* paras: list of strings. Returns, per paragraph, a sorted list of {s, e, def}. */
+  const marks = paras.map(() => []);
+  const free = (pi, s, e) => marks[pi].every(m => e <= m.s || s >= m.e);
+  for (const v of VOCAB) {
+    for (let pi = 0; pi < paras.length; pi++) {
+      let found = null, from = 0, txt = paras[pi];
+      while (from < txt.length) {
+        const m = v.re.exec(txt.slice(from));
+        if (!m) break;
+        const s = from + m.index, e = s + m[0].length;
+        if (free(pi, s, e)) { found = {s, e, def: v.def}; break; }
+        from = s + 1;
+      }
+      if (found) { marks[pi].push(found); break; }
+    }
+  }
+  marks.forEach(m => m.sort((a, b) => a.s - b.s));
+  return marks;
+}
+function renderPara(text, marks){
+  const p = el('p');
+  let at = 0;
+  for (const m of marks) {
+    if (m.s > at) p.append(text.slice(at, m.s));
+    p.append(el('button', {type:'button', class:'vw', 'aria-expanded':'false', 'aria-controls':'vpop', 'data-def': m.def, text: text.slice(m.s, m.e)}));
+    at = m.e;
+  }
+  if (at < text.length) p.append(text.slice(at));
+  return p;
+}
+/* The original as one reading sees it: segments at or below the level, with
+   "…" where it skips. Leading and trailing skips are marked too. */
+function origParas(p, l){
+  const out = [];
+  for (const para of p.orig) {
+    const vis = para.map(s => rank(s[0]) <= rank(l));
+    if (!vis.some(Boolean)) continue;
+    let t = '';
+    para.forEach((s, i) => {
+      if (vis[i]) t += s[1];
+      else if (i === 0 || vis[i - 1]) t += (t ? ' … ' : '… ');
+    });
+    out.push(t.replace(/\s+/g, ' ').replace(/ … …/g, ' …').replace(/… …/g, '…').trim());
+  }
+  return out;
+}
+
+const vpop = document.getElementById('vpop');
+let vOpen = null;
+function closeV(focusBack){
+  if (!vOpen) return;
+  vOpen.setAttribute('aria-expanded', 'false');
+  vpop.hidden = true;
+  if (focusBack) vOpen.focus();
+  vOpen = null;
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('.vw');
+  if (b && !document.getElementById('app').classList.contains('no-vocab')) {
+    if (vOpen === b) { closeV(false); return; }
+    closeV(false);
+    vOpen = b; b.setAttribute('aria-expanded', 'true');
+    document.getElementById('vpopTerm').textContent = b.textContent.replace(/^'/, '');
+    document.getElementById('vpopDef').textContent = b.dataset.def;
+    vpop.hidden = false;
+    const r = b.getBoundingClientRect(), w = vpop.offsetWidth;
+    let left = r.left + window.scrollX;
+    left = Math.max(12 + window.scrollX, Math.min(left, window.scrollX + document.documentElement.clientWidth - w - 12));
+    vpop.style.left = left + 'px';
+    vpop.style.top = (r.bottom + window.scrollY + 8) + 'px';
+    return;
+  }
+  if (e.target.closest('.vpop-bubble .x')) { closeV(true); return; }
+  if (!e.target.closest('.vpop-bubble')) closeV(false);
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeV(true); });
+window.addEventListener('resize', () => closeV(false));
+
+/* ---------- a Stop and Think box (used for passages and the reflections) ---------- */
+function thinkBox(item, l, store, opts){
+  opts = opts || {};
+  const box = el('div', {class: opts.cls || 'think'});
+  if (opts.heading) box.append(el('h3', {text: opts.heading}));
+  box.append(el('p', {class:'ask', text: ask(item, l)}));
+  const ta = el('textarea', {'aria-label': ask(item, l), placeholder: 'Type your answer here.'});
+  const rec = store[item.id] || {};
+  ta.value = rec.a || '';
+  const saved = el('p', {class:'saved', 'aria-live':'polite'});
+  if (l === 'q') {
+    const useBtn = el('button', {type:'button', class:'btn ghost small', text:'Use This Frame', 'data-no-listen':''});
+    useBtn.addEventListener('click', () => { if (!ta.value.trim() || confirm('Replace what you wrote with the frame?')) { ta.value = item.frame; ta.dispatchEvent(new Event('input')); ta.focus(); const i = ta.value.indexOf('______'); if (i >= 0) ta.setSelectionRange(i, i + 6); } });
+    box.append(el('div', {class:'frame'}, el('p', {}, el('b', {text:'Fill in: '}), item.frame), useBtn));
+    const bank = el('div', {class:'bank', 'data-no-listen':''}, el('span', {text:'Word bank:'}));
+    item.bank.forEach(w => bank.append(el('button', {type:'button', text:w, onclick: () => {
+      const blank = ta.value.indexOf('______');
+      if (blank >= 0) ta.value = ta.value.slice(0, blank) + w + ta.value.slice(blank + 6);
+      else { const s = ta.selectionStart || ta.value.length; ta.value = ta.value.slice(0, s) + (s && !/\s$/.test(ta.value.slice(0, s)) ? ' ' : '') + w + ta.value.slice(s); }
+      ta.dispatchEvent(new Event('input')); ta.focus();
+      const nb = ta.value.indexOf('______'); if (nb >= 0) ta.setSelectionRange(nb, nb + 6);
+    }})));
+    box.append(bank);
+  } else {
+    box.append(el('p', {class:'starter'}, el('b', {text:'Start with: '}), item.st[l]));
+  }
+  box.append(ta, saved);
+  let t;
+  ta.addEventListener('input', () => {
+    store[item.id] = Object.assign(store[item.id] || {}, {a: ta.value, l});
+    save(); clearTimeout(t); saved.textContent = '';
+    t = setTimeout(() => { saved.textContent = 'Saved on this computer.'; if (opts.onSave) opts.onSave(); }, 500);
+  });
+  if (l === 'd' && item.further) {
+    const fta = el('textarea', {'aria-label':'Going Further', placeholder:'Optional.'});
+    fta.value = rec.x || '';
+    fta.addEventListener('input', () => { store[item.id] = Object.assign(store[item.id] || {}, {x: fta.value}); save(); });
+    const det = el('details', {class:'further'}, el('summary', {text:'Going Further (optional)'}), el('p', {text: item.further}), fta);
+    if (rec.x) det.open = true;
+    box.append(det);
+  }
+  return box;
+}
+
+/* ---------- a passage card ---------- */
+function passageCard(p, l, n, total, single){
+  const sec = SEC[p.sec];
+  const art = el('article', {class:'psg', id:'p-' + p.id, 'data-listen':'', 'aria-labelledby':'h-' + p.id});
+  const copy = el('button', {type:'button', class:'btn ghost small', text:'Copy Link', title:'Copy a link straight to this passage', onclick: async () => {
+    const ok = await copyText(linkFor(p.id, false));
+    toast(ok ? 'Link copied.' : linkFor(p.id, false));
+  }});
+  art.append(el('div', {class:'psg-head'},
+    el('div', {}, el('p', {class:'sec', text: sec.label + (sec.label !== sec.title ? ': ' + sec.title : '') + (n ? '  ·  Passage ' + n + ' of ' + total : '')}),
+                  el('h2', {id:'h-' + p.id, text: p.title})),
+    el('div', {class:'tools', 'data-no-listen':''}, copy)));
+
+  const paras = origParas(p, l);
+  const marks = S.wordHelp ? markVocab(paras) : paras.map(() => []);
+  const orig = el('div', {class:'orig'}, el('p', {class:'lab', text:"Paine's Words, 1776"}));
+  paras.forEach((t, i) => orig.append(renderPara(t, marks[i])));
+
+  const plain = el('aside', {class:'plain', 'aria-label':'Plain English'});
+  const pt = el('div', {}, el('p', {class:'lab', text: l === 'd' ? 'In Plain Words' : 'In Plain English'}), el('p', {class:'pt', text: p.plain[l]}));
+  if (S.hidePlain) {
+    pt.hidden = true;
+    const rv = el('button', {type:'button', class:'btn ghost small reveal', text:'Show Plain English', onclick: () => { pt.hidden = false; rv.remove(); }});
+    plain.append(el('p', {class:'lab', text:'Try reading on your own first.'}), rv);
+  }
+  plain.append(pt);
+  if (rank(l) >= 2) plain.append(el('div', {class:'closer'}, el('b', {text:'Look Closer'}), el('p', {text: p.note})));
+  if (l === 'd') plain.append(el('a', {class:'full-link', href:'common-sense-full.html#' + p.id, text:'See it in the whole pamphlet'}));
+  art.append(el('div', {class:'psg-body'}, orig, plain));
+  art.append(thinkBox(p, l, S.ans, {heading:'Stop and Think', onSave: updateDots}));
+  return art;
+}
+
+/* ---------- views ---------- */
+const app = document.getElementById('app');
+const lvlBtn = document.getElementById('lvlBtn');
+lvlBtn.addEventListener('click', () => { location.hash = 'start'; });
+
+function setView(){
+  closeV(false);
+  if (window.READER_TOOLS) READER_TOOLS.reset();
+  app.classList.toggle('no-vocab', !S.wordHelp);
+  LV.forEach(l => app.classList.toggle('lv-' + l, S.level === l));
+  const h = decodeURIComponent(location.hash.replace(/^#/, ''));
+  app.innerHTML = '';
+  if (PASS[h]) return single(PASS[h]);
+  if (h === 'read' && S.level) return reader();
+  if (h.startsWith('p-') && PASS[h.slice(2)] && S.level) return reader(h);
+  if (h === 'finish' && S.level) return reader('finish');
+  return landing(h === 'start');
+}
+
+function landing(focusLevels){
+  lvlBtn.hidden = true;
+  document.title = 'Common Sense, Annotated';
+  const hero = el('section', {class:'hero'},
+    el('div', {},
+      el('h1', {text:'Common Sense'}),
+      el('p', {class:'lead', text:'In January 1776, a newcomer from England named Thomas Paine published a short pamphlet. It argued that the colonies should break away from Britain, and thousands of colonists were convinced. Read his most famous words, with help built in.'}),
+      el('div', {class:'cta'},
+        el('a', {class:'btn', href:'#start', text:'Choose My Reading'}),
+        el('a', {class:'btn ghost', href:'common-sense-quiz.html', text:'Take the Quiz: Do You Have Common Sense?'}))),
+    el('div', {class:'pics'},
+      el('figure', {class:'portrait'}, el('img', {src:'images/paine-portrait.jpg', width:'640', height:'862', alt:'Painted portrait of Thomas Paine, a middle-aged man with gray hair in a dark red coat and white neckcloth, smiling slightly.'}),
+        el('figcaption', {text:'Thomas Paine, after a portrait by George Romney.'})),
+      el('figure', {class:'title-page'}, el('img', {src:'images/common-sense-title-page.jpg', width:'510', height:'800', alt:'The title page of Common Sense, printed in Philadelphia by R. Bell in 1776. It lists the four subjects of the pamphlet.'}),
+        el('figcaption', {text:'The first edition, Philadelphia, 1776.'}))));
+
+  const facts = el('section', {class:'facts', 'aria-label':'Quick facts'},
+    el('div', {class:'fact'}, el('b', {text:'Late 1774'}), el('p', {text:'Paine arrives in Philadelphia from England, with a letter from Benjamin Franklin.'})),
+    el('div', {class:'fact'}, el('b', {text:'January 10, 1776'}), el('p', {text:'Common Sense is published. His name is not on it.'})),
+    el('div', {class:'fact'}, el('b', {text:'Plain Words'}), el('p', {text:'Paine wrote for farmers and workers, not just educated leaders. It was read aloud in taverns.'})),
+    el('div', {class:'fact'}, el('b', {text:'July 4, 1776'}), el('p', {text:'About six months later, Congress declares independence.'})));
+
+  /* Level picker */
+  const chosen = S.level || 'f';
+  const lv = el('div', {class:'levels', role:'radiogroup', 'aria-label':'Reading'});
+  const startBtn = el('a', {class:'btn', href:'#read', text:'Start Reading'});
+  LV.forEach((l, i) => {
+    const n = pathFor(l).length;
+    const b = el('button', {type:'button', class:'lvl', role:'radio', 'aria-checked': String(l === chosen)},
+      el('span', {class:'nm', text: LV_NAME[l]}),
+      el('span', {class:'bars', 'aria-hidden':'true'}, LV.map((x, k) => el('i', {class: k <= i ? 'on' : ''}))),
+      el('span', {class:'bl', text: LV_BLURB[l]}),
+      el('span', {class:'ct', text: (l === 'q' ? n + ' short passages' : n + ' passages') + ', ' + LV_TIME[l] + '.'}));
+    b.addEventListener('click', () => { S.level = l; save(); lv.querySelectorAll('.lvl').forEach(x => x.setAttribute('aria-checked', String(x === b))); });
+    lv.append(b);
+  });
+  if (!S.level) { S.level = 'f'; save(); }
+
+  /* Text options */
+  const segPlain = el('div', {class:'seg'},
+    el('button', {type:'button', 'data-v':'show', text:'Show It'}),
+    el('button', {type:'button', 'data-v':'hide', text:'Hide It Until I Tap'}));
+  const segWords = el('div', {class:'seg'},
+    el('button', {type:'button', 'data-v':'on', text:'On'}),
+    el('button', {type:'button', 'data-v':'off', text:'Off'}));
+  function syncOpts(){
+    segPlain.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.v === 'hide') === !!S.hidePlain)));
+    segWords.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.v === 'on') === !!S.wordHelp)));
+  }
+  segPlain.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; S.hidePlain = b.dataset.v === 'hide'; save(); syncOpts(); });
+  segWords.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; S.wordHelp = b.dataset.v === 'on'; save(); syncOpts(); });
+  syncOpts();
+
+  const pick = el('section', {class:'block', id:'start', 'aria-labelledby':'pickH'},
+    el('h2', {id:'pickH', text:'Pick Your Reading'}),
+    el('p', {class:'sub', text:"Every reading has Paine's real words on the left and plain English on the right. The harder the reading, the more of the pamphlet you read."}),
+    lv,
+    el('div', {class:'opts'},
+      el('div', {class:'opt-row'}, el('span', {class:'lab', text:'Plain English Side'}), segPlain,
+        el('p', {class:'hint', text:'Want a challenge? Hide it, read Paine first, then tap to check yourself.'})),
+      el('div', {class:'opt-row'}, el('span', {class:'lab', text:'Word Help'}), segWords,
+        el('p', {class:'hint', text:'Tap an underlined word to see what it means.'})),
+      el('div', {class:'opt-row'}, el('span', {class:'lab', text:'Listen and Font'}), el('p', {text:'Use Listen at the top to hear any page read aloud. Use Font to change the letters, size, and spacing.'}))),
+    el('div', {class:'start-row'}, startBtn, el('span', {class:'starter', text:'Your answers save on this computer as you type.'})));
+
+  const more = el('section', {class:'more', 'aria-label':'More'},
+    el('a', {href:'common-sense-quiz.html'}, el('b', {text:'Do You Have Common Sense?'}), el('span', {text:'Ten questions. Find out how much you agree with Thomas Paine.'})),
+    el('a', {href:'common-sense-full.html'}, el('b', {text:'The Whole Pamphlet'}), el('span', {text:'Every word of Common Sense, with links back to the passages you can read here.'})));
+
+  const credits = el('footer', {class:'credits'},
+    el('p', {text:'The text of Common Sense is from the 1776 third edition (Project Gutenberg). The portrait of Paine (National Portrait Gallery, London) and the title page are public domain, from Wikimedia Commons. The plain-English versions, notes, and questions were written for this page.'}));
+
+  app.append(hero, facts, pick, more, credits);
+  if (focusLevels) { pick.scrollIntoView(); lv.querySelector('[aria-checked="true"]').focus({preventScroll:true}); }
+}
+
+function reader(scrollTo){
+  const l = S.level;
+  const path = pathFor(l);
+  lvlBtn.hidden = false; lvlBtn.textContent = 'Reading: ' + LV_NAME[l];
+  document.title = 'Common Sense: ' + LV_NAME[l];
+  const dots = el('nav', {class:'dots', 'aria-label':'Passages'});
+  path.forEach((p, i) => dots.append(el('a', {href:'#p-' + p.id, 'data-id': p.id, title: p.title, 'aria-label': 'Passage ' + (i + 1) + ': ' + p.title, text: String(i + 1)})));
+  dots.append(el('a', {href:'#finish', class:'end', text:'Finish'}));
+  const top = el('section', {class:'path-top'},
+    el('h1', {text:'Common Sense'}),
+    el('div', {class:'path-meta'},
+      el('span', {class:'chip', text: LV_NAME[l] + ' Reading'}),
+      el('span', {text: path.length + ' passages from the pamphlet, in order. Answer the Stop and Think question under each one, then finish with a reflection and an extension.'})),
+    l === 'd' ? el('p', {}, 'You see the longest passages. Want the whole thing? ', el('a', {href:'common-sense-full.html', text:'Read the whole pamphlet'}), '.') : null,
+    dots);
+  app.append(top);
+  path.forEach((p, i) => {
+    const card = passageCard(p, l, i + 1, path.length);
+    const next = path[i + 1];
+    card.append(el('div', {class:'next-row', 'data-no-listen':''},
+      next ? el('a', {class:'btn ghost small', href:'#p-' + next.id, text:'Next: ' + next.title}) : el('a', {class:'btn small', href:'#finish', text:'Finish Up'})));
+    app.append(card);
+  });
+  app.append(finishSection(l, path));
+  updateDots();
+  if (scrollTo) {
+    const target = document.getElementById(scrollTo);
+    if (target) requestAnimationFrame(() => target.scrollIntoView());
+  } else window.scrollTo(0, 0);
+}
+
+function single(p){
+  const l = S.level || 'f';
+  if (!S.level) { S.level = l; save(); }
+  lvlBtn.hidden = true;
+  document.title = 'Common Sense: ' + p.title;
+  const seg = el('div', {class:'seg', role:'group', 'aria-label':'Reading'});
+  LV.forEach(x => seg.append(el('button', {type:'button', 'aria-pressed': String(x === l), text: LV_NAME[x], onclick: () => { S.level = x; save(); setView(); }})));
+  app.append(el('section', {class:'single-note'},
+    el('p', {}, el('b', {text:'One passage from Common Sense. '}), 'Pick your reading, read, and answer the question. Then send it to Mr. B.'),
+    seg));
+  app.append(passageCard(p, l, 0, 0, true));
+  app.append(sendBlock(l, [p], true));
+  app.append(el('p', {}, el('a', {href:'#', text:'See all the passages'}), '  ·  ', el('a', {href:'common-sense-quiz.html', text:'Take the quiz'})));
+  window.scrollTo(0, 0);
+}
+
+function updateDots(){
+  document.querySelectorAll('.dots a[data-id]').forEach(a => {
+    const done = (S.ans[a.dataset.id] && S.ans[a.dataset.id].a || '').trim().length > 0;
+    a.classList.toggle('done', done);
+    a.setAttribute('aria-label', a.getAttribute('aria-label').replace(/ \(answered\)$/, '') + (done ? ' (answered)' : ''));
+  });
+}
+
+/* ---------- finish: reflection, extension, send ---------- */
+function finishSection(l, path){
+  const sec = el('section', {class:'finish', id:'finish', 'data-listen':''});
+  sec.append(el('h2', {text:'Finish Up'}));
+  CS.reflect.forEach((r, i) => sec.append(thinkBox(r, l, S.refl, {cls:'q-card', heading:'Reflect ' + (i + 1)})));
+
+  const extCard = el('div', {class:'q-card'}, el('h3', {text:'Extension: Pick One'}));
+  const grid = el('div', {class:'ext-grid', role:'radiogroup', 'aria-label':'Extensions'});
+  const extTask = el('p', {class:'ask'});
+  const extTa = el('textarea', {'aria-label':'Your extension', placeholder:'Type your extension here.'});
+  extTa.value = S.ext.a || '';
+  function showExt(){
+    const x = CS.extensions.find(e => e.id === S.ext.id);
+    extTask.textContent = x ? (l === 'q' ? x.qtask : x.task) : 'Pick one above.';
+    extTa.hidden = !x;
+    grid.querySelectorAll('.ext').forEach(b => b.setAttribute('aria-checked', String(b.dataset.id === S.ext.id)));
+  }
+  CS.extensions.forEach(x => {
+    const b = el('button', {type:'button', class:'ext', role:'radio', 'data-id': x.id}, el('b', {text: x.title}), el('span', {text: (l === 'q' ? x.qtask : x.task).split('. ')[0] + '.'}));
+    b.addEventListener('click', () => { S.ext.id = x.id; save(); showExt(); extTa.focus(); });
+    grid.append(b);
+  });
+  extTa.addEventListener('input', () => { S.ext.a = extTa.value; save(); });
+  extCard.append(grid, extTask, extTa);
+  showExt();
+  sec.append(extCard);
+  sec.append(sendBlock(l, path, false));
+  return sec;
+}
+
+function sendBlock(l, list, single){
+  const fn = el('input', {type:'text', id:'fn', autocomplete:'off'}), li = el('input', {type:'text', id:'li', maxlength:'1', autocomplete:'off'});
+  const per = el('select', {id:'per'}, el('option', {value:'', text:'Pick'}), [1,2,3,4,5,6].map(n => el('option', {text:String(n)})));
+  fn.value = S.fn || ''; li.value = S.li || ''; per.value = S.per || '';
+  [fn, li, per].forEach(x => x.addEventListener('input', () => { S.fn = fn.value.trim(); S.li = li.value.trim().toUpperCase(); S.per = per.value; save(); }));
+  const msg = el('p', {class:'msg', role:'status'});
+  const sendBtn = el('button', {type:'button', class:'btn', text:'Send to Mr. B'});
+  const copyBtn = el('button', {type:'button', class:'btn ghost', text:'Copy My Work'});
+  sendBtn.addEventListener('click', () => sendToMrB(buildPayload(l, list, single), sendBtn, msg, fn));
+  copyBtn.addEventListener('click', async () => {
+    const text = workText(l, list, single);
+    const ok = await copyText(text);
+    if (ok) msg.textContent = 'Copied. Paste it into Canvas if Mr. B asks you to.';
+    else { const ta = el('textarea', {readonly:''}); ta.value = text; msg.textContent = 'Select the text below and copy it.'; msg.after(ta); ta.select(); }
+  });
+  return el('div', {class:'q-card', 'data-no-listen':''},
+    el('h3', {text: single ? 'Send Your Answer' : 'Turn It In'}),
+    el('p', {text: single ? 'Type your name, then send.' : 'This is extra credit. Send it when you are done, even if you did not answer every passage.'}),
+    el('div', {class:'who'},
+      el('label', {for:'fn'}, 'First name', fn), el('label', {for:'li'}, 'Last initial', li), el('label', {for:'per'}, 'Period', per)),
+    el('div', {class:'send-row'}, sendBtn, copyBtn), msg);
+}
+
+function answered(list){ return list.filter(p => ((S.ans[p.id] || {}).a || '').trim()); }
+function buildPayload(l, list, single){
+  const items = [];
+  const done = answered(list);
+  done.forEach(p => {
+    const r = S.ans[p.id];
+    items.push({q: p.title + ': ' + ask(p, r.l || l), a: r.a.trim(), note: (r.x || '').trim() ? 'Going Further: ' + r.x.trim() : ''});
+  });
+  if (!single) {
+    CS.reflect.forEach((r, i) => { const a = ((S.refl[r.id] || {}).a || '').trim(); if (a) items.push({q: 'Reflect ' + (i + 1) + ': ' + ask(r, l), a}); });
+    const x = CS.extensions.find(e => e.id === S.ext.id);
+    if (x && (S.ext.a || '').trim()) items.push({q: 'Extension: ' + x.title, a: S.ext.a.trim()});
+  }
+  const score = single
+    ? 'One passage: ' + list[0].title + ' (' + LV_NAME[l] + ' reading)'
+    : LV_NAME[l] + ' reading. Answered ' + done.length + ' of ' + list.length + ' passages' +
+      (CS.reflect.every(r => ((S.refl[r.id] || {}).a || '').trim()) ? ', both reflections' : '') +
+      ((S.ext.a || '').trim() ? ', and an extension.' : '.');
+  return {activity: 'Common Sense', score, items};
+}
+function workText(l, list, single){
+  const pl = buildPayload(l, list, single);
+  const name = (S.fn || '(no name)') + (S.li ? ' ' + S.li + '.' : '') + (S.per ? ', Period ' + S.per : '');
+  return 'Common Sense\n' + name + '\n' + pl.score + '\n\n' + pl.items.map((it, i) => (i + 1) + '. ' + it.q + '\n' + it.a + (it.note ? '\n' + it.note : '')).join('\n\n');
+}
+
+/* ---------- Send to Mr. B ----------
+   The same Apps Script as the Fast Finisher Menu (tools/fast-finisher-mailer.gs).
+   Posts in a small new window, which carries the student's school sign-in; the
+   script emails Mr. B and answers with postMessage. */
+const MAILER_URL = 'https://script.google.com/a/macros/edmonds.wednet.edu/s/AKfycbxMFUW_B1AXQUPNPklTlOiOyUPTCFnDYKI9Dmp8mH9UUUo4RxHgTOKUkKN9_wFNnncw/exec';
+let sendN = 0;
+function sendToMrB(payload, btn, msgEl, fnInput){
+  if (!S.fn || !S.per) { msgEl.textContent = 'Type your first name and pick your period first.'; fnInput.focus(); return; }
+  if (!payload.items.length) { msgEl.textContent = 'Answer at least one question first.'; return; }
+  const name = 'cs-send-' + (++sendN) + '-' + Date.now();
+  const tab = window.open('', name, 'width=520,height=420');
+  const form = el('form', {method:'POST', action: MAILER_URL, target: tab ? name : '_blank', hidden:''});
+  const inp = el('input', {type:'hidden', name:'payload'});
+  inp.value = JSON.stringify(Object.assign({student: S.fn + (S.li ? ' ' + S.li + '.' : ''), period: S.per}, payload));
+  form.append(inp); document.body.append(form);
+  btn.disabled = true; msgEl.textContent = 'Sending… a small window opened. It says "Sent to Mr. B" when it works.';
+  let done = false;
+  function finish(text){ if (done) return; done = true; window.removeEventListener('message', onMsg); btn.disabled = false; msgEl.textContent = text; form.remove(); }
+  function onMsg(e){ const d = e.data; if (!d || d.source !== 'ff-mailer') return;
+    finish(d.ok ? 'Sent to Mr. B at ' + new Date().toLocaleTimeString([], {hour:'numeric', minute:'2-digit'}) + '.'
+                : 'That did not send. Make sure you are signed in to your school account, then try again.'); }
+  window.addEventListener('message', onMsg);
+  setTimeout(() => finish('If the small window said "Sent to Mr. B", you are done. If not, use Copy My Work.'), 30000);
+  form.submit();
+}
+
+window.addEventListener('hashchange', setView);
+document.getElementById('home').addEventListener('click', e => { e.preventDefault(); if (location.hash) location.hash = ''; else setView(); window.scrollTo(0, 0); });
+setView();
+})();
+</script>
+<script src="reader-tools.js?v=20261014b"></script>
+<script>
+/* Group each Font-panel row's buttons so the row is label + options (as on index.html). */
+window.addEventListener('load', function(){
+  document.querySelectorAll('#rtools .rt-row').forEach(function(row){
+    if (row.querySelector('.rt-opts')) return;
+    var opts = document.createElement('div'); opts.className = 'rt-opts';
+    Array.prototype.slice.call(row.querySelectorAll(':scope > .rt-opt')).forEach(function(b){ opts.appendChild(b); });
+    row.appendChild(opts);
+  });
+});
+</script>
+</body>
+</html>

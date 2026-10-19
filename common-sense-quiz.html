@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Do You Have Common Sense?</title>
+<meta name="description" content="Ten questions. Find out how much you agree with Thomas Paine.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Libre+Caslon+Text:ital@0;1&display=swap">
+<link rel="stylesheet" href="fonts/atkinson.css?v=20261005">
+<style>
+/* Same Unit 2 look as common-sense.html. */
+:root{
+  --bg:#f6f1e8; --panel:#fffdf9; --ink:#1f2124; --muted:#5a4f45; --rule:#d6cfc3;
+  --deep:#7a2a28; --accent:#b23a34; --tint:#f6e7e4; --gold:#9a7536; --band:#f1e6d8; --on-accent:#fff;
+  --ok:#2c6b37; --ok-tint:#e4f1e6; --no:#8a4b12; --no-tint:#f8ebdc;
+  --mast:#3d1413; --mast-ink:#fff8ee; --mast-edge:#b88f86; --card:var(--panel);
+  --loyal:#1b2d45;
+  --display:'Playfair Display',Georgia,serif;
+  --body:'Atkinson Hyperlegible Next','Atkinson Hyperlegible',Verdana,system-ui,sans-serif;
+  --orig:'Libre Caslon Text',Georgia,serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1a1614; --panel:#241f1c; --ink:#f3ece3; --muted:#c9bcae; --rule:#40362f;
+  --deep:#f0a59c; --accent:#e9827a; --tint:#3a2421; --gold:#d9b46a; --band:#2e2622; --on-accent:#1a0b09;
+  --ok:#8fd19a; --ok-tint:#1f3424; --no:#f0b37a; --no-tint:#3a2a1a; --loyal:#9db8e0;
+  --mast:#0f0b0a; --mast-edge:#7d6a62; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1a1614; --panel:#241f1c; --ink:#f3ece3; --muted:#c9bcae; --rule:#40362f;
+  --deep:#f0a59c; --accent:#e9827a; --tint:#3a2421; --gold:#d9b46a; --band:#2e2622; --on-accent:#1a0b09;
+  --ok:#8fd19a; --ok-tint:#1f3424; --no:#f0b37a; --no-tint:#3a2a1a; --loyal:#9db8e0;
+  --mast:#0f0b0a; --mast-edge:#7d6a62; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55}
+h1,h2,h3{font-family:var(--display);color:var(--deep);margin:0;line-height:1.12;text-wrap:balance}
+p{margin:0}
+a{color:var(--accent);font-weight:700}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+.mast{position:sticky;top:0;z-index:20;background:var(--mast);color:var(--mast-ink);border-bottom:3px solid var(--gold)}
+.mast .in{max-width:980px;margin:0 auto;padding:8px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.brand{font-family:var(--display);font-weight:800;font-size:21px;color:var(--mast-ink);text-decoration:none}
+.spacer{flex:1 1 auto}
+.mast #rtools{position:relative;margin:0;flex-wrap:nowrap}
+#rtools .rt-btn{min-height:40px;padding:6px 14px;border-radius:8px;font-size:15px;font-weight:700;background:transparent;color:var(--mast-ink);border:2px solid var(--mast-edge)}
+#rtools .rt-btn.rt-primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+#rtools .rt-panel{position:absolute;top:calc(100% + 8px);right:0;width:min(360px,90vw);z-index:30;box-shadow:0 10px 30px rgba(0,0,0,.3);color:var(--ink)}
+#rtools .rt-panel .rt-row{display:grid;grid-template-columns:76px 1fr;gap:10px;align-items:center;margin:0 0 14px}
+#rtools .rt-panel .rt-opts{display:flex;flex-wrap:wrap;gap:8px}
+main.wrap{max-width:980px;margin:0 auto;padding:24px 16px 64px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:10px 20px;border-radius:10px;border:0;background:var(--accent);color:var(--on-accent);font-weight:800;font-size:17px;cursor:pointer;text-decoration:none}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--rule)}
+.btn:hover{filter:brightness(1.07)}
+
+/* Intro */
+.intro{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:30px;align-items:center;min-height:calc(100vh - 160px)}
+.intro h1{font-size:clamp(44px,8vw,80px);line-height:.98}
+.intro .lead{font-size:clamp(18px,2.2vw,22px);margin:16px 0 22px}
+.intro .how{color:var(--muted);margin-bottom:22px}
+.intro figure{margin:0;background:var(--panel);border:1px solid var(--rule);border-radius:8px;padding:10px;transform:rotate(2deg);box-shadow:0 16px 36px rgba(40,10,5,.22)}
+.intro figure img{display:block;width:100%;height:auto;border-radius:4px}
+.intro figcaption{font-size:13px;color:var(--muted);margin-top:6px}
+
+/* Question */
+.qwrap{max-width:760px;margin:0 auto;display:grid;gap:22px}
+.progress{display:grid;gap:8px}
+.progress .bar{height:10px;border-radius:999px;background:var(--rule);overflow:hidden}
+.progress .bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+.progress p{color:var(--muted);font-weight:700}
+.statement{font-family:var(--display);font-size:clamp(28px,4.4vw,42px);color:var(--ink);line-height:1.2;min-height:3.6em;display:flex;align-items:center}
+.choices{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.choice{min-height:84px;padding:12px 10px;border-radius:12px;border:2px solid var(--rule);background:var(--panel);cursor:pointer;font-weight:800;font-size:17px;line-height:1.2;display:grid;gap:6px;place-items:center;text-align:center}
+.choice .dot{width:18px;height:18px;border-radius:50%;border:2px solid currentColor}
+.choice.sd{color:var(--loyal)} .choice.d{color:var(--loyal)}
+.choice.a{color:var(--accent)} .choice.sa{color:var(--accent)}
+.choice.sd .dot,.choice.sa .dot{width:24px;height:24px}
+.choice:hover{border-color:currentColor}
+.choice[aria-pressed="true"]{border-color:currentColor;background:var(--tint)}
+.choice[aria-pressed="true"] .dot{background:currentColor}
+.qnav{display:flex;justify-content:space-between;gap:10px}
+
+/* Result */
+.result{display:grid;gap:22px}
+.score-card{background:var(--panel);border:1px solid var(--rule);border-radius:16px;padding:24px;display:grid;gap:14px;text-align:center}
+.score-card .pct{font-family:var(--display);font-size:clamp(56px,10vw,96px);font-weight:800;color:var(--deep);line-height:1}
+.score-card h2{font-size:clamp(28px,4vw,40px)}
+.score-card .desc{font-size:19px;max-width:40em;margin:0 auto}
+.meter{position:relative;margin:30px 6px 8px}
+.meter .track{height:18px;border-radius:999px;background:linear-gradient(90deg,var(--loyal),#8c7a8a 50%,var(--accent))}
+.meter .pin{position:absolute;top:-26px;transform:translateX(-50%);display:grid;place-items:center}
+.meter .pin b{background:var(--ink);color:var(--bg);padding:2px 8px;border-radius:6px;font-size:14px;white-space:nowrap}
+.meter .pin i{width:0;height:0;border:7px solid transparent;border-top-color:var(--ink)}
+.meter .ends{display:flex;justify-content:space-between;font-weight:700;font-size:15px;margin-top:6px}
+.meter .ends span:first-child{color:var(--loyal)} .meter .ends span:last-child{color:var(--accent)}
+.talk{background:var(--tint);border-left:5px solid var(--accent);border-radius:10px;padding:14px 18px;font-size:18px}
+.talk b{color:var(--deep)}
+.breakdown{display:grid;gap:12px}
+.breakdown h2{font-size:30px}
+.row{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:16px 18px;display:grid;gap:8px}
+.row .st{font-weight:800;font-size:18px}
+.row .vs{display:flex;flex-wrap:wrap;gap:8px}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 12px;border-radius:999px;font-weight:700;font-size:15px;background:var(--band)}
+.pill.match{background:var(--ok-tint);color:var(--ok)}
+.pill.miss{background:var(--no-tint);color:var(--no)}
+.row blockquote{margin:0;font-family:var(--orig);font-size:18px;border-left:3px solid var(--gold);padding-left:12px}
+.row .why{color:var(--muted)}
+.end-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+@media (max-width:760px){
+  .intro{grid-template-columns:1fr;min-height:0}
+  .intro figure{max-width:320px;justify-self:center}
+  .choices{grid-template-columns:1fr 1fr}
+  .statement{min-height:0}
+}
+@media (max-width:560px){.brand{font-size:18px}}
+</style>
+</head>
+<body>
+<header class="mast">
+  <div class="in">
+    <a class="brand" href="common-sense.html">Common Sense</a>
+    <span class="spacer"></span>
+    <div id="rtools" role="group" aria-label="Listen and font"></div>
+  </div>
+</header>
+<main class="wrap" id="app" data-listen></main>
+
+<script>
+(function(){
+'use strict';
+/* The ten statements. paine: true if Paine would agree. id: the passage in
+   common-sense.html where he argues it. quote: Paine's words (1776). */
+const QS = [
+  { s: 'A person should get to be a leader because of who their parents are.', paine: false, id: 'ass-lion',
+    quote: 'nature disapproves it, otherwise she would not so frequently turn it into ridicule by giving mankind an ass for a lion.',
+    why: 'Paine said being born into a royal family proves nothing. A great king can have a child who would be a terrible ruler.' },
+  { s: 'Government is something we need, but it is not really a good thing.', paine: true, id: 'society',
+    quote: 'government even in its best state is but a necessary evil',
+    why: 'Paine said people working together is good, but government only exists because people do wrong.' },
+  { s: 'Rules should apply to everyone, even the person in charge.', paine: true, id: 'law-is-king',
+    quote: 'in America the law is king.',
+    why: 'Paine said that in a free country, the law rules everyone. No leader is above it.' },
+  { s: 'A small country far away should be able to make the rules for a much bigger place.', paine: false, id: 'island',
+    quote: 'there is something very absurd, in supposing a continent to be perpetually governed by an island.',
+    why: 'Paine said it was silly for one small island, England, to rule a whole continent from across the ocean.' },
+  { s: 'Ordinary people should get to choose who makes the laws.', paine: true, id: 'tree',
+    quote: 'In this first parliament every man, by natural right, will have a seat.',
+    why: 'Paine said government starts with people meeting together, then choosing representatives who share their interests.' },
+  { s: 'If someone took care of you in the past, you should stay loyal to them no matter what.', paine: false, id: 'milk',
+    quote: 'We may as well assert that because a child has thrived upon milk, that it is never to have meat',
+    why: 'Paine said doing well under Britain in the past did not mean America needed Britain forever. America had grown up.' },
+  { s: 'If you know you have to do something hard, it is better to do it now than to keep putting it off.', paine: true, id: 'putting-off',
+    quote: 'like a man who continues putting off some unpleasant business from day to day, yet knows it must be done',
+    why: 'Paine said America should declare independence now instead of dreading it.' },
+  { s: 'After a big fight, it is usually best to make up and go back to the way things were.', paine: false, id: 'time-to-part',
+    quote: "The blood of the slain, the weeping voice of nature cries, 'Tis time to part.",
+    why: 'After people died at Lexington, Concord, and Bunker Hill, Paine said making up with Britain was no longer possible.' },
+  { s: 'A group that sticks together is stronger than a group that is just big.', paine: true, id: 'unity',
+    quote: 'It is not in numbers, but in unity, that our great strength lies',
+    why: 'Paine said no colony could win alone, but together they could.' },
+  { s: 'When people fight for freedom in one country, it matters to people everywhere.', paine: true, id: 'cause',
+    quote: 'The cause of America is in a great measure the cause of all mankind.',
+    why: "Paine said America's fight was about rights that belong to every person on earth." }
+];
+const CHOICES = [
+  { v: 1, cls: 'sd', label: 'Strongly Disagree' },
+  { v: 2, cls: 'd', label: 'Disagree' },
+  { v: 3, cls: 'a', label: 'Agree' },
+  { v: 4, cls: 'sa', label: 'Strongly Agree' }
+];
+const LABEL = {1:'Strongly Disagree', 2:'Disagree', 3:'Agree', 4:'Strongly Agree'};
+const TIERS = [
+  { min: 85, name: 'Pure Common Sense', desc: 'You think like Thomas Paine. In 1776 you would have been handing out his pamphlet on the streets of Philadelphia.' },
+  { min: 65, name: 'Patriot', desc: 'You agree with Paine on most things. In 1776 you probably would have sided with independence.' },
+  { min: 45, name: 'On the Fence', desc: 'You agree with Paine on some things but not others. In early 1776, many colonists were unsure too. Paine wrote Common Sense to win over people just like you.' },
+  { min: 25, name: 'Cautious Colonist', desc: 'You have doubts about Paine\'s ideas. Like many colonists, you might have hoped the colonies and Britain could still make up.' },
+  { min: 0, name: 'Loyalist', desc: 'You disagree with Paine on most things. In 1776 you would likely have stayed loyal to the King, like thousands of colonists did.' }
+];
+
+const KEY = 'cs-quiz-v1';
+let S = {};
+try { S = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { S = {}; }
+S.a = Array.isArray(S.a) ? S.a : [];
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+try { var t = JSON.parse(localStorage.getItem('cs-annotated-v1') || '{}').theme; if (t && t !== 'auto') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+
+const app = document.getElementById('app');
+function el(tag, attrs, ...kids){
+  const e = document.createElement(tag);
+  if (attrs) for (const k in attrs) {
+    const v = attrs[k]; if (v == null || v === false) continue;
+    if (k === 'class') e.className = v; else if (k === 'text') e.textContent = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v);
+  }
+  kids.flat().forEach(k => { if (k != null && k !== false) e.append(k); });
+  return e;
+}
+function reset(){ if (window.READER_TOOLS) READER_TOOLS.reset(); app.innerHTML = ''; window.scrollTo(0, 0); }
+
+function intro(){
+  reset();
+  const resume = S.a.filter(Boolean).length && S.a.filter(Boolean).length < QS.length;
+  app.append(el('section', {class:'intro'},
+    el('div', {},
+      el('h1', {text:'Do You Have Common Sense?'}),
+      el('p', {class:'lead', text:'In 1776, Thomas Paine wrote a pamphlet called Common Sense. He said his ideas were just plain common sense. Do you agree with him?'}),
+      el('p', {class:'how', text:'Read 10 statements. Pick how much you agree with each one. There are no wrong answers. At the end, find out how much you think like Paine.'}),
+      el('div', {style:'display:flex;flex-wrap:wrap;gap:10px'},
+        el('button', {class:'btn', type:'button', text: resume ? 'Keep Going' : 'Start', onclick: () => question(resume ? S.a.findIndex(x => !x) : 0)}),
+        resume ? el('button', {class:'btn ghost', type:'button', text:'Start Over', onclick: () => { S.a = []; save(); question(0); }}) : null)),
+    el('figure', {}, el('img', {src:'images/paine-portrait.jpg', width:'640', height:'862', alt:'Painted portrait of Thomas Paine, smiling slightly, in a dark red coat.'}),
+      el('figcaption', {text:'Thomas Paine, after a portrait by George Romney.'}))));
+  app.querySelector('.btn').focus();
+}
+
+function question(i){
+  if (i < 0) i = 0;
+  if (i >= QS.length) return result();
+  reset();
+  const q = QS[i];
+  const wrap = el('section', {class:'qwrap', 'aria-labelledby':'stmt'});
+  wrap.append(el('div', {class:'progress'},
+    el('p', {text:'Question ' + (i + 1) + ' of ' + QS.length}),
+    el('div', {class:'bar', role:'progressbar', 'aria-valuemin':'0', 'aria-valuemax': String(QS.length), 'aria-valuenow': String(i)}, el('i', {style:'width:' + (i / QS.length * 100) + '%'}))));
+  wrap.append(el('h1', {class:'statement', id:'stmt', text: q.s}));
+  const ch = el('div', {class:'choices', role:'group', 'aria-labelledby':'stmt'});
+  CHOICES.forEach(c => ch.append(el('button', {type:'button', class:'choice ' + c.cls, 'aria-pressed': String(S.a[i] === c.v), onclick: (e) => {
+    S.a[i] = c.v; save();
+    const me = e.currentTarget;
+    ch.querySelectorAll('.choice').forEach(b => b.setAttribute('aria-pressed', String(b === me)));
+    setTimeout(() => question(i + 1), 280);
+  }}, el('span', {class:'dot', 'aria-hidden':'true'}), el('span', {text: c.label}))));
+  wrap.append(ch);
+  wrap.append(el('div', {class:'qnav', 'data-no-listen':''},
+    el('button', {class:'btn ghost', type:'button', text: i ? 'Back' : 'Back to Start', onclick: () => i ? question(i - 1) : intro()}),
+    S.a[i] ? el('button', {class:'btn ghost', type:'button', text: i === QS.length - 1 ? 'See My Result' : 'Next', onclick: () => question(i + 1)}) : null));
+  app.append(wrap);
+  (ch.querySelector('[aria-pressed="true"]') || ch.querySelector('.choice')).focus();
+}
+
+function points(q, v){ return q.paine ? v - 1 : 4 - v; }   // 0 to 3, where 3 is Paine's view held strongly
+function result(){
+  const first = S.a.findIndex((x, i) => i < QS.length && !x);
+  if (first >= 0) return question(first);
+  reset();
+  const total = QS.reduce((sum, q, i) => sum + points(q, S.a[i]), 0);
+  const pct = Math.round(total / (QS.length * 3) * 100);
+  const tier = TIERS.find(t => pct >= t.min);
+  const matches = QS.filter((q, i) => (S.a[i] >= 3) === q.paine).length;
+  const res = el('section', {class:'result'});
+  res.append(el('div', {class:'score-card'},
+    el('p', {text:'You agree with Thomas Paine'}),
+    el('p', {class:'pct', text: pct + '%'}),
+    el('h2', {text: tier.name}),
+    el('p', {class:'desc', text: tier.desc}),
+    el('div', {class:'meter', role:'img', 'aria-label':'Paine-o-meter: ' + pct + ' percent, from Loyalist to Pure Common Sense'},
+      el('div', {class:'pin', style:'left:' + pct + '%', 'aria-hidden':'true'}, el('b', {text:'You'}), el('i')),
+      el('div', {class:'track'}),
+      el('div', {class:'ends', 'aria-hidden':'true'}, el('span', {text:'Loyalist'}), el('span', {text:'Pure Common Sense'}))),
+    el('p', {text:'You took the same side as Paine on ' + matches + ' of ' + QS.length + ' statements.'})));
+  res.append(el('p', {class:'talk'}, el('b', {text:'Talk with a partner: '}), 'Which of your answers is most different from Paine\'s? Do you still agree with yourself after reading his reason?'));
+  const bd = el('div', {class:'breakdown'}, el('h2', {text:'You vs. Paine'}));
+  QS.forEach((q, i) => {
+    const v = S.a[i], same = (v >= 3) === q.paine;
+    bd.append(el('div', {class:'row'},
+      el('p', {class:'st', text: (i + 1) + '. ' + q.s}),
+      el('div', {class:'vs'},
+        el('span', {class:'pill', text:'You: ' + LABEL[v]}),
+        el('span', {class:'pill', text:'Paine: ' + (q.paine ? 'Agree' : 'Disagree')}),
+        el('span', {class:'pill ' + (same ? 'match' : 'miss'), text: same ? 'Same side' : 'Different side'})),
+      el('blockquote', {}, '"' + q.quote + '"'),
+      el('p', {class:'why', text: q.why}),
+      el('a', {href:'common-sense.html#' + q.id, text:'Read this passage'})));
+  });
+  res.append(bd);
+  res.append(el('div', {class:'end-row', 'data-no-listen':''},
+    el('a', {class:'btn', href:'common-sense.html', text:'Read Common Sense'}),
+    el('button', {class:'btn ghost', type:'button', text:'Change My Answers', onclick: () => question(0)}),
+    el('button', {class:'btn ghost', type:'button', text:'Start Over', onclick: () => { S.a = []; save(); intro(); }})));
+  app.append(res);
+}
+
+if (S.a.filter(Boolean).length === QS.length) result(); else intro();
+})();
+</script>
+<script src="reader-tools.js?v=20261014b"></script>
+<script>
+window.addEventListener('load', function(){
+  document.querySelectorAll('#rtools .rt-row').forEach(function(row){
+    if (row.querySelector('.rt-opts')) return;
+    var opts = document.createElement('div'); opts.className = 'rt-opts';
+    Array.prototype.slice.call(row.querySelectorAll(':scope > .rt-opt')).forEach(function(b){ opts.appendChild(b); });
+    row.appendChild(opts);
+  });
+});
+</script>
+</body>
+</html>
