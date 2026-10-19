@@ -645,6 +645,21 @@
   .starter-gloss{display:block;font-size:.9em;opacity:.85;margin-top:2px}
   .cd-steps{margin:0;padding-left:1.4em;display:grid;gap:6px;line-height:1.5}
   .cd-model{margin:10px 0 0;padding:8px 10px;border-left:4px solid var(--accent);background:var(--panel);border-radius:6px}
+  /* Step-by-step help under each reflection question (reflect-help.js). */
+  .reflect-help{margin:4px 0 10px;border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:10px;background:var(--surface-alt)}
+  .reflect-help > summary{cursor:pointer;padding:10px 14px;font-weight:700;color:var(--fg)}
+  .reflect-help[open] > summary{border-bottom:1px solid var(--border)}
+  .reflect-help > :not(summary){margin-left:14px;margin-right:14px}
+  .reflect-help > :last-child{margin-bottom:12px}
+  .rh-steps{margin-top:10px;padding-left:1.4em;display:grid;gap:6px;line-height:1.5}
+  .rh-pairs{margin-top:10px}
+  .rh-pairs ul{margin:4px 0 0;padding-left:1.3em;display:grid;gap:4px;line-height:1.5}
+  .rh-model-box{margin-top:10px}
+  .rh-model-box > summary{cursor:pointer;font-weight:700;color:var(--accent)}
+  .rh-model{margin:8px 0 6px;padding:8px 10px;border-left:4px solid var(--gold);background:var(--panel);border-radius:6px;font-style:italic}
+  .rh-model-note{margin:0 0 4px;font-size:.95rem}
+  .rh-nocopy{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+  .rh-page-link{display:inline-block;margin-top:10px;color:var(--accent);font-weight:700}
   @media(max-width:640px){ .cd-row{grid-template-columns:1fr auto;} .cd-track{grid-column:1 / -1;order:3} .cd-side{text-align:right} }
   .reflection-q > label{font-weight:700;font-size:1.05rem;display:block;margin-bottom:2px}
   .turn-in{border:2px solid var(--accent);border-radius:12px;padding:14px 16px;background:var(--surface)}
@@ -1000,6 +1015,8 @@
 
   <footer>United States History • Colonial Period • Unrest in the Colonies</footer>
 
+<script src="class-data.js?v=20261019"></script>
+<script src="reflect-help.js?v=20261019"></script>
 <script>
 // ----- Config -----
 const STORAGE_KEY = 'unrest-simple-v1';
@@ -1649,17 +1666,8 @@ const REFLECTION_STARTERS_SIMPLE = {
   q5: ['Colonists turned against Britain because ___.', 'Unrest went from ___ to ___ points because ___.', 'When Britain ___, colonists ___.']
 };
 
-// The whole grade's Day 6 results (every pair, every period), from the class
-// page's slides. Update avg, pairs and when after a new class average; the
-// Question 3 panel and its hints are built from these numbers.
-const CLASS_DATA = {
-  slides:'https://docs.google.com/presentation/d/13CegoBj5ImlE9K1z1sA__QOEXiZV50I4iaSDMgxrutU/edit?usp=sharing',
-  date:'2026-10-14', pairs:41,
-  // The slides' before/after-1770 averages, worked from the unrounded numbers;
-  // copied so the page and the slides match (blank: worked out from avg).
-  early:3.2, late:4.7,
-  avg:{A:2.6, B:3.3, C:3.6, D:3.2, E:5.4, F:3.8, G:4.0, H:3.2, I:6.8}
-};
+// CLASS_DATA (the whole grade's Day 6 averages) lives in class-data.js, shared
+// with the help page. Update it there after a new class average.
 
 const EVENT_ART = {
   A: {title:'Proclamation of 1763', subtitle:'Drawing a boundary line', colors:['#1e3a8a','#2563eb'], glyph:'⛰️'},
@@ -2516,12 +2524,14 @@ function renderQuestionsSection(){
     // "Look at" in that language, and each starter's translation under it
     // (the English starter is what goes into the answer).
     const tl = key==='q5' ? q5Lang() : 'en', T = CD_I18N[tl];
-    const mkSupports = ()=> elSupports({ look: tl!=='en' ? T.look : cfg.look, lookLang: tl, starters:(starters||[]).map(fillLinkTokens), glosses: tl!=='en' && lvl==='l0' ? T.starters : null, bank: lvl==='l0' ? cfg.bank : null, push: lvl==='adv' ? cfg.push : null }, input, v=>{ state.answers[key]=v; updateMissing(); });
+    const mkSupports = ()=> elSupports({ look: null, lookLang: tl, starters:(starters||[]).map(fillLinkTokens), glosses: tl!=='en' && lvl==='l0' ? T.starters : null, bank: lvl==='l0' ? cfg.bank : null, push: lvl==='adv' ? cfg.push : null }, input, v=>{ state.answers[key]=v; updateMissing(); });
     let supports = mkSupports();
     const pickers = cfg.pick ? elLinkPickers(()=>{ const fresh = mkSupports(); supports.replaceWith(fresh); supports = fresh; }) : null;
     const qTr = tl!=='en' ? h('p',{class:'q-translation', lang:LANG_TAG[tl]}, T.q) : null;
     if(qTr) qTr.setAttribute('translate','no');
-    return h('div',{class:'reflection-q'}, label, qTr, pickers, key==='q5' ? elClassData() : null, supports, input);
+    // Step-by-step help (reflect-help.js, shared with reflect-help.html).
+    const help = buildReflectHelp(key, lvl==='l0');
+    return h('div',{class:'reflection-q'}, label, qTr, pickers, key==='q5' ? elClassData() : null, supports, help, input);
   });
 
   // Turn in: copy everything (ratings, every reason, reflections) as plain text
@@ -2933,7 +2943,6 @@ const LOOK_HINT_PLACARD = ' Open “Show the reading again” below if you need 
 const LOOK_HINT_SUMMARY = ' The reading is just above.';
 const REFLECTION_QS = {
   q3: { q:'Which event did you move the most points on, and what changed your mind?',
-        look:'Look at: The “How your ratings changed” table above.',
         l0:['I changed ___ from ___ to ___. I changed it because ___.'], bank:['more','less','important','angry','first','later','because'],
         ss:['I moved ___ from ___ to ___ points because ___.', 'At first I gave ___ more points, but then ___.'],
         core:['I moved ___ from ___ to ___ points because ___.', 'I decided ___ mattered more than I first thought because earlier events like ___ had already ___.'],
@@ -2941,7 +2950,6 @@ const REFLECTION_QS = {
   // {A} and {B} are filled from the two event pickers (the event, and what it
   // led to); until a student picks, they show as blanks.
   q4: { q:'Which event changed what happened next the most, and how?',
-        look:'Look at: Your two highest-rated events in the table above, and the event right before each one. Which earlier event set it off?',
         pick:true,
         l0:['The most important event was {A}. After it, {B} happened.'], bank:['led to','after','so','because','war','protest','punish'],
         ss:['{A} changed what happened next: it led to {B} because ___.', 'After {A}, colonists ___.'],
@@ -2951,7 +2959,6 @@ const REFLECTION_QS = {
   // Unit 2 supporting essential question, verbatim from the Unit 2 Content Brief.
   // Evidence: the grade's class averages from Day 6 (CLASS_DATA, shown above the question) and the tracker.
   q5: { q:'How did loyal British subjects turn into revolutionaries in barely a decade?',
-        look:'Look at: “Use our class data” just above. Did the numbers grow? What did each side do, and what happened when they clashed?',
         l0:['Colonists turned against Britain because ___. The biggest jump was ___.', 'Before 1770 it was ___ points. After 1770 it was ___ points.'], bank:['loyal','angry','tax','punish','together','fight','points','because','so'],
         ss:['Colonists went from loyal to rebels because ___.', 'Unrest grew from ___ points to ___ points because ___.', 'When Britain ___, colonists answered by ___.'],
         core:['Loyal colonists became revolutionaries because ___.', 'Unrest escalated: events before 1770 averaged ___ points, but events after averaged ___, because ___.', 'When Britain ___ (___ points), colonists answered with ___ (___ points), which shows ___.'],

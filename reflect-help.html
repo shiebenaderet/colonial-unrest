@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reflection Help</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap">
+<style>
+/* Help page for the three reflection questions. Steps and sample answers come
+   from reflect-help.js (shared with the activity); numbers from class-data.js.
+   Unit 2 brick red palette, same as fast-finisher.html. */
+:root{
+  --bg:#f6f1e8; --panel:#fffdf9; --ink:#1f2124; --muted:#5a4f45; --rule:#d6cfc3;
+  --deep:#7a2a28; --accent:#b23a34; --tint:#f6e7e4; --gold:#9a7536; --on-accent:#ffffff;
+  --display:'Playfair Display',Georgia,'Times New Roman',serif;
+  --body:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1a1614; --panel:#241f1c; --ink:#f3ece3; --muted:#c9bcae; --rule:#40362f;
+  --deep:#f0a59c; --accent:#e9827a; --tint:#3a2421; --gold:#d9b46a; --on-accent:#1a0b09; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1a1614; --panel:#241f1c; --ink:#f3ece3; --muted:#c9bcae; --rule:#40362f;
+  --deep:#f0a59c; --accent:#e9827a; --tint:#3a2421; --gold:#d9b46a; --on-accent:#1a0b09; color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55;margin:0}
+.wrap{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:28px 56px;display:grid;gap:22px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;color:var(--deep)}
+h1{font-size:clamp(30px,6vw,42px);line-height:1.1}
+h2{font-size:24px}
+h3{font-size:19px}
+p{margin:0}
+a{color:var(--accent);font-weight:700}
+a:focus-visible,summary:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.top{display:grid;gap:12px}
+.lead{max-width:62ch}
+.btnrow{display:flex;flex-wrap:wrap;gap:10px}
+.linkbtn{display:inline-block;text-decoration:none;background:var(--accent);color:var(--on-accent);border-radius:8px;padding:10px 16px;font-weight:800}
+.linkbtn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--rule)}
+.card{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:18px 20px;display:grid;gap:12px;scroll-margin-top:16px}
+.qtext{font-weight:800;font-size:19px}
+ol,ul{margin:0;padding-left:22px;display:grid;gap:6px}
+.rule-box{background:var(--tint);border-left:5px solid var(--accent);border-radius:8px;padding:12px 16px}
+.rule-box ul{margin-top:6px}
+.rh-pairs{display:grid;gap:4px}
+details > summary{cursor:pointer;font-weight:800;color:var(--accent)}
+details[open] > summary{margin-bottom:8px}
+.rh-model{margin:0 0 8px;padding:10px 14px;border-left:4px solid var(--gold);background:var(--tint);border-radius:6px;font-style:italic}
+.rh-nocopy{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.charts{display:grid;gap:18px}
+figure{margin:0;display:grid;gap:6px}
+figure img{width:100%;height:auto;border:1px solid var(--rule);border-radius:8px;background:#fff}
+figcaption{font-size:15px;color:var(--muted)}
+figcaption strong{color:var(--ink)}
+.small{font-size:15px;color:var(--muted)}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="top">
+    <h1>How to Answer the Reflection Questions</h1>
+    <p class="lead">Use these steps to answer the three reflection questions at the end of Unrest in the Colonies. Each answer should be <strong>two or three full sentences</strong> with a reason and a piece of evidence.</p>
+    <nav class="btnrow" aria-label="Jump to a question">
+      <a class="linkbtn" href="#q1">Question 1</a>
+      <a class="linkbtn" href="#q2">Question 2</a>
+      <a class="linkbtn" href="#q3">Question 3</a>
+      <a class="linkbtn ghost" href="index.html">Back to the Activity</a>
+    </nav>
+  </header>
+
+  <section class="card" id="start">
+    <h2>Before You Start</h2>
+    <ol>
+      <li>Go to <a href="index.html">unrest.mrbsocialstudies.org</a> and sign in with your first name, last initial, and period.</li>
+      <li>Using a different Chromebook than before? Click <strong>Load a backup</strong> first.</li>
+      <li>Scroll to <strong>Reflect and turn in</strong>. It opens only after your pair has spent <strong>exactly 36 points</strong>.</li>
+      <li>Have your <strong>paper tracker</strong> next to you. It shows your arrows, your ratings, and your pair’s points.</li>
+    </ol>
+    <div class="rule-box">
+      <strong>Three rules for every answer:</strong>
+      <ul>
+        <li>Use <em>because</em>, <em>so</em>, or <em>led to</em> to give a reason.</li>
+        <li>Name real events and real numbers. Do not write “it” or “that event.”</li>
+        <li>Write in direct voice. No “I think” or “I believe.”</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card" id="q1" data-key="q3"></section>
+  <section class="card" id="q2" data-key="q4"></section>
+  <section class="card" id="q3" data-key="q5"></section>
+
+  <section class="card" id="turn-in">
+    <h2>Check and Turn In</h2>
+    <p><strong>Check every answer before you copy:</strong></p>
+    <ul>
+      <li>Each answer has two or more full sentences.</li>
+      <li>Each answer gives a reason with <em>because</em>, <em>so</em>, or <em>led to</em>.</li>
+      <li>Question 3 has at least one number from the class data.</li>
+      <li>You used at least two Unit 2 words.</li>
+      <li>No “I think” or “I believe.”</li>
+    </ul>
+    <p><strong>Turn it in:</strong></p>
+    <ol>
+      <li>Press <strong>Copy my work</strong>.</li>
+      <li>Open the Canvas assignment <strong>Unrest in the Colonies</strong> and press <strong>Start Assignment</strong>.</li>
+      <li>Paste with <strong>Ctrl + V</strong>, then press <strong>Submit Assignment</strong>.</li>
+      <li>Go back to the activity and check the box that says you submitted.</li>
+    </ol>
+  </section>
+</main>
+
+<script src="class-data.js?v=20261019"></script>
+<script src="reflect-help.js?v=20261019"></script>
+<script>
+// Builds each question's card from REFLECT_HELP (reflect-help.js).
+const CHARTS = [
+  ['each-event.png','Class average for each event','A taller bar means more unrest. The dashed line is 4, an average event.'],
+  ['push-and-push-back.png','Push and push back, 1763 to 1775','Read down like a timeline. Bars on the left are Britain; bars on the right are the colonists.'],
+  ['getting-worse.png','Did unrest grow over time?','Compare the average line before 1770 with the line after.'],
+  ['step-by-step.png','More or less unrest than the event before','The tallest bar is the biggest jump.']
+];
+document.querySelectorAll('section[data-key]').forEach(sec => {
+  const cfg = REFLECT_HELP[sec.dataset.key];
+  sec.append(
+    rhEl('h2','', 'Question ' + cfg.n),
+    rhEl('p','qtext', cfg.q),
+    rhEl('p','', cfg.lead),
+    rhList(cfg.steps)
+  );
+  if(cfg.pairs) sec.appendChild(rhPairs(cfg));
+  if(sec.dataset.key === 'q5'){
+    const charts = rhEl('div','charts');
+    charts.appendChild(rhEl('h3','', 'Our Class Data'));
+    const d = new Date(CLASS_DATA.date + 'T12:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric'});
+    const p = rhEl('p','', 'These charts show all ' + CLASS_DATA.pairs + ' pairs from every period (' + d + '). ');
+    const a = rhEl('a','', 'Open the class data slides ↗');
+    a.href = CLASS_DATA.slides; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    p.appendChild(a);
+    charts.appendChild(p);
+    CHARTS.forEach(([file, title, how]) => {
+      const fig = document.createElement('figure');
+      const img = document.createElement('img');
+      img.src = 'images/class-data/' + file; img.alt = title + ' (chart of our class averages)'; img.loading = 'lazy';
+      img.width = 1600; img.height = 900;
+      const cap = rhEl('figcaption','', '<strong>' + title + (/[?.!]$/.test(title) ? '' : '.') + '</strong> ' + how);
+      fig.append(img, cap);
+      charts.appendChild(fig);
+    });
+    sec.appendChild(charts);
+  }
+  const quick = rhEl('details','');
+  quick.appendChild(rhEl('summary','', 'Shorter Steps'));
+  quick.appendChild(rhList(cfg.quick));
+  sec.appendChild(quick);
+  sec.appendChild(rhModel(cfg, true));
+});
+// Land on #q1–#q3 after the cards are built.
+if(location.hash){ const t = document.querySelector(location.hash); if(t) t.scrollIntoView(); }
+</script>
+</body>
+</html>
