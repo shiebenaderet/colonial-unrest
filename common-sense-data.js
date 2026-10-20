@@ -490,6 +490,7 @@ window.COMMON_SENSE = {
      are matched before the single words inside them. Written at about grade 5. */
   vocab: [
     ["natural rights?", "Rights every person is born with, like life and liberty. No ruler gives them, so no ruler can take them."],
+    ["AUTHOR", "Paine signed the Introduction this way instead of with his name. The first printings did not say who wrote the pamphlet."],
     ["necessary evil", "Something bad that we still need."],
     ["hereditary succession|hereditary right", "Passing the crown from a ruler to his or her children."],
     ["hereditary", "Passed down from parent to child."],

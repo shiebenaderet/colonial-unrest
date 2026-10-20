@@ -55,7 +55,17 @@ html[data-rt-font]:not([data-rt-font="atkinson"]) .pamphlet{font-family:var(--rt
 .pamphlet h2{font-family:var(--display)}
 .hit{background:var(--tint);border-left:5px solid var(--accent);border-radius:8px;padding:10px 16px 2px;margin:0 0 16px}
 .hit .back{display:inline-block;font-family:var(--body);font-size:15px;margin-bottom:6px}
-pre.table{font-size:14px;overflow-x:auto;background:var(--panel);border:1px solid var(--rule);border-radius:8px;padding:12px;line-height:1.4}
+.sig,.cite{text-align:right;margin-top:-6px}
+.hit .sig{margin:-6px 0 10px}
+p.fn{font-size:16px;line-height:1.55;border-left:3px solid var(--rule);padding-left:12px;color:var(--muted)}
+table.costs{font-family:var(--body);font-size:16px;border-collapse:collapse;margin:0 0 20px;max-width:100%}
+table.costs caption{text-align:left;font-weight:700;padding:0 0 6px}
+table.costs th,table.costs td{border:1px solid var(--rule);padding:5px 12px;text-align:right}
+table.costs th[scope=col]{background:var(--band)}
+table.costs th[scope=row]{text-align:left;font-weight:600}
+table.costs td.txt{text-align:left;max-width:16em}
+table.costs tfoot td{font-weight:700}
+.costs-wrap{overflow-x:auto}
 .finis{text-align:center;font-style:italic}
 @media (max-width:560px){.pamphlet{font-size:18px}.brand{font-size:18px}}
 @media print{.mast,nav.toc{display:none}.hit{background:none}}
