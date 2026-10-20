@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Class Results: Do You Have Common Sense?</title>
+<meta name="description" content="How each class answered the Do You Have Common Sense? quiz, next to what Thomas Paine would say.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Libre+Caslon+Text:ital@0;1&display=swap">
+<link rel="stylesheet" href="fonts/atkinson.css?v=20261005">
+<style>
+/* Same Unit 2 look as common-sense-quiz.html. Built for a projector: big type, few words. */
+:root{
+  --bg:#f6f1e8; --panel:#fffdf9; --ink:#1f2124; --muted:#5a4f45; --rule:#d6cfc3;
+  --deep:#7a2a28; --accent:#b23a34; --tint:#f6e7e4; --gold:#9a7536; --band:#f1e6d8; --on-accent:#fff;
+  --ok:#2c6b37; --ok-tint:#e4f1e6; --no:#8a4b12; --no-tint:#f8ebdc;
+  --mast:#3d1413; --mast-ink:#fff8ee; --mast-edge:#b88f86;
+  --loyal:#1b2d45; --loyal-2:#5b6a85; --mid:#9a8f8a; --pat:#c9706a;
+  --display:'Playfair Display',Georgia,serif;
+  --body:'Atkinson Hyperlegible Next','Atkinson Hyperlegible',Verdana,system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1a1614; --panel:#241f1c; --ink:#f3ece3; --muted:#c9bcae; --rule:#40362f;
+  --deep:#f0a59c; --accent:#e9827a; --tint:#3a2421; --gold:#d9b46a; --band:#2e2622; --on-accent:#1a0b09;
+  --ok:#8fd19a; --ok-tint:#1f3424; --no:#f0b37a; --no-tint:#3a2a1a;
+  --loyal:#9db8e0; --loyal-2:#7f93b5; --mid:#8a807c; --pat:#d9948e;
+  --mast:#0f0b0a; --mast-edge:#7d6a62; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1a1614; --panel:#241f1c; --ink:#f3ece3; --muted:#c9bcae; --rule:#40362f;
+  --deep:#f0a59c; --accent:#e9827a; --tint:#3a2421; --gold:#d9b46a; --band:#2e2622; --on-accent:#1a0b09;
+  --ok:#8fd19a; --ok-tint:#1f3424; --no:#f0b37a; --no-tint:#3a2a1a;
+  --loyal:#9db8e0; --loyal-2:#7f93b5; --mid:#8a807c; --pat:#d9948e;
+  --mast:#0f0b0a; --mast-edge:#7d6a62; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.5}
+h1,h2,h3{font-family:var(--display);color:var(--deep);margin:0;line-height:1.12;text-wrap:balance}
+p{margin:0}
+a{color:var(--accent);font-weight:700}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+.mast{position:sticky;top:0;z-index:20;background:var(--mast);color:var(--mast-ink);border-bottom:3px solid var(--gold)}
+.mast .in{max-width:1100px;margin:0 auto;padding:8px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.brand{font-family:var(--display);font-weight:800;font-size:21px;color:var(--mast-ink);text-decoration:none}
+.spacer{flex:1 1 auto}
+.mbtn{min-height:40px;padding:6px 14px;border-radius:8px;font-size:15px;font-weight:700;background:transparent;color:var(--mast-ink);border:2px solid var(--mast-edge);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.mbtn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.mbtn:hover{filter:brightness(1.1)}
+.mbtn svg{width:18px;height:18px}
+.stamp{font-size:14px;color:var(--mast-ink);opacity:.8}
+main.wrap{max-width:1100px;margin:0 auto;padding:22px 16px 64px;display:grid;gap:22px}
+.head{display:grid;gap:4px}
+.head h1{font-size:clamp(30px,4.6vw,48px)}
+.head .sub{color:var(--muted);font-size:18px}
+
+/* Period tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:10px}
+.tab{min-height:56px;padding:8px 18px;border-radius:12px;border:2px solid var(--rule);background:var(--panel);font-weight:800;font-size:19px;cursor:pointer;display:grid;gap:0;place-items:center;line-height:1.1}
+.tab small{font-size:14px;font-weight:700;color:var(--muted)}
+.tab[aria-pressed="true"]{border-color:var(--accent);background:var(--tint);color:var(--deep)}
+.tab[aria-pressed="true"] small{color:var(--deep)}
+
+/* Class score card */
+.card{background:var(--panel);border:1px solid var(--rule);border-radius:16px;padding:22px 24px;display:grid;gap:16px}
+.score{text-align:center;display:grid;gap:10px}
+.score .lead{font-size:19px}
+.score .pct{font-family:var(--display);font-size:clamp(56px,9vw,92px);font-weight:800;color:var(--deep);line-height:1;font-variant-numeric:lining-nums}
+.score h2{font-size:clamp(26px,3.6vw,36px)}
+.meter{position:relative;margin:30px 6px 8px}
+.meter .track{height:18px;border-radius:999px;background:linear-gradient(90deg,var(--loyal),#8c7a8a 50%,var(--accent))}
+.meter .pin{position:absolute;top:-26px;transform:translateX(-50%);display:grid;place-items:center}
+.meter .pin b{background:var(--ink);color:var(--bg);padding:2px 8px;border-radius:6px;font-size:14px;white-space:nowrap}
+.meter .pin i{width:0;height:0;border:7px solid transparent;border-top-color:var(--ink)}
+.meter .ends{display:flex;justify-content:space-between;font-weight:700;font-size:15px;margin-top:6px}
+.meter .ends span:first-child{color:var(--loyal)} .meter .ends span:last-child{color:var(--accent)}
+
+/* Tier split */
+.tiers{display:grid;gap:10px}
+.tiers h3{font-size:20px;color:var(--ink)}
+.tbar{display:flex;height:44px;border-radius:10px;overflow:hidden;background:var(--band)}
+.tbar span{display:grid;place-items:center;color:#fff;font-weight:800;font-size:18px;min-width:0;transition:width .4s}
+.tbar span:empty{font-size:0}
+.tbar .t0{background:var(--loyal)} .tbar .t1{background:var(--loyal-2)} .tbar .t2{background:var(--mid)} .tbar .t3{background:var(--pat)} .tbar .t4{background:var(--accent)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:16px}
+.legend span{display:inline-flex;align-items:center;gap:8px;font-weight:700}
+.legend i{width:16px;height:16px;border-radius:4px;display:inline-block}
+.legend .t0 i{background:var(--loyal)} .legend .t1 i{background:var(--loyal-2)} .legend .t2 i{background:var(--mid)} .legend .t3 i{background:var(--pat)} .legend .t4 i{background:var(--accent)}
+.legend b{font-variant-numeric:lining-nums}
+
+/* Statements */
+.stmts{display:grid;gap:12px}
+.stmts h2{font-size:30px}
+.stmts .how{color:var(--muted)}
+.row{background:var(--panel);border:1px solid var(--rule);border-left:8px solid var(--rule);border-radius:12px;padding:14px 18px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 18px;align-items:center}
+.row.same{border-left-color:var(--ok)} .row.diff{border-left-color:var(--no)}
+.row .st{font-weight:800;font-size:20px;grid-column:1}
+.row .agree{grid-column:2;grid-row:1 / span 2;text-align:center;display:grid;gap:2px;min-width:120px}
+.row .agree b{font-family:var(--display);font-size:40px;line-height:1;color:var(--deep);font-variant-numeric:lining-nums}
+.row .agree small{font-weight:700;font-size:14px;color:var(--muted)}
+.row .bar{grid-column:1;display:flex;height:30px;border-radius:8px;overflow:hidden;background:var(--band)}
+.row .bar span{display:grid;place-items:center;font-size:15px;font-weight:800;color:#fff;min-width:0;transition:width .4s}
+.row .bar span:empty{font-size:0}
+.row .bar .a1{background:var(--loyal)} .row .bar .a2{background:var(--loyal-2)} .row .bar .a3{background:var(--pat)} .row .bar .a4{background:var(--accent)}
+.row .foot{grid-column:1 / -1;display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:999px;font-weight:700;font-size:15px;background:var(--band)}
+.verdict{display:inline-flex;align-items:center;gap:8px;padding:5px 14px;border-radius:10px;font-weight:800;font-size:16px;line-height:1.1}
+.verdict .ic{font-size:20px;line-height:1}
+.verdict.same{background:var(--ok-tint);color:var(--ok);border:2px solid var(--ok)}
+.verdict.diff{background:var(--no-tint);color:var(--no);border:2px solid var(--no)}
+.verdict.split{background:var(--band);color:var(--muted);border:2px solid var(--rule)}
+.key{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:15px;color:var(--muted)}
+.key span{display:inline-flex;align-items:center;gap:6px;font-weight:700}
+.key i{width:14px;height:14px;border-radius:3px;display:inline-block}
+.key .a1 i{background:var(--loyal)} .key .a2 i{background:var(--loyal-2)} .key .a3 i{background:var(--pat)} .key .a4 i{background:var(--accent)}
+
+.empty{background:var(--tint);border-left:5px solid var(--accent);border-radius:10px;padding:16px 20px;font-size:19px}
+.empty b{color:var(--deep)}
+.err{background:var(--no-tint);border-left:5px solid var(--no);border-radius:10px;padding:14px 18px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:700px){
+  .row{grid-template-columns:1fr}
+  .row .agree{grid-column:1;grid-row:auto;text-align:left;display:flex;align-items:baseline;gap:8px}
+  .row .agree b{font-size:30px}
+  .tbar{height:38px} .tbar span{font-size:15px}
+}
+@media (max-width:560px){.brand{font-size:18px}}
+</style>
+</head>
+<body>
+<header class="mast">
+  <div class="in">
+    <a class="brand" href="common-sense.html">Common Sense</a>
+    <span class="spacer"></span>
+    <span class="stamp" id="stamp" aria-live="polite"></span>
+    <button class="mbtn primary" type="button" id="refresh">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v6h-6"/></svg>
+      <span>Refresh</span>
+    </button>
+  </div>
+</header>
+<main class="wrap">
+  <div class="head">
+    <h1>Do You Have Common Sense? Class Results</h1>
+    <p class="sub">How the class answered, next to what Thomas Paine would say. No names, only answers.</p>
+  </div>
+  <div class="tabs" id="tabs" role="group" aria-label="Which class"></div>
+  <div id="out"></div>
+</main>
+
+<script>
+(function(){
+'use strict';
+/* The Responses tab of Mr. B's "Common Sense Quiz Results" sheet, shared
+   read-only by link. The quiz page writes to it through the mailer script;
+   this page only reads. Columns: Time, Period, Paine-o-meter %, Result,
+   Same Side, Q1..Q10 (1 = Strongly Disagree .. 4 = Strongly Agree), Browser ID. */
+const SHEET_ID = '1WmenyYzy7jm3XRZAzf0YyMytzXwILrxDCygq81dbZR0';
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv&sheet=Responses';
+const PERIODS = ['1', '2', '3', '5'];
+const AUTO_MS = 20000;
+
+/* Same statements, same order, same Paine side as common-sense-quiz.html. */
+const QS = [
+  { s: 'A person should get to be a leader because of who their parents are.', paine: false },
+  { s: 'Government is something we need, but it is not really a good thing.', paine: true },
+  { s: 'Rules should apply to everyone, even the person in charge.', paine: true },
+  { s: 'A small country far away should be able to make the rules for a much bigger place.', paine: false },
+  { s: 'Ordinary people should get to choose who makes the laws.', paine: true },
+  { s: 'If someone took care of you in the past, you should stay loyal to them no matter what.', paine: false },
+  { s: 'If you know you have to do something hard, it is better to do it now than to keep putting it off.', paine: true },
+  { s: 'After a big fight, it is usually best to make up and go back to the way things were.', paine: false },
+  { s: 'A group that sticks together is stronger than a group that is just big.', paine: true },
+  { s: 'A fight for freedom in one country matters to people everywhere.', paine: true }
+];
+const TIERS = [
+  { min: 0, name: 'Loyalist' },
+  { min: 25, name: 'Cautious Colonist' },
+  { min: 45, name: 'On the Fence' },
+  { min: 65, name: 'Patriot' },
+  { min: 85, name: 'Pure Common Sense' }
+];
+const ANS = ['Strongly Disagree', 'Disagree', 'Agree', 'Strongly Agree'];
+
+let rows = [];          // {period, a:[10 numbers], pct}
+let view = '';
+try { view = localStorage.getItem('cs-results-period') || ''; } catch (e) {}
+if (view !== 'all' && PERIODS.indexOf(view) === -1) view = 'all';
+try { var t = JSON.parse(localStorage.getItem('cs-annotated-v1') || '{}').theme; if (t && t !== 'auto') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+
+const out = document.getElementById('out'), tabs = document.getElementById('tabs'), stamp = document.getElementById('stamp');
+function el(tag, attrs, ...kids){
+  const e = document.createElement(tag);
+  if (attrs) for (const k in attrs) {
+    const v = attrs[k]; if (v == null || v === false) continue;
+    if (k === 'class') e.className = v; else if (k === 'text') e.textContent = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v);
+  }
+  kids.flat().forEach(k => { if (k != null && k !== false) e.append(k); });
+  return e;
+}
+
+/* A small CSV reader: quoted fields, doubled quotes, CRLF. */
+function parseCSV(text){
+  const res = [[]]; let f = '', q = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) {
+      if (c === '"') { if (text[i + 1] === '"') { f += '"'; i++; } else q = false; }
+      else f += c;
+    } else if (c === '"') q = true;
+    else if (c === ',') { res[res.length - 1].push(f); f = ''; }
+    else if (c === '\n' || c === '\r') { if (c === '\r' && text[i + 1] === '\n') i++; res[res.length - 1].push(f); f = ''; res.push([]); }
+    else f += c;
+  }
+  res[res.length - 1].push(f);
+  return res.filter(r => r.length > 1 || (r.length === 1 && r[0] !== ''));
+}
+function points(i, v){ return QS[i].paine ? v - 1 : 4 - v; }
+function toRows(table){
+  const head = table[0].map(h => h.trim().toLowerCase());
+  const pi = head.indexOf('period'), qi = QS.map((q, i) => head.indexOf('q' + (i + 1)));
+  if (pi < 0 || qi.some(x => x < 0)) throw new Error('The sheet does not have the columns this page expects.');
+  const list = [];
+  table.slice(1).forEach(r => {
+    const period = String(parseInt(r[pi], 10));
+    const a = qi.map(k => parseInt(r[k], 10));
+    if (PERIODS.indexOf(period) === -1 || a.some(v => !(v >= 1 && v <= 4))) return;
+    const total = a.reduce((s, v, i) => s + points(i, v), 0);
+    list.push({ period, a, pct: Math.round(total / (QS.length * 3) * 100) });
+  });
+  return list;
+}
+
+async function load(manual){
+  const btn = document.getElementById('refresh');
+  btn.disabled = true;
+  try {
+    const r = await fetch(CSV_URL + '&t=' + Date.now(), { cache: 'no-store' });
+    if (!r.ok) throw new Error('The sheet answered with an error (' + r.status + ').');
+    rows = toRows(parseCSV(await r.text()));
+    stamp.textContent = 'Updated ' + new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    render();
+  } catch (e) {
+    if (!rows.length || manual) {
+      out.replaceChildren(el('div', { class: 'err' }, el('b', { text: 'Could not read the results sheet. ' }), String(e.message || e),
+        el('p', { text: 'Check that the sheet is still shared as "Anyone with the link can view," then press Refresh.' })));
+    }
+    stamp.textContent = 'Could not update';
+  }
+  btn.disabled = false;
+}
+
+function tierOf(pct){ let t = TIERS[0]; TIERS.forEach(x => { if (pct >= x.min) t = x; }); return t; }
+function renderTabs(){
+  tabs.replaceChildren();
+  const opts = [['all', 'All Classes']].concat(PERIODS.map(p => [p, 'Period ' + p]));
+  opts.forEach(([v, label]) => {
+    const n = v === 'all' ? rows.length : rows.filter(r => r.period === v).length;
+    tabs.append(el('button', { type: 'button', class: 'tab', 'aria-pressed': String(view === v),
+      onclick: () => { view = v; try { localStorage.setItem('cs-results-period', v); } catch (e) {} render(); } },
+      el('span', { text: label }), el('small', { text: n + (n === 1 ? ' student' : ' students') })));
+  });
+}
+
+function render(){
+  renderTabs();
+  const set = view === 'all' ? rows : rows.filter(r => r.period === view);
+  const label = view === 'all' ? 'All classes' : 'Period ' + view;
+  out.replaceChildren();
+  if (!set.length) {
+    out.append(el('p', { class: 'empty' }, el('b', { text: label + ': ' }), 'no results yet. They show up here as students press Send. This page checks again every 20 seconds.'));
+    return;
+  }
+  const n = set.length;
+  const avg = Math.round(set.reduce((s, r) => s + r.pct, 0) / n);
+  const tier = tierOf(avg);
+  const counts = TIERS.map(() => 0);
+  set.forEach(r => { counts[TIERS.indexOf(tierOf(r.pct))]++; });
+
+  /* Score card */
+  const card = el('section', { class: 'card', 'aria-label': 'Class Paine-o-meter' },
+    el('div', { class: 'score' },
+      el('p', { class: 'lead', text: (view === 'all' ? 'All classes together agree' : label + ' agrees') + ' with Thomas Paine' }),
+      el('p', { class: 'pct', text: avg + '%' }),
+      el('h2', { text: 'Class average: ' + tier.name }),
+      el('div', { class: 'meter', role: 'img', 'aria-label': 'Paine-o-meter: class average ' + avg + ' percent, from Loyalist to Pure Common Sense' },
+        el('div', { class: 'pin', style: 'left:' + avg + '%', 'aria-hidden': 'true' }, el('b', { text: label }), el('i')),
+        el('div', { class: 'track' }),
+        el('div', { class: 'ends', 'aria-hidden': 'true' }, el('span', { text: 'Loyalist' }), el('span', { text: 'Pure Common Sense' })))),
+    el('div', { class: 'tiers' },
+      el('h3', { text: 'Where ' + (n === 1 ? 'the 1 student' : 'the ' + n + ' students') + ' landed' }),
+      el('div', { class: 'tbar', role: 'img', 'aria-label': TIERS.map((t, i) => counts[i] + ' ' + t.name).join(', ') },
+        TIERS.map((t, i) => el('span', { class: 't' + i, style: 'width:' + (counts[i] / n * 100) + '%', text: counts[i] ? String(counts[i]) : '' }))),
+      el('div', { class: 'legend' }, TIERS.map((t, i) => el('span', { class: 't' + i }, el('i'), t.name + ' ', el('b', { text: String(counts[i]) }))))));
+  out.append(card);
+
+  /* Statements */
+  const sec = el('section', { class: 'stmts', 'aria-labelledby': 'st-h' },
+    el('h2', { id: 'st-h', text: 'Statement by Statement' }),
+    el('p', { class: 'how', text: 'The big number is how much of the class agreed. The bar shows every answer, from Strongly Disagree on the left to Strongly Agree on the right.' }),
+    el('div', { class: 'key', 'aria-hidden': 'true' }, ANS.map((a, i) => el('span', { class: 'a' + (i + 1) }, el('i'), a))));
+  QS.forEach((q, i) => {
+    const c = [0, 0, 0, 0];
+    set.forEach(r => { c[r.a[i] - 1]++; });
+    const agreeN = c[2] + c[3], agreePct = Math.round(agreeN / n * 100);
+    const classAgrees = agreePct > 50, split = agreePct === 50;
+    const same = !split && classAgrees === q.paine;
+    const cls = split ? 'split' : (same ? 'same' : 'diff');
+    sec.append(el('div', { class: 'row ' + cls },
+      el('p', { class: 'st', text: (i + 1) + '. ' + q.s }),
+      el('div', { class: 'agree' }, el('b', { text: agreePct + '%' }), el('small', { text: 'agreed' })),
+      el('div', { class: 'bar', role: 'img', 'aria-label': ANS.map((a, k) => c[k] + ' ' + a).join(', ') },
+        c.map((v, k) => el('span', { class: 'a' + (k + 1), style: 'width:' + (v / n * 100) + '%', text: v ? String(v) : '' }))),
+      el('div', { class: 'foot' },
+        el('span', { class: 'pill', text: 'Paine: ' + (q.paine ? 'Agree' : 'Disagree') }),
+        el('span', { class: 'verdict ' + cls },
+          el('span', { class: 'ic', 'aria-hidden': 'true', text: split ? '=' : (same ? '✓' : '✗') }),
+          el('span', { text: split ? 'Class is split down the middle' : (same ? 'Most of the class is on Paine’s side' : 'Most of the class is on the other side') })))));
+  });
+  out.append(sec);
+}
+
+document.getElementById('refresh').addEventListener('click', () => load(true));
+load(true);
+setInterval(() => { if (!document.hidden) load(false); }, AUTO_MS);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) load(false); });
+})();
+</script>
+</body>
+</html>
