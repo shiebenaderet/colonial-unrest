@@ -330,6 +330,15 @@ function tierOf(pct){ let t = TIERS[0]; TIERS.forEach(x => { if (pct >= x.min) t
    typed one (the hand count covers the whole class, so it replaces that period's rows). */
 function periodData(p){
   const m = manual[p];
+  if (m && m.pcts && m.pcts.length) {
+    const n = Math.max(m.n || 0, m.pcts.length);
+    const tiers = TIERS.map(() => 0);
+    m.pcts.forEach(x => { tiers[TIERS.indexOf(tierOf(x))]++; });
+    const hasStmt = (m.agree || []).some(v => v != null);
+    const stmt = hasStmt ? QS.map((q, i) => { const a = m.agree[i] || 0; return { agree: a, dis: Math.max(0, n - a) }; }) : null;
+    const sum = m.pcts.reduce((a, b) => a + b, 0) / m.pcts.length * n;
+    return { n, tiers, stmt, sum, manual: true, at: m.at, pcts: true };
+  }
   if (m && m.n > 0) {
     const hasStmt = m.agree.some(v => v != null);
     const stmt = hasStmt ? QS.map((q, i) => { const a = m.agree[i] || 0; return { agree: a, dis: Math.max(0, m.n - a) }; }) : null;
@@ -357,7 +366,7 @@ function dataFor(v){
     return { c, agree, dis };
   }) : null;
   return { n, tiers, stmt, stmtN: sp.reduce((a, d) => a + d.n, 0), avg: Math.round(parts.reduce((a, d) => a + d.sum, 0) / n), manual: anyManual,
-           hand: parts.filter(d => d.manual).length, parts: parts.length, estimated: parts.some(d => d.manual && !d.stmt) };
+           hand: parts.filter(d => d.manual).length, parts: parts.length, estimated: parts.some(d => d.manual && !d.stmt && !d.pcts) };
 }
 function current(){ return dataFor(view); }
 function renderTabs(){
@@ -508,12 +517,15 @@ function typeIn(){
   const sel = el('select', { 'aria-label': 'Period' }, PERIODS.map(p => el('option', { value: p, text: 'Period ' + p, selected: p === p0 || null })));
   const num = (v, label) => el('input', { type: 'number', min: '0', max: '60', step: '1', inputmode: 'numeric', value: v == null ? '' : String(v), 'aria-label': label });
   const nIn = num(cur.n, 'How many students');
+  const pctIn = el('textarea', { rows: '3', 'aria-label': 'Each student\'s percentage', placeholder: '70 45 82 55 …', style: 'width:100%;font:inherit;font-size:18px;font-weight:700;padding:8px 12px;border:2px solid var(--rule);border-radius:8px;background:var(--bg);color:var(--ink)' });
+  pctIn.value = cur.pcts ? cur.pcts.join(' ') : '';
   const tierIn = TIERS.map((t, k) => num(cur.tiers ? cur.tiers[k] : '', t.name));
   const agIn = QS.map((q, i) => num(cur.agree && cur.agree[i] != null ? cur.agree[i] : '', 'Agreed with statement ' + (i + 1)));
   const msg = el('p', { class: 'msg', role: 'status' });
   function fill(p){
     const m = manual[p] || {};
     nIn.value = m.n == null ? '' : m.n;
+    pctIn.value = m.pcts ? m.pcts.join(' ') : '';
     tierIn.forEach((x, k) => { x.value = m.tiers ? m.tiers[k] : ''; });
     agIn.forEach((x, i) => { x.value = m.agree && m.agree[i] != null ? m.agree[i] : ''; });
   }
@@ -521,12 +533,14 @@ function typeIn(){
   const v = x => { const k = parseInt(x.value, 10); return isNaN(k) ? 0 : Math.max(0, k); };
   const vn = x => x.value.trim() === '' ? null : v(x);     // blank stays blank
   function save(){
-    const p = sel.value, n = v(nIn);
-    if (!n) { msg.textContent = 'Type how many students were in the room first.'; nIn.focus(); return; }
+    const p = sel.value;
+    const pcts = pctIn.value.split(/[^0-9.]+/).filter(x => x !== '').map(Number).filter(x => x >= 0 && x <= 100).map(Math.round);
+    const n = v(nIn) || pcts.length;
+    if (!n) { msg.textContent = 'Type how many students were in the room, or their percentages.'; nIn.focus(); return; }
     const agree = agIn.map(vn), tiers = tierIn.map(v);
     const over = agree.findIndex(a => a != null && a > n);
     if (over >= 0) { msg.textContent = 'Statement ' + (over + 1) + ' has more hands than students.'; agIn[over].focus(); return; }
-    manual[p] = { n, tiers, agree, at: new Date().toISOString() };
+    manual[p] = { n, tiers, agree, pcts: pcts.length ? pcts : null, at: new Date().toISOString() };
     saveManual(); view = p; try { localStorage.setItem('cs-results-period', p); } catch (e) {}
     unfocus(); render();
   }
@@ -542,7 +556,9 @@ function typeIn(){
       el('div', { class: 'form' },
         el('p', { text: 'Students keep their result on their own screen. Ask the room, count hands, type the numbers. This replaces any sent results for that period on this page, and it is saved on this computer only.' }),
         el('div', { class: 'frow' }, el('label', {}, 'Period ', sel), el('label', {}, 'Students in the room ', nIn)),
-        el('h3', { text: '1. "Who got Loyalist?" and so on. Count hands for each.' }),
+        el('h3', { text: '1. Each student\'s percentage, if you wrote them down. Spaces or commas between them.' }),
+        pctIn,
+        el('h3', { text: 'Or, if you don\'t have the percentages: "Who got Loyalist?" and so on. Count hands for each.' }),
         el('div', { class: 'frow' }, TIERS.map((t, k) => el('label', {}, t.name + ' ', tierIn[k]))),
         el('h3', { text: '2. For each statement: "Hands up if you agreed (Agree or Strongly Agree)." Leave these blank if you only have the tier counts.' }),
         QS.map((q, i) => el('div', { class: 'srow' }, el('span', {}, el('small', { text: 'Statement ' + (i + 1) + ' · Paine says ' + (q.paine ? 'Agree' : 'Disagree') }), q.s), agIn[i])),
