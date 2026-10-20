@@ -561,7 +561,7 @@ function docView(opts){
   function showText(on){
     if (!textLayer) return;
     textLayer.classList.toggle('on', on); textLayer.setAttribute('aria-hidden', String(!on)); doc.classList.toggle('text-on', on);
-    if (on) { const need = textLayer.firstElementChild.scrollHeight + 24; if (need > doc.clientHeight) doc.style.height = need + 'px'; }   // a long excerpt on a narrow screen: grow, never clip
+    if (on) { const need = textLayer.firstElementChild.scrollHeight + 32; if (need > doc.clientHeight) doc.style.height = need + 'px'; }   // a long excerpt on a narrow screen: grow, never clip
     else doc.style.height = '';
   }
   function hover(n, on){ const b = inner.querySelector('.doc-box[data-n="' + n + '"]'); if (b) b.classList.toggle('hover', on); }
