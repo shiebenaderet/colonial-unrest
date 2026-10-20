@@ -5,8 +5,35 @@
    alone with the clue card; Deep hides the clue card until tapped and adds a question.
    Station numbers match the cards: 1 to 7, no gap. */
 window.DECLARATION = {
+  /* Each station's box: where its lines sit on the 1823 Stone engraving, as percentages of
+     the image (x0, y0, x1, y1), read off the scan for the paper cards' backs. */
   stations: [
-    { n: 1, title: 'Why We’re Writing This', together: true,
+    { n: 1, box: [4, 15.0, 95.5, 19.3], title: 'Why We’re Writing This', together: true,
+      /* Station 1 is done together in class, so on the page it is walked through one step at
+         a time: read, three questions, then the translation built in two halves. */
+      guide: [
+        { type: 'read', say: 'Read it twice. The first time, just get the sound of it. The second time, tap the underlined words.' },
+        { type: 'ask', q: 'Who is “one people” in this sentence?',
+          choices: [['The American colonists', true, 'Yes. Jefferson means the people of the thirteen colonies. “Another” is Britain.'],
+                    ['The British', false, 'Not quite. Britain is the “another” they are breaking away from. “One people” is the colonists.'],
+                    ['Native nations', false, 'No. Jefferson is writing about the colonists. Native nations are not in this sentence.']] },
+        { type: 'ask', q: 'What does “dissolve the political bands” mean?',
+          choices: [['Break away from Britain’s government', true, 'Yes. Dissolve means end, and political bands are the ties of government.'],
+                    ['Make new laws together with Britain', false, 'No. Dissolve means to end something, not to make something new.'],
+                    ['Sign a peace treaty', false, 'No. There is no treaty here. The bands are the ties of government, and they are being ended.']] },
+        { type: 'ask', q: 'Why does Jefferson say they should “declare the causes”?',
+          choices: [['Out of respect for what the rest of the world thinks', true, 'Yes. “A decent respect to the opinions of mankind” means they owe the world an explanation.'],
+                    ['Because the king ordered it', false, 'No. The king is the one they are breaking away from.'],
+                    ['To ask Britain for help', false, 'No. They are leaving Britain, not asking it for anything.']] },
+        { type: 'build', part: 1, q: 'Now say it in your own words. First half: what is happening?',
+          frame: 'Sometimes one ___ has to break away from another ___.', bank: ['respect', 'people', 'obey', 'country', 'hide'],
+          start: 'Sometimes one people has to ___.', full: 'Write the first half: who is breaking away from whom.' },
+        { type: 'build', part: 2, q: 'Second half: what should they do, and why?',
+          frame: 'When that happens, they should ___ why, out of ___ for what the rest of the world thinks.', bank: ['fight', 'explain', 'respect', 'hide', 'obey'],
+          start: 'When that happens, they should ___ because ___.', full: 'Write the second half: what they owe the rest of the world.' },
+        { type: 'assemble', say: 'Here it is, both halves together. Read it out loud. Change anything that does not sound like you.' },
+        { type: 'check' }
+      ],
       where: 'The first paragraph, right under the title.',
       orig: 'When in the Course of human events, it becomes necessary for one people to dissolve the political bands which have connected them with another, and to assume among the powers of the earth, the separate and equal station to which the Laws of Nature and of Nature’s God entitle them, a decent respect to the opinions of mankind requires that they should declare the causes which impel them to the separation.',
       words: [['dissolve', 'end, break apart'], ['political bands', 'ties of government'], ['assume', 'take up, take on'], ['station', 'place, position'], ['entitle', 'give the right to'], ['impel', 'push, force']],
@@ -16,7 +43,7 @@ window.DECLARATION = {
       bank: ['respect', 'fight', 'people', 'explain', 'obey', 'country', 'hide'],
       check: 'Sometimes one people has to break away from another country. When that happens, they should explain why, out of respect for what the rest of the world thinks.',
       deep: 'Why do you think Jefferson starts by explaining himself to “the opinions of mankind” instead of to the king?' },
-    { n: 2, title: 'We’re All Equal', vocab: 'Unalienable Rights',
+    { n: 2, box: [4, 17.9, 95.5, 20.6], title: 'We’re All Equal', vocab: 'Unalienable Rights',
       where: 'The start of the second paragraph. Look for “We hold these truths.”',
       orig: 'We hold these truths to be self-evident, that all men are created equal, that they are endowed by their Creator with certain unalienable Rights, that among these are Life, Liberty and the pursuit of Happiness.',
       words: [['self-evident', 'obvious, clear to everyone'], ['endowed', 'given'], ['Creator', 'God'], ['unalienable', 'cannot be taken away'], ['pursuit', 'trying to get']],
@@ -26,7 +53,7 @@ window.DECLARATION = {
       bank: ['freedom', 'money', 'rights', 'happiness', 'equal', 'land', 'life', 'power'],
       check: 'These things are obvious: all men are created equal. God gave them rights that cannot be taken away, including life, freedom, and the chance to seek happiness.',
       deep: 'Jefferson wrote “the pursuit of Happiness,” not “Happiness.” What is the difference, and why might he have chosen it?' },
-    { n: 3, title: 'Why We Have Government', vocab: 'Consent of the Governed',
+    { n: 3, box: [4, 19.2, 95.5, 21.9], title: 'Why We Have Government', vocab: 'Consent of the Governed',
       where: 'Still the second paragraph: the end of line 4 and the start of line 5.',
       orig: 'That to secure these rights, Governments are instituted among Men, deriving their just powers from the consent of the governed.',
       words: [['secure', 'protect'], ['instituted', 'set up, created'], ['deriving', 'getting'], ['just powers', 'fair power'], ['consent', 'agreement']],
@@ -36,7 +63,7 @@ window.DECLARATION = {
       bank: ['army', 'agreement', 'rights', 'king', 'governments', 'taxes'],
       check: 'People create governments to protect these rights. A government’s fair power comes from the agreement of the people it rules.',
       deep: 'If a government’s power comes from the consent of the governed, who in 1776 was never asked for consent?' },
-    { n: 4, title: 'When Government Fails',
+    { n: 4, box: [4, 20.5, 95.5, 23.3], title: 'When Government Fails',
       where: 'The second paragraph, line 5 and the first word of line 6.',
       orig: 'That whenever any Form of Government becomes destructive of these ends, it is the Right of the People to alter or to abolish it, and to institute new Government.',
       words: [['destructive of', 'harmful to'], ['these ends', 'these goals (protecting rights)'], ['alter', 'change'], ['abolish', 'get rid of'], ['institute', 'set up']],
@@ -46,7 +73,7 @@ window.DECLARATION = {
       bank: ['new', 'obey', 'rid', 'protecting', 'bigger', 'change', 'thank'],
       check: 'When a government stops protecting people’s rights, the people have the right to change it or get rid of it, and to set up a new one.',
       deep: 'This sentence gives people the right to get rid of their government. What could go wrong with a right like that, and how does the next sentence of the Declaration try to answer that?' },
-    { n: 5, title: 'The King Is a Tyrant', vocab: 'Tyranny',
+    { n: 5, box: [4, 27.6, 95.5, 30.5], title: 'The King Is a Tyrant', vocab: 'Tyranny',
       where: 'The end of the second paragraph, right before the long list of complaints.',
       orig: 'The history of the present King of Great Britain is a history of repeated injuries and usurpations, all having in direct object the establishment of an absolute Tyranny over these States.',
       words: [['present', 'current'], ['injuries', 'harms, wrongs'], ['usurpations', 'taking power that isn’t yours'], ['direct object', 'goal'], ['absolute Tyranny', 'total, cruel control']],
@@ -56,7 +83,7 @@ window.DECLARATION = {
       bank: ['freedom', 'control', 'helped', 'power', 'harmed', 'land', 'peace'],
       check: 'King George III has harmed us again and again and taken power that isn’t his. His goal is total, unfair control over the colonies.',
       deep: 'Jefferson blames the king, not Parliament, even though Parliament passed the taxes. Why might he aim at the king?' },
-    { n: 6, title: 'The Grievances', vocab: 'Grievance', match: true,
+    { n: 6, box: [4, 30.4, 95.5, 60.8], title: 'The Grievances', vocab: 'Grievance', match: true,
       where: 'The long list in the middle of the page is 27 grievances, one complaint after another. Here are four.',
       intro: 'The longest part of the Declaration is a list of 27 grievances against the king. For each of these four, pick the letter of the event from your unrest tracker that it matches, or “none.” Some match more than one.',
       griev: [
@@ -70,7 +97,7 @@ window.DECLARATION = {
       nativeStart: 'This was the ___’s view. It shows they did not count ___ as equal because ___.',
       nativeBank: ['Native people', 'king', 'colonists', 'signers', 'soldiers'],
       note: 'We quote this phrase only to study it. It is a slur the signers used.' },
-    { n: 7, title: 'We’re Independent!', vocab: 'Independence', together: true,
+    { n: 7, box: [4, 67.5, 95.5, 71.8], title: 'We’re Independent!', vocab: 'Independence', together: true,
       where: 'The last paragraph, right above the signatures. Look for “We, therefore.”',
       orig: 'We, therefore, … solemnly publish and declare, That these United Colonies are, and of Right ought to be Free and Independent States…',
       words: [['therefore', 'for these reasons'], ['solemnly', 'seriously, officially'], ['of Right', 'by right'], ['ought to be', 'should be']],

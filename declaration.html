@@ -116,8 +116,8 @@ main.wrap > *{min-width:0}
 .st-head .where{color:var(--muted)}
 .step{padding:18px 22px;border-bottom:1px solid var(--rule);display:grid;gap:10px}
 .step:last-child{border-bottom:0}
-.step h2{font-size:21px;display:flex;align-items:center;gap:10px}
-.step h2 .num{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--accent);color:var(--on-accent);font-family:var(--body);font-size:16px;flex:none}
+.step h2,.w-now h2{font-size:21px;display:flex;align-items:center;gap:10px}
+.step h2 .num,.w-now h2 .num{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--accent);color:var(--on-accent);font-family:var(--body);font-size:16px;flex:none}
 .step .say{color:var(--muted)}
 .orig{font-family:var(--orig);font-size:21px;line-height:1.75;background:var(--band);border-left:5px solid var(--gold);border-radius:8px;padding:14px 18px}
 html[data-rt-font]:not([data-rt-font="atkinson"]) .orig{font-family:var(--rt-font)}
@@ -153,6 +153,68 @@ textarea:focus{border-color:var(--accent)}
 .vocab-line{background:var(--band);border-radius:10px;padding:10px 14px;font-weight:600}
 .next-row{display:flex;justify-content:space-between;padding:18px 22px;gap:10px;flex-wrap:wrap;background:var(--bg)}
 .warn{background:var(--band);border-left:5px solid var(--gold);border-radius:10px;padding:10px 14px;font-size:16px}
+
+/* ---- The page itself: zoom to a station's lines, then cross-fade to the words ---- */
+.doc{position:relative;width:100%;height:clamp(280px,calc(100vh - 340px),460px);overflow:hidden;background:#d9d0c1;border-radius:12px;border:1px solid var(--rule)}
+.doc-inner{--inv:1;position:absolute;left:0;top:0;width:100%;transform-origin:0 0;transition:transform 1.4s cubic-bezier(.4,0,.2,1),opacity .9s ease}
+.doc-inner img{display:block;width:100%;height:auto}
+.doc.text-on .doc-inner{opacity:.28}
+/* Boxes and their labels are drawn inside the scaled layer, so they counter-scale (--inv = 1/scale)
+   and keep the same weight on the whole page and on a zoomed line. */
+.doc-box{position:absolute;border:calc(3px * var(--inv)) solid var(--accent);border-radius:calc(4px * var(--inv));background:rgba(178,58,52,.08);cursor:pointer;padding:0;transition:background .2s,border-width 1.4s}
+.doc-box:hover,.doc-box:focus-visible,.doc-box.hover{background:rgba(178,58,52,.26)}
+.doc-box.done{border-color:var(--ok);background:rgba(44,107,55,.12)}
+.doc-box.done:hover,.doc-box.done.hover{background:rgba(44,107,55,.3)}
+.doc-box.here{background:rgba(178,58,52,.14)}
+.doc-box.next{animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(178,58,52,0)}50%{box-shadow:0 0 0 calc(7px * var(--inv)) rgba(178,58,52,.35)}}
+.doc-box .tag{position:absolute;left:0;top:0;transform:translateY(-100%) scale(var(--inv));transform-origin:left bottom;background:var(--accent);color:#fff;font-family:var(--body);font-weight:800;font-size:12px;line-height:1;padding:3px 6px;border-radius:4px 4px 0 0;white-space:nowrap}
+.doc-box.done .tag{background:var(--ok)}
+/* On the map the labels sit in the margins, alternating sides, so neighbouring lines don't collide. */
+.doc.map .doc-box .tag{font-size:13px;left:auto;right:100%;top:50%;transform:translate(-4px,-50%) scale(var(--inv));transform-origin:right center;border-radius:5px}
+.doc.map .doc-box.alt .tag{right:auto;left:100%;transform:translate(4px,-50%) scale(var(--inv));transform-origin:left center}
+/* The typed lines fade in where the handwriting was: same width as the box, same red edge. */
+.doc-text{position:absolute;inset:0;display:grid;place-items:center;padding:12px;opacity:0;pointer-events:none;transition:opacity .9s ease}
+.doc-text.on{opacity:1;pointer-events:auto}
+.doc-text .card{width:94%;max-width:960px;background:var(--panel);border:3px solid var(--accent);border-radius:8px;padding:14px 20px 16px;box-shadow:0 14px 40px rgba(0,0,0,.28);max-height:100%;overflow:auto}
+.doc-text .card .orig{background:transparent;border:0;padding:0;margin:0;font-size:21px}
+.doc-text .card .lab{font-family:var(--body);font-weight:800;font-size:13px;letter-spacing:.02em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+.doc-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px;font-size:15px;color:var(--muted)}
+.doc.still .doc-inner{transition:none}
+.doc.map{height:clamp(380px,calc(100vh - 170px),900px);cursor:default}
+.map-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,330px);gap:20px;align-items:start}
+.map-side{display:grid;gap:12px;align-content:start}
+.map-side h1{font-size:clamp(26px,3vw,34px);line-height:1.1}
+.map-side .say{margin:0}
+.map-list{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.map-item{display:flex;align-items:center;gap:10px;min-height:44px;padding:4px 12px;border:2px solid var(--rule);border-radius:10px;background:var(--panel);text-decoration:none;color:var(--ink);font-weight:700;line-height:1.2}
+.map-item:hover,.map-item:focus-visible,.map-item.hover{border-color:var(--accent)}
+.map-item.next{border-color:var(--accent);background:var(--tint)}
+.map-item .n{flex:none;width:30px;height:30px;border-radius:50%;border:2px solid var(--accent);display:grid;place-items:center;font-family:var(--body);font-size:14px;color:var(--accent)}
+.map-item.done .n{background:var(--ok);border-color:var(--ok);color:#fff}
+.map-item .t{flex:1}
+.map-item .st{font-size:13px;color:var(--muted);font-weight:600;white-space:nowrap}
+.map-item.next .st{color:var(--accent)}
+@media (max-width:900px){.map-grid{grid-template-columns:1fr}.doc.map{height:clamp(320px,62vh,640px)}}
+@media (max-width:700px){.doc{height:clamp(260px,calc(100vh - 300px),340px)}.doc-text .card{padding:10px 14px}.doc-text .card .orig{font-size:18px}}
+
+/* ---- Guided walk (Station 1): one step at a time ---- */
+.walk{display:grid;gap:0}
+.walk .w-done{width:100%;text-align:left;padding:12px 22px;border:0;border-bottom:1px solid var(--rule);display:flex;gap:10px;align-items:baseline;color:var(--muted);font-size:16px;background:var(--bg);cursor:pointer}
+.walk .w-done b{color:var(--ok);font-family:var(--body);flex:none}
+.walk .w-now{padding:18px 22px;border-bottom:1px solid var(--rule);display:grid;gap:12px;background:var(--panel)}
+.choices{display:grid;gap:8px}
+.choice{text-align:left;min-height:48px;padding:10px 14px;border-radius:10px;border:2px solid var(--rule);background:var(--bg);font-weight:700;font-size:17px;cursor:pointer}
+.choice:hover{border-color:var(--accent)}
+.choice[aria-pressed="true"]{border-color:var(--accent);background:var(--tint)}
+.choice.right[aria-pressed="true"]{border-color:var(--ok);background:var(--ok-tint)}
+.feedback{border-left:5px solid var(--accent);background:var(--tint);border-radius:8px;padding:10px 14px;font-size:17px}
+.feedback.right{border-color:var(--ok);background:var(--ok-tint)}
+.w-nav{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center}
+.w-count{color:var(--muted);font-weight:700;font-size:15px}
+details.stuck{border:1.5px dashed var(--rule);border-radius:10px;padding:8px 14px}
+details.stuck summary{cursor:pointer;font-weight:800;color:var(--deep);min-height:40px;display:flex;align-items:center}
+details.stuck ol{margin:6px 0 4px;padding-left:22px;display:grid;gap:6px}
 
 /* Station 6 */
 .gr{display:grid;gap:10px;padding:14px 16px;border:1px solid var(--rule);border-radius:12px;background:var(--bg)}
@@ -364,6 +426,7 @@ function frameText(frame, blanks){
 }
 function translation(s){
   const r = st(s.n);
+  if (s.guide) return (r.t || '').trim();
   if (S.level === 'q' && s.frame) {
     const b = r.b || [];
     return b.some(x => (x || '').trim()) ? frameText(s.frame, b) : '';
@@ -380,6 +443,82 @@ function exitText(){
   return (x.t || '').trim();
 }
 
+/* ---------- the page itself: a zoomable Stone engraving with the stations boxed ----------
+   docView({box, boxes, zoomed, text}) returns a .doc element. zoomTo(box) animates the
+   inner wrapper so that box fills the frame; zoomOut() fits the whole page. */
+const DOC_W = 2000, DOC_H = 2373;   // images/declaration-stone-2000.jpg
+const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function docView(opts){
+  /* The picture and its boxes are decoration for a screen reader: the station list (map) or the
+     typed excerpt (station) carries the same information in text. */
+  const doc = el('div', {class:'doc' + (opts.map ? ' map' : '') + (reduced ? ' still' : ''), role:'group', 'aria-label': opts.map ? 'The Declaration of Independence with each station boxed' : 'The Declaration of Independence, zoomed to the lines for this station'});
+  const inner = el('div', {class:'doc-inner', 'aria-hidden':'true'});
+  inner.append(el('img', {src:'images/declaration-stone-2000.jpg', width: String(DOC_W), height: String(DOC_H), alt:'', draggable:'false'}));
+  const boxes = opts.map ? tileBoxes(opts.boxes || []) : (opts.boxes || []);
+  boxes.forEach((b, i) => {
+    const [x0, y0, x1, y1] = b.box;
+    const btn = el('button', {type:'button', class:'doc-box' + (b.done ? ' done' : '') + (b.here ? ' here' : '') + (b.next ? ' next' : '') + (i % 2 ? ' alt' : ''),
+      style:'left:' + x0 + '%;top:' + y0 + '%;width:' + (x1 - x0) + '%;height:' + (y1 - y0) + '%',
+      'data-n': String(b.n), tabindex:'-1', title: opts.map ? 'Station ' + b.n + ': ' + b.title : '',
+      onclick: () => opts.onPick && opts.onPick(b.n)},
+      el('span', {class:'tag', text: (opts.map ? 'Station ' : '') + b.n + (opts.map && b.next ? ' \u00b7 next' : '')}));
+    if (opts.map) { btn.addEventListener('mouseenter', () => opts.onHover && opts.onHover(b.n, true)); btn.addEventListener('mouseleave', () => opts.onHover && opts.onHover(b.n, false)); }
+    inner.append(btn);
+  });
+  doc.append(inner);
+  let textLayer = null;
+  if (opts.text) { textLayer = el('div', {class:'doc-text', 'aria-hidden':'true'}, el('div', {class:'card'}, el('p', {class:'lab', text:'The same lines, in type'}), opts.text)); doc.append(textLayer); }
+  function geom(){ const W = doc.clientWidth, H = doc.clientHeight; return {W, H, ih: W * DOC_H / DOC_W}; }
+  function apply(scale, tx, ty){ inner.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + scale + ')'; inner.style.setProperty('--inv', String(1 / scale)); }
+  function zoomTo(box){
+    const {W, H, ih} = geom();
+    const [x0, y0, x1, y1] = box;
+    const bx = x0 / 100 * W, by = y0 / 100 * ih, bw = (x1 - x0) / 100 * W, bh = (y1 - y0) / 100 * ih;
+    const scale = Math.min(W / bw * 0.94, H / bh * 0.72, 7);
+    apply(scale, W / 2 - scale * (bx + bw / 2), H / 2 - scale * (by + bh / 2));
+  }
+  function zoomOut(){
+    const {W, H, ih} = geom();
+    const room = opts.map ? 190 : 0;           // the margin labels need space either side
+    const scale = Math.min(1, H / ih, (W - room) / W);
+    apply(scale, (W - W * scale) / 2, Math.max(0, (H - ih * scale) / 2));
+  }
+  function showText(on){ if (!textLayer) return; textLayer.classList.toggle('on', on); textLayer.setAttribute('aria-hidden', String(!on)); doc.classList.toggle('text-on', on); }
+  function hover(n, on){ const b = inner.querySelector('.doc-box[data-n="' + n + '"]'); if (b) b.classList.toggle('hover', on); }
+  doc.zoomTo = zoomTo; doc.zoomOut = zoomOut; doc.showText = showText; doc.hover = hover;
+  return doc;
+}
+/* Neighbouring stations share a line or two, so on the map their boxes are trimmed to meet at the
+   middle of the overlap: every click lands on one station, and the boxes tile the text. */
+function tileBoxes(list){
+  const out = list.map(b => Object.assign({}, b, {box: b.box.slice()})).sort((a, b) => a.box[1] - b.box[1]);
+  for (let i = 0; i + 1 < out.length; i++) {
+    const a = out[i].box, b = out[i + 1].box;
+    if (a[3] > b[1]) { const mid = (a[3] + b[1]) / 2; a[3] = mid; b[1] = mid; }
+  }
+  return out;
+}
+/* The station's excerpt arrives like this: the whole page, a pause, a zoom to its lines,
+   then the typed words fade in over the handwriting. A toggle brings the handwriting back. */
+function excerptBlock(s, textNode){
+  const wrap = el('div', {});
+  const doc = docView({boxes: [{n: s.n, title: s.title, box: s.box, here: true}], text: textNode});
+  const tools = el('div', {class:'doc-tools', 'data-no-listen':''});
+  const again = el('button', {type:'button', class:'btn ghost small', text:'See the handwriting', 'aria-pressed':'false'});
+  let showing = false;
+  again.addEventListener('click', () => { showing = !showing; doc.showText(!showing); again.textContent = showing ? 'Back to the words' : 'See the handwriting'; again.setAttribute('aria-pressed', String(showing)); if (showing) doc.zoomTo(s.box); });
+  const whole = el('button', {type:'button', class:'btn ghost small', text:'See the whole page', onclick: () => { doc.showText(false); doc.zoomOut(); showing = true; again.textContent = 'Back to the words'; again.setAttribute('aria-pressed', 'true'); }});
+  tools.append(again, whole, el('span', {text: 'Where it is: ' + s.where}));
+  wrap.append(doc, tools);
+  requestAnimationFrame(() => {
+    doc.zoomOut();
+    if (reduced) { doc.zoomTo(s.box); doc.showText(true); return; }
+    setTimeout(() => doc.zoomTo(s.box), 700);
+    setTimeout(() => doc.showText(true), 2300);
+  });
+  return wrap;
+}
+
 /* ---------- views ---------- */
 const app = document.getElementById('app');
 const lvlBtn = document.getElementById('lvlBtn');
@@ -393,7 +532,9 @@ function setView(){
   app.innerHTML = '';
   cur = h;
   const m = /^s([1-7])$/.exec(h);
+  if (h !== 'start') window.scrollTo(0, 0);     // every screen opens at its top
   if (m && S.level) return station(parseInt(m[1], 10));
+  if (h === 'map' && S.level) return mapView();
   if (h === 'finish' && S.level) return finish();
   return landing(h === 'start');
 }
@@ -408,12 +549,13 @@ function landing(focusLevels){
       el('h1', {text:'Translating the Declaration'}),
       el('p', {class:'lead', text:'In July 1776, Congress told the world why the colonies were breaking away. Read seven parts of the Declaration of Independence in Jefferson’s own words, and write each one the way you would say it.'}),
       el('div', {class:'cta', 'data-no-listen':''},
-        el('a', {class:'btn', href:'#start', text: started ? 'Keep Going' : 'Choose My Reading'}),
+        el('a', {class:'btn', href: started ? '#map' : '#start', text: started ? 'Keep Going' : 'Choose My Reading'}),
+        started ? el('a', {class:'btn ghost', href:'#start', text:'Change My Reading'}) : null,
         started ? el('a', {class:'btn ghost', href:'#finish', text:'Turn It In'}) : null)),
     el('figure', {}, el('img', {src:'images/declaration-stone-1823.jpg', width:'700', height:'831', alt:'The Declaration of Independence: the 1823 Stone engraving of the signed parchment.'}),
       el('figcaption', {text:'The Declaration of Independence. The 1823 Stone engraving, an exact copy of the signed parchment. National Archives.'})));
   const how = el('section', {class:'how', 'aria-label':'How it works', 'data-listen':''},
-    el('div', {}, el('b', {text:'1. Read'}), el('p', {text:'Jefferson’s words, with help on the hard ones. Tap any underlined word, or press Listen.'})),
+    el('div', {}, el('b', {text:'1. Read'}), el('p', {text:'The page zooms to the lines for each station, then the words appear in type. Tap any underlined word, or press Listen.'})),
     el('div', {}, el('b', {text:'2. Write'}), el('p', {text:'Use the clue card and write what it means in your own words. Your work saves on this computer as you type.'})),
     el('div', {}, el('b', {text:'3. Check'}), el('p', {text:'Press Check to see a simpler version. Fix a word if you need to, then go on to the next station.'})));
 
@@ -458,8 +600,43 @@ function landing(focusLevels){
 function dots(here){
   const d = el('nav', {class:'dots', 'aria-label':'Stations', 'data-no-listen':''});
   ST.forEach(s => d.append(el('a', {href:'#s' + s.n, class: (s.n === here ? 'here ' : '') + (stationDone(s) ? 'done' : ''), 'aria-label':'Station ' + s.n + (stationDone(s) ? ' (done)' : '') + (s.n === here ? ', this one' : ''), 'aria-current': s.n === here ? 'page' : null, text: String(s.n)})));
+  d.append(el('a', {href:'#map', class:'end' + (here === 'map' ? ' here' : ''), text:'The page'}));
   d.append(el('a', {href:'#finish', class:'end' + (here === 'finish' ? ' here' : ''), text:'Finish'}));
   return d;
+}
+
+/* ---------- the map: the whole page, every station boxed; tap one to open it ---------- */
+function mapView(){
+  const l = S.level;
+  lvlBtn.hidden = false; document.getElementById('lvlName').textContent = LV_NAME[l];
+  document.title = 'The Declaration, station by station';
+  const next = ST.find(s => !stationDone(s));
+  const doneN = ST.filter(stationDone).length;
+  const top = el('div', {class:'path-top'}, el('div', {class:'path-meta'}, el('span', {class:'chip', text: LV_NAME[l] + ' reading'}), el('span', {text: doneN + ' of 7 stations done'}), el('a', {href:'#', text:'Start page'})));
+  let list;
+  const doc = docView({map: true, boxes: ST.map(s => ({n: s.n, title: s.title, box: s.box, done: stationDone(s), next: next && next.n === s.n})),
+    onPick: n => go('s' + n), onHover: (n, on) => { const a = list.querySelector('[data-n="' + n + '"]'); if (a) a.classList.toggle('hover', on); }});
+  list = el('ol', {class:'map-list', 'aria-label':'Stations'}, ST.map(s => {
+    const done = stationDone(s), isNext = next && next.n === s.n;
+    const a = el('a', {class:'map-item' + (done ? ' done' : '') + (isNext ? ' next' : ''), href:'#s' + s.n, 'data-n': String(s.n),
+      'aria-label':'Station ' + s.n + ', ' + s.title + (done ? ', done' : isNext ? ', next' : '')},
+      el('span', {class:'n', 'aria-hidden':'true', text: done ? '\u2713' : String(s.n)}),
+      el('span', {class:'t', text: s.title}),
+      el('span', {class:'st', 'aria-hidden':'true', text: done ? 'Done' : isNext ? 'Next' : ''}));
+    a.addEventListener('mouseenter', () => doc.hover(s.n, true)); a.addEventListener('mouseleave', () => doc.hover(s.n, false));
+    a.addEventListener('focus', () => doc.hover(s.n, true)); a.addEventListener('blur', () => doc.hover(s.n, false));
+    return el('li', {}, a);
+  }));
+  const side = el('div', {class:'map-side'},
+    el('h1', {text:'The Whole Page'}),
+    el('p', {class:'say', text: next ? 'Every box on the page is one station. Tap a box, or a station in the list, to zoom in. Do them in order if you can.' : 'All seven stations are done. Tap any station to look again, or finish up.'}),
+    list,
+    next ? el('a', {class:'btn', href:'#s' + next.n, text:'Next: Station ' + next.n + ' \u2192'}) : el('a', {class:'btn', href:'#finish', text:'Finish and Turn It In \u2192'}));
+  app.append(top, el('div', {class:'map-grid'}, doc, side));
+  requestAnimationFrame(() => doc.zoomOut());
+  const onResize = () => { if (document.body.contains(doc)) doc.zoomOut(); else window.removeEventListener('resize', onResize); };
+  window.addEventListener('resize', onResize);
+  if (navigated) focusTitle(side.querySelector('h1'));
 }
 function stepHead(n, text){ return el('h2', {}, el('span', {class:'num', 'aria-hidden':'true', text:String(n)}), el('span', {class:'sr', text:'Step ' + n + '. '}), text); }
 
@@ -486,11 +663,12 @@ function station(n){
     el('h1', {id:'st-h', text: s.title}),
     el('p', {class:'where', text: 'Where it is on the page: ' + s.where})));
   if (s.match) { art.append(...grievanceSteps(s, l, r)); }
+  else if (s.guide) { art.append(walk(s, l, r)); }
   else {
     /* 1 read */
     art.append(el('div', {class:'step'}, stepHead(1, 'Read it. Tap any underlined word.'),
-      el('p', {class:'say', text:'Read it out loud with your partner, or press Listen at the top.'}),
-      renderOrig(s.orig, s.words)));
+      el('p', {class:'say', text:'Watch the page zoom in. Then read the lines out loud, or press Listen at the top.'}),
+      excerptBlock(s, renderOrig(s.orig, s.words))));
     /* 2 clue card */
     art.append(el('div', {class:'step'}, stepHead(2, 'Use the clue card.'), clueCard(s, l)));
     /* 3 write */
@@ -514,7 +692,7 @@ function station(n){
       }})));
       inputs.forEach((inp, i) => inp.addEventListener('input', () => { r.b[i] = inp.value; save(); syncBank(); note(); }));
       syncBank();
-      write.append(el('p', {class:'say', text:'Fill in each blank. Tap a word in the bank, or type your own. Two of the words do not belong.'}), bank, frame, saved);
+      write.append(el('p', {class:'say', text:'Fill in each blank. Tap a word in the bank, or type your own. Two of the words do not belong.'}), bank, frame, saved, stuckBox(s, l));
     } else {
       const ta = el('textarea', {'aria-label':'Your translation of Station ' + n, placeholder:'Type what it means in your own words.'});
       ta.value = r.t || '';
@@ -523,7 +701,7 @@ function station(n){
         const useBtn = el('button', {type:'button', class:'btn ghost small', text:'Put the starter in the box', onclick: () => { if (!ta.value.trim()) { ta.value = s.start; r.t = ta.value; save(); } ta.focus(); }});
         write.append(el('div', {class:'starter', 'data-no-listen':''}, el('p', {}, el('b', {text:'Start with: '}), s.start), useBtn));
       } else write.append(el('p', {class:'say', text:'Short is fine. Your own words are the point.'}));
-      write.append(ta, saved);
+      write.append(ta, saved, stuckBox(s, l));
     }
     art.append(write);
     /* 4 check */
@@ -542,11 +720,119 @@ function station(n){
     /* 5 vocab card */
     if (s.vocab) art.append(el('div', {class:'step'}, stepHead(5, 'Your vocabulary card.'), el('p', {class:'vocab-line', text:'Finish the Use It sentence for ' + s.vocab + ' on your Declaration vocabulary card.'})));
   }
+  const walking = s.guide && (r.step || 0) < s.guide.length;   // mid-walk: the steps' own Next leads on
   art.append(el('div', {class:'next-row', 'data-no-listen':''},
-    n > 1 ? el('a', {class:'btn ghost', href:'#s' + (n - 1), text:'← Station ' + (n - 1)}) : el('a', {class:'btn ghost', href:'#', text:'← Start'}),
-    n < 7 ? el('a', {class:'btn', href:'#s' + (n + 1), text:'Station ' + (n + 1) + ' →'}) : el('a', {class:'btn', href:'#finish', text:'Finish →'})));
+    el('a', {class:'btn ghost', href:'#map', text:'\u2190 Back to the page'}),
+    walking ? el('span', {class:'w-count', text:'Finish the steps above, then the page comes back.'}) :
+    n < 7 ? el('a', {class:'btn', href:'#map', text:'Done with Station ' + n + ' \u2192'}) : el('a', {class:'btn', href:'#finish', text:'Finish \u2192'})));
   app.append(top, art);
   if (navigated) focusTitle(art.querySelector('h1'));
+}
+
+/* "Stuck?" on every write step: what to try, in order, before asking for help. */
+function stuckBox(s, l){
+  const tips = [
+    'Read the clue card\u2019s key phrases again. They are the hard parts, already in plain words.',
+    'Say it out loud first: \u201cJefferson is saying that\u2026\u201d Then type what you said.',
+    l === 'q' ? 'Fill the blanks you are sure about first. Then the leftover words have fewer places to go.' : 'Write only the first half of the sentence. Then come back for the second half.',
+    'Press Check, read the simpler version once, then close it and write yours without looking.',
+    'Still stuck? Press Listen and hear it read. Or write your best guess and move on; you can come back.'
+  ];
+  return el('details', {class:'stuck', 'data-no-listen':''}, el('summary', {text:'Stuck? Try this'}), el('ol', {}, tips.map(t => el('li', {text: t}))));
+}
+
+/* ---------- the guided walk (Station 1): one step at a time ---------- */
+function walk(s, l, r){
+  r.w = r.w || {};              // step answers: {i: value}
+  r.parts = r.parts || {};      // built halves: {1: text, 2: text}
+  if (r.step == null) r.step = 0;
+  const steps = s.guide;
+  const box = el('div', {class:'walk'});
+  function summaryOf(i){
+    const g = steps[i];
+    if (g.type === 'read') return 'Read it.';
+    if (g.type === 'ask') { const c = g.choices[r.w[i]]; return g.q + ' ' + (c ? c[0] + '.' : ''); }
+    if (g.type === 'build') return (g.part === 1 ? 'First half: ' : 'Second half: ') + (r.parts[g.part] || '');
+    if (g.type === 'assemble') return 'Your translation: ' + (r.t || '');
+    return 'Checked.';
+  }
+  function render(){
+    box.replaceChildren();
+    for (let i = 0; i < r.step && i < steps.length; i++) {
+      const b = el('button', {type:'button', class:'w-done', 'aria-label':'Step ' + (i + 1) + ', done. Go back to it.', onclick: () => { r.step = i; save(); render(); }},
+        el('b', {text:'\u2713 ' + (i + 1)}), el('span', {text: summaryOf(i)}));
+      box.append(b);
+    }
+    if (r.step >= steps.length) { box.append(el('div', {class:'w-now'}, el('p', {class:'ask', text:'Station 1 is done. Tap any step above to change an answer, or go back to the page.'}))); return; }
+    const i = r.step, g = steps[i];
+    const now = el('div', {class:'w-now'});
+    const count = el('p', {class:'w-count', text:'Step ' + (i + 1) + ' of ' + steps.length});
+    const nextBtn = el('button', {type:'button', class:'btn', text: i === steps.length - 1 ? 'Done' : 'Next step \u2192'});
+    const backBtn = i ? el('button', {type:'button', class:'btn ghost', text:'\u2190 Back', onclick: () => { r.step = i - 1; save(); render(); }}) : el('span');
+    let ready = () => true;
+    if (g.type === 'read') {
+      now.append(count, stepHead(1, 'Read it.'), el('p', {class:'say', text: g.say}), excerptBlock(s, renderOrig(s.orig, s.words)), clueCard(s, l));
+    } else if (g.type === 'ask') {
+      now.append(count, stepHead(i + 1, g.q));
+      now.append(el('p', {class:'say', text:'Pick one. Then read why.'}));
+      const fb = el('div', {class:'feedback', hidden:'', role:'status'});
+      const ch = el('div', {class:'choices', role:'group', 'aria-label':'Choices'});
+      g.choices.forEach((c, k) => {
+        const b = el('button', {type:'button', class:'choice' + (c[1] ? ' right' : ''), 'aria-pressed': String(r.w[i] === k), text: c[0]});
+        b.addEventListener('click', () => { r.w[i] = k; save(); ch.querySelectorAll('.choice').forEach(x => x.setAttribute('aria-pressed', String(x === b))); fb.hidden = false; fb.textContent = c[2]; fb.classList.toggle('right', !!c[1]); });
+        ch.append(b);
+      });
+      if (r.w[i] != null) { const c = g.choices[r.w[i]]; fb.hidden = false; fb.textContent = c[2]; fb.classList.toggle('right', !!c[1]); }
+      now.append(renderOrig(s.orig, s.words), ch, fb);
+      ready = () => { if (r.w[i] == null) { toast('Pick an answer first.'); return false; } return true; };
+    } else if (g.type === 'build') {
+      now.append(count, stepHead(i + 1, g.q));
+      const saved = el('p', {class:'saved', role:'status'});
+      if (l === 'q') {
+        const inputs = []; r.w[i] = r.w[i] || [];
+        const frame = el('p', {class:'frame', 'data-no-listen':''});
+        g.frame.split('___').forEach((part, k) => {
+          if (k) { const inp = el('input', {type:'text', 'aria-label':'Blank ' + k, autocomplete:'off'}); inp.value = r.w[i][k - 1] || ''; inputs.push(inp); frame.append(inp); }
+          if (part) frame.append(part);
+        });
+        const bank = el('div', {class:'bank', 'data-no-listen':''}, el('span', {text:'Words:'}));
+        const sync = () => { bank.querySelectorAll('button').forEach(b => b.classList.toggle('used', inputs.some(x => x.value.trim().toLowerCase() === b.textContent.toLowerCase()))); r.parts[g.part] = inputs.some(x => x.value.trim()) ? frameText(g.frame, r.w[i]) : ''; save(); };
+        g.bank.forEach(w => bank.append(el('button', {type:'button', text: w, onclick: () => { const t = inputs.find(x => x === document.activeElement && !x.value.trim()) || inputs.find(x => !x.value.trim()) || inputs[0]; t.value = w; r.w[i][inputs.indexOf(t)] = w; sync(); t.focus(); }})));
+        inputs.forEach((inp, k) => inp.addEventListener('input', () => { r.w[i][k] = inp.value; sync(); saved.textContent = 'Saved.'; }));
+        now.append(el('p', {class:'say', text:'Tap a word in the bank, or type your own. Some of these words do not belong.'}), bank, frame, saved);
+        ready = () => { if (!inputs.every(x => x.value.trim())) { toast('Fill in every blank first.'); return false; } sync(); return true; };
+      } else {
+        const ta = el('textarea', {'aria-label':'Your words', placeholder:'Type it here.'}); ta.value = r.parts[g.part] || '';
+        ta.addEventListener('input', () => { r.parts[g.part] = ta.value; save(); saved.textContent = 'Saved.'; });
+        if (l === 'c') now.append(el('div', {class:'starter', 'data-no-listen':''}, el('p', {}, el('b', {text:'Start with: '}), g.start), el('button', {type:'button', class:'btn ghost small', text:'Put the starter in the box', onclick: () => { if (!ta.value.trim()) { ta.value = g.start; r.parts[g.part] = ta.value; save(); } ta.focus(); }})));
+        else now.append(el('p', {class:'say', text: g.full}));
+        now.append(ta, saved);
+        ready = () => { if (!ta.value.trim()) { toast('Write something first. A few words is fine.'); return false; } return true; };
+      }
+      now.append(renderOrig(s.orig, s.words), clueCard(s, l), stuckBox(s, l));
+    } else if (g.type === 'assemble') {
+      now.append(count, stepHead(i + 1, 'Your translation, all together.'), el('p', {class:'say', text: g.say}));
+      const joined = [r.parts[1], r.parts[2]].filter(Boolean).join(' ');
+      if (!r.t || r.tFrom !== joined) { r.t = joined; r.tFrom = joined; save(); }
+      const ta = el('textarea', {'aria-label':'Your translation'}); ta.value = r.t;
+      ta.addEventListener('input', () => { r.t = ta.value; save(); });
+      now.append(ta);
+      ready = () => { if (!ta.value.trim()) { toast('Your translation is empty. Go back a step.'); return false; } return true; };
+    } else if (g.type === 'check') {
+      now.append(count, stepHead(i + 1, 'Check your translation.'),
+        el('div', {class:'check-box'}, el('b', {text:'A simpler version'}), el('p', {text: s.check}), el('p', {class:'say', text:'Does yours say the same thing? Fix one word if you need to.'})),
+        el('p', {class:'lab', text:'Yours:'}));
+      const ta = el('textarea', {'aria-label':'Your translation'}); ta.value = r.t || '';
+      ta.addEventListener('input', () => { r.t = ta.value; save(); });
+      now.append(ta);
+      r.checked = true; save();
+    }
+    nextBtn.addEventListener('click', () => { if (!ready()) return; r.step = i + 1; save(); if (r.step >= steps.length) { go('map'); return; } render(); window.scrollTo({top: box.getBoundingClientRect().top + window.scrollY - 90, behavior: reduced ? 'auto' : 'smooth'}); });
+    now.append(el('div', {class:'w-nav', 'data-no-listen':''}, backBtn, nextBtn));
+    box.append(now);
+  }
+  render();
+  return box;
 }
 
 function grievanceSteps(s, l, r){
@@ -554,6 +840,7 @@ function grievanceSteps(s, l, r){
   const steps = [];
   const intro = el('div', {class:'step'}, stepHead(1, 'Read the four grievances.'),
     el('p', {class:'say', text: s.intro}),
+    excerptBlock(s, el('p', {class:'orig', text:'\u201cHe has refused his Assent to Laws\u2026\u201d The list runs on for 27 grievances, each one a complaint against the king. Four of them are below.'})),
     el('p', {class:'warn', text: s.note}));
   steps.push(intro);
   const match = el('div', {class:'step'}, stepHead(2, 'Match each one to an event. Use the key card below.'));
