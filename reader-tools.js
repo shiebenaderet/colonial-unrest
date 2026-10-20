@@ -179,7 +179,7 @@
   };
 
   /* ------------------------------------------------------------ sentences */
-  var BLOCKS = 'h1,h2,h3,h4,p,li,legend,label,summary,blockquote'; /* ADAPTED (1) */
+  var BLOCKS = 'h1,h2,h3,h4,p,li,dt,dd,legend,label,summary,blockquote'; /* ADAPTED (1) */
 
   /* Every readable block inside the data-listen containers, in page order, each
      split into sentences with character offsets into its text. */
