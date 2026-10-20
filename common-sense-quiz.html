@@ -99,12 +99,35 @@ main.wrap{max-width:980px;margin:0 auto;padding:24px 16px 64px}
 .talk b{color:var(--deep)}
 .breakdown{display:grid;gap:12px}
 .breakdown h2{font-size:30px}
-.row{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:16px 18px;display:grid;gap:8px}
-.row .st{font-weight:800;font-size:18px}
-.row .vs{display:flex;flex-wrap:wrap;gap:8px}
-.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 12px;border-radius:999px;font-weight:700;font-size:15px;background:var(--band)}
-.pill.match{background:var(--ok-tint);color:var(--ok)}
-.pill.miss{background:var(--no-tint);color:var(--no)}
+.row{background:var(--panel);border:1px solid var(--rule);border-left:8px solid var(--rule);border-radius:12px;padding:16px 18px;display:grid;gap:10px;scroll-margin-top:80px}
+.row.same{border-left-color:var(--ok)} .row.diff{border-left-color:var(--no)}
+.row .top{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:10px}
+.row .st{font-weight:800;font-size:19px;flex:1 1 300px}
+.verdict{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:10px;font-weight:800;font-size:19px;line-height:1.1;white-space:nowrap}
+.verdict .ic{font-size:24px;line-height:1}
+.verdict.same{background:var(--ok-tint);color:var(--ok);border:2px solid var(--ok)}
+.verdict.diff{background:var(--no-tint);color:var(--no);border:2px solid var(--no)}
+.row .vs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-width:520px}
+.side{background:var(--band);border-radius:8px;padding:8px 12px;display:grid;gap:2px}
+.side small{font-size:14px;color:var(--muted);font-weight:700;text-transform:none}
+.side b{font-size:18px}
+.tally{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+.tally span{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:12px;font-weight:800;font-size:20px}
+.tally .same{background:var(--ok-tint);color:var(--ok);border:2px solid var(--ok)}
+.tally .diff{background:var(--no-tint);color:var(--no);border:2px solid var(--no)}
+.tally strong{font-family:var(--display);font-size:32px;line-height:1;font-variant-numeric:lining-nums}
+.strip{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:6px;max-width:620px;width:100%;margin:0 auto}
+.strip a{display:grid;place-items:center;gap:0;min-height:58px;border-radius:10px;text-decoration:none;font-weight:800;font-size:16px;line-height:1.1;border:2px solid currentColor}
+.strip a .ic{font-size:22px}
+.strip a.same{background:var(--ok-tint);color:var(--ok)} .strip a.diff{background:var(--no-tint);color:var(--no)}
+.send{background:var(--panel);border:2px solid var(--accent);border-radius:14px;padding:18px 20px;display:grid;gap:12px}
+.send h2{font-size:26px}
+.send .pers{display:flex;flex-wrap:wrap;gap:8px}
+.send .per{min-width:64px;min-height:48px;border-radius:10px;border:2px solid var(--rule);background:var(--bg);font-weight:800;font-size:18px;cursor:pointer}
+.send .per[aria-pressed="true"]{border-color:var(--accent);background:var(--tint);color:var(--deep)}
+.send .msg{font-weight:700;min-height:1.5em}
+.send .msg.ok{color:var(--ok)}
+.send .fine{color:var(--muted);font-size:15px}
 .row blockquote{margin:0;font-family:var(--orig);font-size:18px;border-left:3px solid var(--gold);padding-left:12px}
 .row .why{color:var(--muted)}
 .end-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
@@ -113,6 +136,7 @@ main.wrap{max-width:980px;margin:0 auto;padding:24px 16px 64px}
   .intro figure{max-width:320px;justify-self:center}
   .choices{grid-template-columns:1fr 1fr}
   .statement{min-height:0}
+  .strip{grid-template-columns:repeat(5,minmax(0,1fr))}
 }
 @media (max-width:560px){.brand{font-size:18px}}
 </style>
@@ -259,17 +283,30 @@ function result(){
       el('div', {class:'pin', style:'left:' + pct + '%', 'aria-hidden':'true'}, el('b', {text:'You'}), el('i')),
       el('div', {class:'track'}),
       el('div', {class:'ends', 'aria-hidden':'true'}, el('span', {text:'Loyalist'}), el('span', {text:'Pure Common Sense'}))),
-    el('p', {text:'You took the same side as Paine on ' + matches + ' of ' + QS.length + ' statements.'})));
+    el('div', {class:'tally'},
+      el('span', {class:'same'}, el('strong', {text: String(matches)}), ' Same Side as Paine'),
+      el('span', {class:'diff'}, el('strong', {text: String(QS.length - matches)}), ' Different Side')),
+    el('nav', {class:'strip', 'aria-label':'Each statement: same side or different side as Paine'},
+      QS.map((q, i) => {
+        const same = (S.a[i] >= 3) === q.paine;
+        return el('a', {href:'#r' + (i + 1), class: same ? 'same' : 'diff', 'aria-label':'Statement ' + (i + 1) + ': ' + (same ? 'same side' : 'different side'),
+          onclick: (e) => { e.preventDefault(); const t = document.getElementById('r' + (i + 1)); t.scrollIntoView({behavior:'smooth'}); t.focus({preventScroll:true}); }},
+          el('span', {class:'ic', 'aria-hidden':'true', text: same ? '\u2713' : '\u2717'}), el('span', {'aria-hidden':'true', text: String(i + 1)}));
+      }))));
   res.append(el('p', {class:'talk'}, el('b', {text:'Talk with a partner: '}), 'Which of your answers is most different from Paine\'s? Do you still agree with yourself after reading his reason?'));
+  res.append(sendCard(pct, tier));
   const bd = el('div', {class:'breakdown'}, el('h2', {text:'You vs. Paine'}));
   QS.forEach((q, i) => {
     const v = S.a[i], same = (v >= 3) === q.paine;
-    bd.append(el('div', {class:'row'},
-      el('p', {class:'st', text: (i + 1) + '. ' + q.s}),
+    bd.append(el('div', {class:'row ' + (same ? 'same' : 'diff'), id:'r' + (i + 1), tabindex:'-1'},
+      el('div', {class:'top'},
+        el('p', {class:'st', text: (i + 1) + '. ' + q.s}),
+        el('span', {class:'verdict ' + (same ? 'same' : 'diff')},
+          el('span', {class:'ic', 'aria-hidden':'true', text: same ? '\u2713' : '\u2717'}),
+          el('span', {text: same ? 'Same Side as Paine' : 'Different Side'}))),
       el('div', {class:'vs'},
-        el('span', {class:'pill', text:'You: ' + LABEL[v]}),
-        el('span', {class:'pill', text:'Paine: ' + (q.paine ? 'Agree' : 'Disagree')}),
-        el('span', {class:'pill ' + (same ? 'match' : 'miss'), text: same ? 'Same side' : 'Different side'})),
+        el('span', {class:'side'}, el('small', {text:'You said'}), el('b', {text: LABEL[v]})),
+        el('span', {class:'side'}, el('small', {text:'Paine would say'}), el('b', {text: q.paine ? 'Agree' : 'Disagree'}))),
       el('blockquote', {}, '"' + q.quote + '"'),
       el('p', {class:'why', text: q.why}),
       el('a', {href:'common-sense.html#' + q.id, text:'Read this passage'})));
@@ -280,6 +317,52 @@ function result(){
     el('button', {class:'btn ghost', type:'button', text:'Change My Answers', onclick: () => question(0)}),
     el('button', {class:'btn ghost', type:'button', text:'Start Over', onclick: () => { S.a = []; save(); intro(); }})));
   app.append(res);
+}
+
+/* ---------- Send My Result ----------
+   Same Apps Script as the Fast Finisher Menu (tools/fast-finisher-mailer.gs).
+   For this quiz it sends no name and no email: one row per browser goes into
+   Mr. B's quiz sheet (period, score, the 10 answers). Sending again replaces it. */
+const MAILER_URL = 'https://script.google.com/a/macros/edmonds.wednet.edu/s/AKfycbwgligKU760q4iLftUgH-74QpiNF6dzcjpAXtXU7I3bd9iprC1Bxbl2Fz-UD8D9y-zf/exec';
+const PERIODS = ['1', '2', '3', '5'];
+if (!S.id) { S.id = Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10); save(); }
+function sendCard(pct, tier){
+  const msg = el('p', {class:'msg', role:'status'});
+  const sig = S.a.join('');
+  if (S.sent && S.sent.sig === sig) { msg.textContent = 'Sent to Mr. B. You are done!'; msg.classList.add('ok'); }
+  const pers = el('div', {class:'pers', role:'group', 'aria-label':'Your period'});
+  PERIODS.forEach(p => pers.append(el('button', {type:'button', class:'per', 'aria-pressed': String(S.per === p), text: 'P' + p,
+    'aria-label': 'Period ' + p, onclick: (e) => {
+      S.per = p; save(); const me = e.currentTarget;
+      pers.querySelectorAll('.per').forEach(b => b.setAttribute('aria-pressed', String(b === me)));
+    }})));
+  const btn = el('button', {class:'btn', type:'button', text:'Send My Result to Mr. B'});
+  btn.addEventListener('click', () => send(btn, msg, pers, sig));
+  return el('section', {class:'send', 'aria-labelledby':'send-h', 'data-no-listen':''},
+    el('h2', {id:'send-h', text:'Send My Result to Mr. B'}),
+    el('p', {text:'Pick your period, then send. Mr. B will see how each class did.'}),
+    pers, el('div', {}, btn), msg,
+    el('p', {class:'fine', text:'Your name is not sent, only your period and answers. If you change your answers, send again: it replaces your old result.'}));
+}
+let sendN = 0;
+function send(btn, msg, pers, sig){
+  msg.classList.remove('ok');
+  if (!S.per) { msg.textContent = 'Pick your period first.'; pers.querySelector('.per').focus(); return; }
+  const name = 'csq-send-' + (++sendN) + '-' + Date.now();
+  const tab = window.open('', name, 'width=520,height=420');
+  const form = el('form', {method:'POST', action: MAILER_URL, target: tab ? name : '_blank', hidden:''});
+  const inp = el('input', {type:'hidden', name:'payload'});
+  inp.value = JSON.stringify({activity:'Common Sense Quiz', period: S.per, answers: S.a.slice(0, QS.length), id: S.id + '-p' + S.per});
+  form.append(inp); document.body.append(form);
+  btn.disabled = true; msg.textContent = 'Sending… a small window opened. It says "Sent to Mr. B" when it works.';
+  let done = false;
+  function finish(text, ok){ if (done) return; done = true; window.removeEventListener('message', onMsg); btn.disabled = false; msg.textContent = text; msg.classList.toggle('ok', !!ok); form.remove(); }
+  function onMsg(e){ const d = e.data; if (!d || d.source !== 'ff-mailer') return;
+    if (d.ok) { S.sent = {sig: sig, per: S.per}; save(); }
+    finish(d.ok ? 'Sent to Mr. B. You are done!' : 'That did not send. Make sure you are signed in to your school account, then try again.', d.ok); }
+  window.addEventListener('message', onMsg);
+  setTimeout(() => finish('If the small window said "Sent to Mr. B", you are done. If not, tell Mr. B.'), 30000);
+  form.submit();
 }
 
 if (S.a.filter(Boolean).length === QS.length) result(); else intro();

@@ -554,7 +554,7 @@ function setView(){
 function landing(focusLevels){
   lvlBtn.hidden = true;
   document.title = 'Common Sense, Annotated';
-  const hero = el('section', {class:'hero'},
+  const hero = el('section', {class:'hero', 'data-listen':''},   // Listen reads the intro and facts on this screen
     el('div', {},
       el('h1', {text:'Common Sense'}),
       el('p', {class:'lead', text:'In January 1776, a newcomer from England named Thomas Paine published a short pamphlet. It argued that the colonies should break away from Britain, and thousands of colonists were convinced. Read his most famous words, with help built in.'}),
@@ -567,7 +567,7 @@ function landing(focusLevels){
       el('figure', {class:'title-page'}, el('img', {src:'images/common-sense-title-page.jpg', width:'510', height:'800', alt:'The title page of Common Sense, printed in Philadelphia by R. Bell in 1776. It lists the four subjects of the pamphlet.'}),
         el('figcaption', {text:'The first edition, Philadelphia, 1776.'}))));
 
-  const facts = el('section', {class:'facts', 'aria-label':'Quick facts'},
+  const facts = el('section', {class:'facts', 'aria-label':'Quick facts', 'data-listen':''},
     el('div', {class:'fact'}, el('b', {text:'Late 1774'}), el('p', {text:'Paine arrives in Philadelphia from England, with a letter from Benjamin Franklin.'})),
     el('div', {class:'fact'}, el('b', {text:'January 10, 1776'}), el('p', {text:'Common Sense is published. His name is not on it.'})),
     el('div', {class:'fact'}, el('b', {text:'Plain Words'}), el('p', {text:'Paine wrote for farmers and workers, not just educated leaders. It was read aloud in taverns.'})),
