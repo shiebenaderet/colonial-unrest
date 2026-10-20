@@ -363,7 +363,7 @@ function el(tag, attrs, ...kids){
   kids.flat(Infinity).forEach(k => { if (k != null && k !== false) e.append(k); });
   return e;
 }
-function toast(t){ const d = el('div', {class:'toast', role:'status', text:t}); document.body.append(d); setTimeout(() => d.remove(), 2200); }
+function toast(t){ document.querySelectorAll('.toast').forEach(x => x.remove()); const d = el('div', {class:'toast', role:'status', text:t}); document.body.append(d); setTimeout(() => d.remove(), 2600); }
 async function copyText(text){ try { await navigator.clipboard.writeText(text); return true; } catch (e) { return false; } }
 function radioKeys(group, sel){
   function items(){ return Array.from(group.querySelectorAll(sel)); }
@@ -438,8 +438,20 @@ function frameText(frame, blanks){
 function realText(t, starter){
   t = (t || '').trim();
   if (!t || /___/.test(t)) return '';
-  if (starter && t.replace(/\s+/g, ' ') === starter.trim().replace(/\s+/g, ' ')) return '';
+  if (starter) {
+    const norm = x => x.replace(/\s+/g, ' ').trim();
+    if (norm(t) === norm(starter)) return '';
+    const stem = norm(starter.split('___')[0]);           // the words the starter gave them
+    const own = norm(t).toLowerCase().startsWith(stem.toLowerCase()) ? norm(t).slice(stem.length) : norm(t);
+    if (own.split(/\s+/).filter(Boolean).length < 3) return '';   // a one-word ending is not the idea yet
+  } else if (t.split(/\s+/).filter(Boolean).length < 3) return '';  // "idk" is not a translation
   return t;
+}
+/* The matching message for a box that is not an answer yet. */
+function whyNotText(t, l){
+  if (/___/.test(t || '')) return 'Fill in the blanks (___) first.';
+  if (!(t || '').trim()) return 'Write your translation first. One sentence is fine.';
+  return 'Say the whole idea in a sentence. One word is not enough.';
 }
 function translation(s){
   const r = st(s.n);
@@ -497,17 +509,19 @@ function buildFrame(frameStr, bankWords, values, onChange, opts){
   const extra = bankWords.length - wordy().length;
   const NUM = ['', 'One', 'Two', 'Three', 'Four', 'Five'];
   return {frame, bank, inputs, filled: () => inputs.every(x => x.value.trim()),
-    hint: 'Tap a word in the bank, or type your own.' + (extra > 0 ? ' ' + (NUM[extra] || extra) + ' of the words do not belong.' : '') + ' To change a word, tap the blank and type, or tap the word again to take it out.'};
+    hint: 'Tap a word in the bank, or type your own.' + (opts.extras ? ' ' + opts.extras : (extra > 0 ? ' ' + (NUM[extra] || extra) + ' of the words do not belong.' : '')) + ' To change a word, tap the blank and type, or tap the word again to take it out.'};
 }
 /* Why a station is not done yet, in words the student can act on; null when it is done. */
 function notDoneWhy(s, l, r){
   if (s.match) {
     if (!grievPicked(s)) return 'Pick a letter, or none, for every grievance first.';
-    if (!r.mChecked) return 'Press Check on your matches first.';
-    if (!nativeText(s)) return l === 'q' ? 'Fill in the blanks for the last grievance first.' : 'Answer the last grievance question first. A few words is fine.';
+    if (!r.mChecked) return 'Press Check my matches first.';
+    const wrong = s.griev.filter((g, i) => !(r.m[i] || []).every(x => g.ok.includes(x))).length;
+    if (wrong) return wrong + (wrong > 1 ? ' of your matches still say Not quite.' : ' of your matches still says Not quite.') + ' Fix ' + (wrong > 1 ? 'them' : 'it') + ' and press Check again.';
+    if (!nativeText(s)) return l === 'q' ? 'Fill in the blanks for the last grievance first.' : whyNotText(r.native, l).replace('your translation', 'your answer to the last grievance');
     return null;
   }
-  if (!translation(s)) return l === 'q' ? 'Fill in every blank first.' : 'Write your translation first. A few words is fine.';
+  if (!translation(s)) return l === 'q' ? 'Fill in every blank first.' : whyNotText(r.t, l);
   if (!r.checked) return 'Press Check first and compare with the simpler version.';
   if (l === 'd' && s.deep && !(r.x || '').trim()) return 'Answer Going Further too.';
   return null;
@@ -712,7 +726,7 @@ function mapView(){
   }));
   const side = el('div', {class:'map-side'},
     el('h1', {text:'The Whole Page'}),
-    el('p', {class:'say', text: next ? 'Every box on the page is one station; the circled numbers match this list. Tap a box, or a station here, to zoom in. Do them in order if you can.' : 'All seven stations are done. Tap any station to look again, or finish up.'}),
+    el('p', {class:'say', text: next ? 'Every box on the page is one station; the circled numbers match this list. Tap a station here, or its box on the page, to zoom in. Do them in order if you can.' : 'All seven stations are done. Tap any station to look again, or finish up.'}),
     list,
     next ? el('a', {class:'btn', href:'#s' + next.n, text:'Next: Station ' + next.n + ' \u2192'}) : el('a', {class:'btn', href:'#finish', text:'Finish and Turn It In \u2192'}));
   app.append(top, el('div', {class:'map-grid'}, doc, side));
@@ -756,7 +770,7 @@ function station(n){
     art.append(el('div', {class:'step'}, stepHead(2, 'Use the clue card.'), clueCard(s, l)));
     /* 3 write */
     const write = el('div', {class:'step'}, stepHead(3, 'Write it in your own words.'));
-    const saved = el('p', {class:'saved', role:'status'});
+    const saved = el('p', {class:'saved', role:'status', 'data-no-listen':''});
     let savedT = 0;
     const note = () => { saved.textContent = 'Saved.'; clearTimeout(savedT); savedT = setTimeout(() => { saved.textContent = ''; }, 1500); };
     if (l === 'q') {
@@ -768,9 +782,9 @@ function station(n){
       ta.value = r.t || '';
       ta.addEventListener('input', () => { r.t = ta.value; save(); note(); });
       if (l === 'c') {
-        const useBtn = el('button', {type:'button', class:'btn ghost small', text:'Put the starter in the box', onclick: () => { if (!ta.value.trim()) { ta.value = s.start; r.t = ta.value; save(); } ta.focus(); }});
+        const useBtn = el('button', {type:'button', class:'btn ghost small', text:'Put the starter in the box', onclick: () => { if (!ta.value.trim()) { ta.value = s.start; r.t = ta.value; save(); } else toast('The box already has words. Clear it first if you want the starter.'); ta.focus(); }});
         write.append(el('div', {class:'starter', 'data-no-listen':''}, el('p', {}, el('b', {text:'Start with: '}), s.start), useBtn));
-      } else write.append(el('p', {class:'say', text:'Short is fine. Your own words are the point.'}));
+      } else write.append(el('p', {class:'say', text:'One or two sentences. Your own words are the point.'}));
       write.append(ta, saved, stuckBox(s, l, true));
     }
     art.append(write);
@@ -780,7 +794,7 @@ function station(n){
     const box = el('div', {class:'check-box', hidden: !r.checked}, el('b', {text:'A simpler version'}), el('p', {text: s.check}),
       el('p', {class:'yours'}, el('b', {text:'Yours: '}), mine), el('p', {class:'say', text:'Does yours say the same thing? Fix one word if you need to.'}));
     const cb = el('button', {type:'button', class:'btn ghost small', text: r.checked ? 'Hide the simpler version' : 'Check', 'aria-expanded': String(!!r.checked), onclick: () => {
-      if (!r.checked && !translation(s)) { toast(l === 'q' ? 'Fill in the blanks first. Then check.' : 'Write yours first. Then check.'); return; }
+      if (!r.checked && !translation(s)) { toast(l === 'q' ? 'Fill in the blanks first. Then check.' : whyNotText(r.t, l).replace('Write your translation first. One sentence is fine.', 'Write yours first. Then check.')); return; }
       r.checked = !r.checked; save(); mine.textContent = translation(s); box.hidden = !r.checked; cb.textContent = r.checked ? 'Hide the simpler version' : 'Check'; cb.setAttribute('aria-expanded', String(!!r.checked));
     }});
     mine.textContent = translation(s);
@@ -871,7 +885,7 @@ function walk(s, l, r){
       ready = () => { if (r.w[i] == null) { toast('Pick an answer first.'); return false; } if (!g.choices[r.w[i]][1]) { toast('Not that one. Read the hint under it and try again.'); return false; } return true; };
     } else if (g.type === 'build') {
       now.append(count, stepHead(i + 1, g.q));
-      const saved = el('p', {class:'saved', role:'status'});
+      const saved = el('p', {class:'saved', role:'status', 'data-no-listen':''});
       if (l === 'q') {
         r.w[i] = r.w[i] || [];
         const f = buildFrame(g.frame, g.bank, r.w[i], () => { r.parts[g.part] = f.inputs.some(x => x.value.trim()) ? frameText(g.frame, r.w[i]) : ''; save(); saved.textContent = 'Saved.'; });
@@ -880,10 +894,10 @@ function walk(s, l, r){
       } else {
         const ta = el('textarea', {'aria-label':'Your words', placeholder:'Type it here.'}); ta.value = r.parts[g.part] || '';
         ta.addEventListener('input', () => { r.parts[g.part] = ta.value; save(); saved.textContent = 'Saved.'; });
-        if (l === 'c') now.append(el('div', {class:'starter', 'data-no-listen':''}, el('p', {}, el('b', {text:'Start with: '}), g.start), el('button', {type:'button', class:'btn ghost small', text:'Put the starter in the box', onclick: () => { if (!ta.value.trim()) { ta.value = g.start; r.parts[g.part] = ta.value; save(); } ta.focus(); }})));
+        if (l === 'c') now.append(el('div', {class:'starter', 'data-no-listen':''}, el('p', {}, el('b', {text:'Start with: '}), g.start), el('button', {type:'button', class:'btn ghost small', text:'Put the starter in the box', onclick: () => { if (!ta.value.trim()) { ta.value = g.start; r.parts[g.part] = ta.value; save(); } else toast('The box already has words. Clear it first if you want the starter.'); ta.focus(); }})));
         else now.append(el('p', {class:'say', text: g.full}));
         now.append(ta, saved);
-        ready = () => { if (!ta.value.trim()) { toast('Write something first. A few words is fine.'); return false; } return true; };
+        ready = () => { if (!realText(ta.value, l === 'c' ? g.start : null)) { toast(whyNotText(ta.value, l).replace('your translation', 'this half')); return false; } return true; };
       }
       now.append(renderOrig(s.orig, s.words), clueCard(s, l), stuckBox(s, l, false));
     } else if (g.type === 'assemble') {
@@ -893,7 +907,7 @@ function walk(s, l, r){
       const ta = el('textarea', {'aria-label':'Your translation'}); ta.value = r.t;
       ta.addEventListener('input', () => { r.t = ta.value; save(); });
       now.append(ta);
-      ready = () => { if (!ta.value.trim()) { toast('Your translation is empty. Go back a step.'); return false; } return true; };
+      ready = () => { if (!realText(ta.value)) { toast(ta.value.trim() ? 'Fill in the blanks (___) first.' : 'Your translation is empty. Go back a step.'); return false; } return true; };
     } else if (g.type === 'check') {
       now.append(count, stepHead(i + 1, 'Check your translation.'),
         el('div', {class:'check-box'}, el('b', {text:'A simpler version'}), el('p', {text: s.check}), el('p', {class:'say', text:'Does yours say the same thing? Fix one word if you need to.'})),
@@ -902,6 +916,7 @@ function walk(s, l, r){
       ta.addEventListener('input', () => { r.t = ta.value; save(); });
       now.append(ta);
       r.checked = true; save();
+      ready = () => { if (!realText(ta.value)) { toast(whyNotText(ta.value, l)); return false; } return true; };
     }
     nextBtn.addEventListener('click', () => { if (!ready()) return; r.step = i + 1; save(); if (r.step >= steps.length) { go('map'); return; } rerender = true; render(); window.scrollTo({top: box.getBoundingClientRect().top + window.scrollY - 90, behavior: reduced ? 'auto' : 'smooth'}); });
     now.append(el('div', {class:'w-nav', 'data-no-listen':''}, backBtn, nextBtn));
@@ -920,7 +935,7 @@ function grievanceSteps(s, l, r){
     excerptBlock(s, el('p', {class:'orig', text:'\u201cHe has refused his Assent to Laws\u2026\u201d The list runs on for 27 grievances, each one a complaint against the king. Four of them are in Step 3.'}), !!r.mChecked)));
   steps.push(el('div', {class:'step'}, stepHead(2, 'The key card: the unrest tracker\u2019s nine events.'),
     el('p', {class:'say', text:'The same nine events as your unrest tracker, with their letters. Keep it handy for Step 3.'}),
-    el('div', {class:'key'}, D.events.map(([L, name, yr, what]) => el('p', {}, el('b', {text: L}), el('span', {}, name, el('span', {class:'yr', text: String(yr)})), el('span', {class:'what', text: what}))))));
+    el('div', {class:'key'}, D.events.map(([L, name, yr, what]) => el('p', {}, el('b', {text: L}), el('span', {class:'sr', text:'. '}), el('span', {}, name, name.includes(String(yr)) ? null : el('span', {class:'yr'}, el('span', {class:'sr', text:', '}), String(yr)), el('span', {class:'sr', text:'. '})), el('span', {class:'what', text: what}))))));
   /* 3 match, with a Check that says which letters fit */
   const match = el('div', {class:'step'}, stepHead(3, 'Match each grievance to an event.'),
     el('p', {class:'say', text:'For each one, tap every letter on the key card that fits, or \u201cnone.\u201d Then press Check.'}));
@@ -961,7 +976,7 @@ function grievanceSteps(s, l, r){
   steps.push(match);
   /* 4 the last grievance: Quick fills a frame, Clear gets a starter, Full and Deep the bare question */
   const q = el('div', {class:'step'}, stepHead(4, 'The last grievance.'), el('p', {class:'ask', text: s.native}));
-  const saved = el('p', {class:'saved', role:'status'});
+  const saved = el('p', {class:'saved', role:'status', 'data-no-listen':''});
   const note = () => { saved.textContent = 'Saved.'; setTimeout(() => { saved.textContent = ''; }, 1500); };
   if (l === 'q') {
     r.nb = r.nb || [];
@@ -971,7 +986,7 @@ function grievanceSteps(s, l, r){
     const ta = el('textarea', {'aria-label':'Your answer', placeholder:'Type your answer.'}); ta.value = r.native || '';
     ta.addEventListener('input', () => { r.native = ta.value; save(); note(); });
     if (l === 'c') {
-      const useBtn = el('button', {type:'button', class:'btn ghost small', text:'Put the starter in the box', onclick: () => { if (!ta.value.trim()) { ta.value = s.nativeStart; r.native = ta.value; save(); } ta.focus(); }});
+      const useBtn = el('button', {type:'button', class:'btn ghost small', text:'Put the starter in the box', onclick: () => { if (!ta.value.trim()) { ta.value = s.nativeStart; r.native = ta.value; save(); } else toast('The box already has words. Clear it first if you want the starter.'); ta.focus(); }});
       q.append(el('div', {class:'starter', 'data-no-listen':''}, el('p', {}, el('b', {text:'Start with: '}), s.nativeStart), useBtn));
     } else q.append(el('p', {class:'say', text:'Two or three sentences. Say whose view it is, then what it shows.'}));
     q.append(ta, saved);
@@ -994,13 +1009,13 @@ function finish(){
   let refreshSummary = () => {};
   if (l === 'q') {
     x.b = x.b || [];
-    const f = buildFrame(D.exit.frame, D.exit.bank, x.b, () => { save(); refreshSummary(); }, {first: {label:'Station number, 2, 3 or 4', placeholder:'2, 3 or 4'}});
+    const f = buildFrame(D.exit.frame, D.exit.bank, x.b, () => { save(); refreshSummary(); }, {first: {label:'Station number, 2, 3 or 4', placeholder:'2, 3 or 4'}, extras: 'The second blank is the idea from the station you picked; two of the words fit no station at all.'});
     card.append(el('p', {class:'say', text:'The first blank is a station number, 2, 3 or 4. Then fill the rest. ' + f.hint}), f.bank, f.frame);
   } else {
     const ta = el('textarea', {'aria-label':'Your exit ticket', placeholder:'Type your answer.'}); ta.value = x.t || '';
     ta.addEventListener('input', () => { x.t = ta.value; save(); refreshSummary(); });
     if (l === 'c') {
-      const useBtn = el('button', {type:'button', class:'btn ghost small', text:'Put the starter in the box', onclick: () => { if (!ta.value.trim()) { ta.value = D.exit.start; x.t = ta.value; save(); } ta.focus(); }});
+      const useBtn = el('button', {type:'button', class:'btn ghost small', text:'Put the starter in the box', onclick: () => { if (!ta.value.trim()) { ta.value = D.exit.start; x.t = ta.value; save(); } else toast('The box already has words. Clear it first if you want the starter.'); ta.focus(); }});
       card.append(el('div', {class:'starter', 'data-no-listen':''}, el('p', {}, el('b', {text:'Start with: '}), D.exit.start), useBtn));
     }
     card.append(ta);
@@ -1035,6 +1050,7 @@ function sendBlock(l){
   const sendBtn = el('button', {type:'button', class:'btn ghost', text:'Send to Mr. B'});
   copyBtn.addEventListener('click', async () => {
     if (!S.fn) { msg.textContent = 'Type your first name first.'; fn.focus(); return; }
+    if (!S.per) { msg.textContent = 'Pick your period first.'; per.focus(); return; }
     if (!ST.some(stationDone) && !exitText()) { msg.textContent = 'Nothing to copy yet. Finish at least one station first.'; return; }
     const text = workText(l);
     const ok = await copyText(text);

@@ -26,10 +26,10 @@ window.DECLARATION = {
                     ['Because the king ordered it', false, 'No. The king is the one they are breaking away from.'],
                     ['To ask Britain for help', false, 'No. They are leaving Britain, not asking it for anything.']] },
         { type: 'build', part: 1, q: 'Now say it in your own words. First half: what is happening?',
-          frame: 'Sometimes one ___ has to break away from another ___.', bank: ['respect', 'people', 'obey', 'country', 'hide'],
+          frame: 'Sometimes one ___ has to break away from another ___.', bank: ['obey', 'country', 'respect', 'people', 'hide'],
           start: 'Sometimes one people has to ___.', full: 'Write the first half: who is breaking away from whom.' },
         { type: 'build', part: 2, q: 'Second half: what should they do, and why?',
-          frame: 'When that happens, they should ___ why, out of ___ for what the rest of the world thinks.', bank: ['fight', 'explain', 'respect', 'hide', 'obey'],
+          frame: 'When that happens, they should ___ why, out of ___ for what the rest of the world thinks.', bank: ['hide', 'respect', 'fight', 'explain', 'obey'],
           start: 'When that happens, they should ___ because ___.', full: 'Write the second half: what they owe the rest of the world.' },
         { type: 'assemble', say: 'Here it is, both halves together. Read it out loud. Change anything that does not sound like you.' },
         { type: 'check' }
