@@ -352,7 +352,7 @@ function send(btn, msg, pers, sig){
   const tab = window.open('', name, 'width=520,height=420');
   const form = el('form', {method:'POST', action: MAILER_URL, target: tab ? name : '_blank', hidden:''});
   const inp = el('input', {type:'hidden', name:'payload'});
-  inp.value = JSON.stringify({activity:'Common Sense Quiz', period: S.per, answers: S.a.slice(0, QS.length), id: S.id + '-p' + S.per});
+  inp.value = JSON.stringify({activity:'Common Sense Quiz', period: S.per, answers: S.a.slice(0, QS.length), id: S.id});
   form.append(inp); document.body.append(form);
   btn.disabled = true; msg.textContent = 'Sending… a small window opened. It says "Sent to Mr. B" when it works.';
   let done = false;
