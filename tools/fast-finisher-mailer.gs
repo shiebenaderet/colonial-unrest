@@ -24,11 +24,14 @@
  * ALLOWED_DOMAINS below whenever Google tells it who sent the work.
  *
  * After any edit to this file: Deploy > Manage deployments > edit (pencil) >
- * Version: New version > Deploy. The URL stays the same.
+ * Version: New version > Deploy. The URL stays the same. To check which version
+ * is live, open the web app URL in a browser: it lists the activities it accepts
+ * and this file's VERSION.
  *
  * Nothing is stored: each submission becomes one email and that's it.
  */
 
+const VERSION = 'Oct 19 2026, with Common Sense';
 const TO = 'benaderets885@edmonds.wednet.edu';
 const ACTIVITIES = ["Liberty's Kids", 'Engraving Detective', 'Mission US', 'Boston 1770 Breakout', 'Common Sense'];
 const ALLOWED_DOMAINS = ['edmonds15.org', 'edmonds.wednet.edu'];
@@ -39,7 +42,7 @@ function doPost(e) {
   try {
     const data = JSON.parse((e && e.parameter && e.parameter.payload) || '{}');
     const activity = clean(data.activity, 60);
-    if (ACTIVITIES.indexOf(activity) === -1) throw new Error('unknown activity');
+    if (ACTIVITIES.indexOf(activity) === -1) throw new Error('unknown activity: ' + activity);
     const student = clean(data.student, 40) || '(no name)';
     const period = clean(data.period, 4);
     const items = Array.isArray(data.items) ? data.items.slice(0, 40) : [];
@@ -76,13 +79,18 @@ function doPost(e) {
   } catch (err) {
     note = String(err && err.message || err);
   }
+  // Say why, in plain words, on the page the student sees.
+  let why = '';
+  if (/unknown activity/.test(note)) why = 'This page is not on the mailer\'s list yet (' + esc(note.replace('unknown activity: ', '')) + '). Mr. B needs to deploy a new version of the script.';
+  else if (/not an Edmonds account/.test(note)) why = 'This browser is signed in to Google with an account that is not a school account. Sign in with your @edmonds15.org account, then try again.';
+  else if (note) why = 'Reason: ' + esc(note);
   // The page opens this in a new tab (so the student's school sign-in comes along).
   // The tab says whether it worked and tells the menu page, then closes itself.
   const msg = JSON.stringify({ source: 'ff-mailer', ok: ok, note: note });
   const page =
     '<div style="font-family:Arial,sans-serif;max-width:520px;margin:60px auto;text-align:center;color:#1f2124">' +
     (ok ? '<h1 style="color:#2c6b37">Sent to Mr. B</h1><p style="font-size:18px">You can close this tab and go back to the menu.</p>'
-        : '<h1 style="color:#9f1d12">That did not send</h1><p style="font-size:18px">Close this tab, then try again or use the Copy button.</p>') +
+        : '<h1 style="color:#9f1d12">That did not send</h1>' + (why ? '<p style="font-size:17px;color:#444">' + why + '</p>' : '') + '<p style="font-size:18px">Close this tab, then try again or use the Copy button.</p>') +
     '</div>' +
     '<script>try{var t=window.top;(t.opener||t).postMessage(' + msg + ',"*")}catch(e){}' +
     (ok ? 'setTimeout(function(){try{window.top.close()}catch(e){}},2500);' : '') + '</script>';
@@ -91,7 +99,8 @@ function doPost(e) {
 }
 
 function doGet() {
-  return HtmlService.createHtmlOutput('Fast Finisher Mailer is running.');
+  return HtmlService.createHtmlOutput('<p style="font-family:Arial,sans-serif">Fast Finisher Mailer is running.<br>Version: ' + esc(VERSION) +
+    '<br>Accepting: ' + ACTIVITIES.map(esc).join(', ') + '</p>');
 }
 
 function clean(v, max) { return String(v == null ? '' : v).replace(/\r/g, '').trim().slice(0, max); }
