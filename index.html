@@ -401,6 +401,8 @@
   .intro-hero-subtitle{font-size:clamp(20px,3vw,26px);margin:0;color:#cbd5f5}
   .intro-hero-gradient{text-transform:uppercase;letter-spacing:.3em;font-size:13px;color:#bae6fd}
   .intro-hero-actions{display:flex;flex-wrap:wrap;gap:14px;justify-content:center}
+.intro-hero-links{margin-top:14px;font-size:15px;color:var(--muted,#5a4f45);line-height:1.6}
+.intro-hero-links a{font-weight:700}
   .intro-hero-actions button{min-width:180px;padding:16px 28px;font-size:18px;border-radius:999px}
   .intro-hero-dots{display:flex;gap:10px;justify-content:center}
   .intro-hero-dots span{width:12px;height:12px;border-radius:12px;background:rgba(148,163,184,.45)}
@@ -1996,7 +1998,12 @@ function renderSplashSection(){
       h('li',{}, 'Rate each one from 1 to 8.'),
       h('li',{}, 'Write why.')),
     p('Your work saves on this computer. Use the same computer each day, or save a backup.', 'fm-hint'),
-    h('div',{class:'fm-actions'}, elRestoreLink(), beginBtn)
+    h('div',{class:'fm-actions'}, elRestoreLink(), beginBtn),
+    // Also on this site (Oct 2026): the Common Sense pages and the Declaration stations.
+    h('p',{class:'intro-hero-links'}, 'Also on this site: ',
+      a('common-sense-quiz.html','Do You Have Common Sense?'), ' \u00b7 ',
+      a('common-sense.html','Common Sense, Annotated'), ' \u00b7 ',
+      a('declaration.html','Translating the Declaration'))
   );
   const right = h('div',{class:'fm-card'}, elLevelPicker(()=>toggleBegin()));
   toggleBegin();

@@ -1,0 +1,748 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Translating the Declaration</title>
+<meta name="description" content="The Declaration of Independence in seven stations: read Jefferson's words, use the clue card, and write each part in your own words, with help at four reading levels.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap">
+<link rel="stylesheet" href="fonts/atkinson.css?v=20261005">
+<style>
+/* Same Unit 2 look as common-sense.html. */
+:root{
+  --bg:#f6f1e8; --panel:#fffdf9; --ink:#1f2124; --muted:#5a4f45; --rule:#d6cfc3;
+  --deep:#7a2a28; --accent:#b23a34; --tint:#f6e7e4; --gold:#9a7536; --band:#f1e6d8;
+  --ok:#2c6b37; --ok-tint:#e4f1e6; --on-accent:#ffffff;
+  --mast:#3d1413; --mast-ink:#fff8ee; --mast-edge:#b88f86;
+  --display:'Playfair Display',Georgia,'Times New Roman',serif;
+  --body:'Atkinson Hyperlegible Next','Atkinson Hyperlegible',Verdana,system-ui,sans-serif;
+  --orig:'Libre Caslon Text',Georgia,'Times New Roman',serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1a1614; --panel:#241f1c; --ink:#f3ece3; --muted:#c9bcae; --rule:#40362f;
+  --deep:#f0a59c; --accent:#e9827a; --tint:#3a2421; --gold:#d9b46a; --band:#2e2622;
+  --ok:#8fd19a; --ok-tint:#1f3424; --on-accent:#1a0b09;
+  --mast:#0f0b0a; --mast-ink:#fff8ee; --mast-edge:#7d6a62; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1a1614; --panel:#241f1c; --ink:#f3ece3; --muted:#c9bcae; --rule:#40362f;
+  --deep:#f0a59c; --accent:#e9827a; --tint:#3a2421; --gold:#d9b46a; --band:#2e2622;
+  --ok:#8fd19a; --ok-tint:#1f3424; --on-accent:#1a0b09;
+  --mast:#0f0b0a; --mast-ink:#fff8ee; --mast-edge:#7d6a62; color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55}
+h1,h2,h3{font-family:var(--display);color:var(--deep);margin:0;text-wrap:balance;line-height:1.15}
+p{margin:0}
+a{color:var(--accent);font-weight:700}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+
+.mast{position:sticky;top:0;z-index:20;background:var(--mast);color:var(--mast-ink);border-bottom:3px solid var(--gold)}
+.mast .in{max-width:1100px;margin:0 auto;padding:8px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.brand{font-family:var(--display);font-weight:800;font-size:21px;color:var(--mast-ink);text-decoration:none;white-space:nowrap}
+.mast .spacer{flex:1 1 auto}
+.mbtn{min-height:40px;padding:6px 14px;border-radius:8px;border:2px solid var(--mast-edge);background:transparent;color:var(--mast-ink);font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.mbtn:hover{background:rgba(255,255,255,.08)}
+.mast #rtools{position:relative;margin:0;flex-wrap:nowrap}
+#rtools .rt-btn{min-height:40px;padding:6px 14px;border-radius:8px;font-size:15px;font-weight:700;background:transparent;color:var(--mast-ink);border:2px solid var(--mast-edge)}
+#rtools .rt-btn.rt-primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+#rtools .rt-panel{position:absolute;top:calc(100% + 8px);right:0;width:min(360px,90vw);z-index:30;box-shadow:0 10px 30px rgba(0,0,0,.3);color:var(--ink)}
+#rtools .rt-panel .rt-row{display:grid;grid-template-columns:76px 1fr;gap:10px;align-items:center;margin:0 0 14px}
+#rtools .rt-panel .rt-row:last-child{margin:0}
+#rtools .rt-panel .rt-opts{display:flex;flex-wrap:wrap;gap:8px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{min-height:40px;padding:6px 12px;border-radius:8px;border:1.5px solid var(--rule);background:var(--bg);cursor:pointer}
+.seg button[aria-pressed="true"]{border:2px solid var(--accent);font-weight:700;background:var(--tint)}
+
+main.wrap{max-width:1100px;margin:0 auto;padding:22px 16px 64px;display:grid;gap:22px}
+main.wrap > *{min-width:0}
+[tabindex="-1"]:focus{outline:none}
+[tabindex="-1"]:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:10px 18px;border-radius:9px;border:0;background:var(--accent);color:var(--on-accent);font-weight:800;font-size:16px;cursor:pointer;text-decoration:none}
+.btn:hover{filter:brightness(1.07)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--rule)}
+.btn.small{min-height:40px;padding:6px 12px;font-size:15px}
+.btn:disabled{opacity:.55;cursor:default}
+
+/* ---- Landing ---- */
+.hero{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:28px;align-items:center}
+.hero h1{font-size:clamp(38px,6.5vw,66px);line-height:1}
+.hero .lead{font-size:clamp(18px,2.1vw,21px);margin-top:14px;max-width:34em}
+.hero .cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.hero figure{margin:0;background:var(--panel);padding:10px 10px 8px;border:1px solid var(--rule);border-radius:6px;box-shadow:0 14px 34px rgba(40,10,5,.22);transform:rotate(2deg);max-width:360px;justify-self:center}
+.hero img{display:block;width:100%;height:auto;border-radius:3px}
+.hero figcaption{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.35}
+.how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.how div{background:var(--panel);border:1px solid var(--rule);border-top:5px solid var(--accent);border-radius:10px;padding:14px 16px}
+.how b{display:block;font-family:var(--display);color:var(--deep);font-size:22px;line-height:1.15;margin-bottom:4px}
+.block{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:22px}
+.block > h2{font-size:28px;margin-bottom:6px}
+.block > .sub{color:var(--muted);margin-bottom:16px}
+.levels{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.lvl{text-align:left;display:grid;gap:6px;align-content:start;padding:16px;border-radius:12px;border:2px solid var(--rule);background:var(--bg);cursor:pointer;min-height:150px}
+.lvl:hover{border-color:var(--accent)}
+.lvl[aria-checked="true"]{border-color:var(--accent);background:var(--tint);box-shadow:0 0 0 2px var(--accent) inset}
+.lvl .nm{font-family:var(--display);font-size:26px;font-weight:800;color:var(--deep)}
+.lvl .bl{font-weight:600}
+.lvl .ct{color:var(--muted);font-size:15px}
+.lvl .bars{display:flex;gap:4px;margin-top:2px}
+.lvl .bars i{display:block;height:6px;flex:1;border-radius:3px;background:var(--rule)}
+.lvl .bars i.on{background:var(--accent)}
+.opts{display:grid;gap:14px;margin-top:18px}
+.opt-row{display:grid;grid-template-columns:200px 1fr;gap:12px;align-items:center}
+.opt-row .lab{font-weight:700}
+.opt-row .hint{grid-column:2;color:var(--muted);font-size:15px;margin-top:-6px}
+.start-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:20px}
+.starter-note{color:var(--muted)}
+
+/* ---- Station ---- */
+.path-top{display:grid;gap:12px}
+.path-meta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;color:var(--muted)}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:999px;background:var(--tint);color:var(--deep);font-weight:700;font-size:15px}
+.dots{display:flex;flex-wrap:wrap;gap:6px}
+.dots a{min-width:42px;min-height:42px;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;border:2px solid var(--rule);background:var(--panel);color:var(--ink);text-decoration:none;font-weight:700;font-size:15px}
+.dots a.here{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+.dots a.done{background:var(--ok);border-color:var(--ok);color:var(--bg)}
+.dots a.end{padding:0 12px}
+.st{background:var(--panel);border:1px solid var(--rule);border-radius:16px;overflow:hidden}
+.st-head{padding:18px 22px 12px;border-bottom:1px solid var(--rule);display:grid;gap:6px}
+.st-head .sec{color:var(--muted);font-weight:700;font-size:15px}
+.st-head h1{font-size:clamp(26px,3.4vw,34px)}
+.st-head .where{color:var(--muted)}
+.step{padding:18px 22px;border-bottom:1px solid var(--rule);display:grid;gap:10px}
+.step:last-child{border-bottom:0}
+.step h2{font-size:21px;display:flex;align-items:center;gap:10px}
+.step h2 .num{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--accent);color:var(--on-accent);font-family:var(--body);font-size:16px;flex:none}
+.step .say{color:var(--muted)}
+.orig{font-family:var(--orig);font-size:21px;line-height:1.75;background:var(--band);border-left:5px solid var(--gold);border-radius:8px;padding:14px 18px}
+html[data-rt-font]:not([data-rt-font="atkinson"]) .orig{font-family:var(--rt-font)}
+.lv-q .orig,.lv-c .orig{font-size:22px}
+.vw{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;cursor:pointer;text-decoration:underline dotted var(--accent) 2px;text-underline-offset:4px;border-radius:3px}
+.vw:hover,.vw[aria-expanded="true"]{background:var(--tint)}
+.no-vocab .vw{text-decoration:none;cursor:text;pointer-events:none}
+.clue{border:2px dashed var(--accent);border-radius:10px;padding:12px 16px;display:grid;gap:8px}
+.clue h3{font-size:18px}
+.clue dl{margin:0;display:grid;grid-template-columns:max-content 1fr;gap:4px 14px}
+.clue dt{font-weight:800;color:var(--deep)}
+.clue dd{margin:0}
+.clue .ph{display:grid;gap:4px}
+.clue .ph span b{color:var(--deep)}
+details.clue-wrap summary{cursor:pointer;font-weight:800;color:var(--deep);min-height:40px;display:flex;align-items:center}
+.bank{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.bank span{font-weight:700;color:var(--muted);font-size:15px}
+.bank button{min-height:42px;padding:4px 14px;border-radius:999px;border:1.5px solid var(--accent);background:var(--panel);color:var(--deep);font-weight:700;cursor:pointer}
+.bank button.used{background:var(--tint);text-decoration:line-through;opacity:.8}
+.frame{background:var(--bg);border:1px dashed var(--rule);border-radius:10px;padding:14px 16px;font-size:19px;line-height:2.3}
+.frame input{width:9.5em;max-width:100%;min-height:42px;padding:4px 10px;margin:0 2px;border:0;border-bottom:2.5px solid var(--accent);background:var(--panel);border-radius:6px 6px 0 0;font-weight:700;font-size:18px}
+.frame input:focus{outline:3px solid var(--accent);outline-offset:1px}
+.starter{background:var(--bg);border:1px dashed var(--rule);border-radius:10px;padding:12px 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.starter b{color:var(--deep)}
+textarea{width:100%;min-height:110px;padding:12px 14px;border:1.5px solid var(--rule);border-radius:10px;background:var(--bg);line-height:1.55;resize:vertical;font-size:18px}
+textarea:focus{border-color:var(--accent)}
+.lv-q textarea,.lv-c textarea{font-size:19px}
+.saved{font-size:14px;color:var(--ok);min-height:1.2em}
+.check{display:grid;gap:10px}
+.check-box{background:var(--tint);border-left:5px solid var(--accent);border-radius:10px;padding:14px 18px;font-size:19px;line-height:1.6}
+.lv-q .check-box{font-size:20px}
+.check-box b{display:block;color:var(--deep);font-family:var(--display);font-size:18px;margin-bottom:4px}
+.vocab-line{background:var(--band);border-radius:10px;padding:10px 14px;font-weight:600}
+.next-row{display:flex;justify-content:space-between;padding:18px 22px;gap:10px;flex-wrap:wrap;background:var(--bg)}
+.warn{background:var(--band);border-left:5px solid var(--gold);border-radius:10px;padding:10px 14px;font-size:16px}
+
+/* Station 6 */
+.gr{display:grid;gap:10px;padding:14px 16px;border:1px solid var(--rule);border-radius:12px;background:var(--bg)}
+.gr .go{font-family:var(--orig);font-size:19px}
+.gr .gp{color:var(--muted)}
+.letters{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.letters span{font-weight:700;color:var(--muted);font-size:15px;margin-right:4px}
+.letters button{min-width:44px;min-height:44px;border-radius:8px;border:1.5px solid var(--rule);background:var(--panel);font-weight:800;cursor:pointer}
+.letters button[aria-pressed="true"]{border:2px solid var(--accent);background:var(--tint);color:var(--deep)}
+.letters button.none{min-width:70px}
+.key{display:grid;gap:4px;margin-top:6px}
+.key div{display:grid;grid-template-columns:34px 190px 1fr;gap:8px;align-items:baseline;padding:4px 0;border-bottom:1px solid var(--rule);font-size:16px}
+.key div b{color:var(--deep);font-size:18px}
+.key div .yr{color:var(--muted);font-size:14px;margin-left:4px}
+
+/* ---- Finish ---- */
+.finish{display:grid;gap:18px}
+.finish h2{font-size:32px}
+.q-card{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:18px 20px;display:grid;gap:10px}
+.q-card h3{font-size:22px}
+.ask{font-size:19px;font-weight:700}
+.who{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}
+.who label{display:grid;gap:4px;font-weight:700}
+.who input,.who select{min-height:44px;padding:8px 10px;border:1.5px solid var(--rule);border-radius:8px;background:var(--bg);width:100%;min-width:0}
+.send-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.msg{font-weight:700;min-height:1.4em}
+.summary{display:grid;gap:6px}
+.summary div{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--rule)}
+.summary .ok{color:var(--ok);font-weight:800}
+.summary .no{color:var(--muted)}
+pre.out{white-space:pre-wrap;background:var(--bg);border:1px solid var(--rule);border-radius:10px;padding:12px 14px;font:inherit;font-size:15px;max-height:320px;overflow:auto}
+
+.vpop-bubble{position:absolute;z-index:40;max-width:min(320px,calc(100vw - 24px));background:var(--panel);color:var(--ink);border:2px solid var(--accent);border-radius:10px;padding:10px 44px 10px 12px;box-shadow:0 10px 26px rgba(0,0,0,.25);font-family:var(--body);font-size:16px;line-height:1.45}
+.vpop-bubble b{display:block;color:var(--deep);font-size:17px}
+.vpop-bubble .x{position:absolute;top:2px;right:2px;width:40px;height:40px;border:0;background:none;font-size:22px;line-height:1;cursor:pointer;color:var(--muted);border-radius:6px}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:9px;font-weight:700;z-index:50}
+footer.credits{color:var(--muted);font-size:14px;line-height:1.5;border-top:1px solid var(--rule);padding-top:16px}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr}
+  .hero figure{max-width:280px}
+  .how,.levels{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .opt-row{grid-template-columns:1fr}
+  .opt-row .hint{grid-column:1;margin-top:-8px}
+  .key div{grid-template-columns:30px 1fr;}
+  .key div span.what{grid-column:1 / -1;color:var(--muted);font-size:15px}
+}
+@media (max-width:560px){
+  .how,.levels{grid-template-columns:1fr}
+  .who{grid-template-columns:1fr 1fr}
+  .who label:first-child{grid-column:1 / -1}
+  .orig{font-size:19px;padding:12px 14px}
+  .step{padding:14px 16px}
+  .st-head{padding:16px 16px 10px}
+  .clue dl{grid-template-columns:1fr}
+  .brand{font-size:18px}
+  .frame{font-size:18px}
+  .frame input{width:7.5em}
+}
+@media (max-width:480px){
+  .mast .in{gap:6px 8px;padding:8px 12px}
+  .brand{font-size:17px}
+  .mbtn,.mast #rtools .rt-btn{padding:6px 10px;font-size:14px;min-height:38px}
+  .mbtn .long{display:none}
+}
+@media print{.mast,.next-row,.send-row,.bank,.dots{display:none!important}.st{break-inside:avoid}}
+</style>
+</head>
+<body>
+
+<header class="mast">
+  <div class="in">
+    <a class="brand" href="#" id="home">Translating the Declaration</a>
+    <span class="spacer"></span>
+    <button class="mbtn" id="lvlBtn" type="button" aria-label="Reading: Full. Change it." hidden><span class="long">Reading: </span><span id="lvlName">Full</span></button>
+    <div id="rtools" role="group" aria-label="Listen and font"></div>
+  </div>
+</header>
+
+<main class="wrap" id="app"></main>
+<div class="sr" id="vsay" aria-live="polite"></div>
+
+<div class="vpop-bubble" id="vpop" role="dialog" aria-label="Word help" hidden>
+  <button class="x" type="button" aria-label="Close word help">×</button>
+  <b id="vpopTerm"></b><span id="vpopDef"></span>
+</div>
+
+<script src="declaration-data.js?v=20261020"></script>
+<script>
+(function(){
+'use strict';
+const D = window.DECLARATION;
+const ST = D.stations;
+const LV = ['q','c','f','d'];
+const LV_NAME = {q:'Quick', c:'Clear', f:'Full', d:'Deep'};
+const LV_SLUG = {quick:'q', clear:'c', full:'f', deep:'d'};
+const LV_BLURB = {q:'Fill in the blanks. A word bank for every station.', c:'A sentence starter for every station.', f:'Write it yourself, with the clue card.', d:'The clue card is hidden until you need it, plus one harder question each.'};
+const LV_TIME = {q:'about 35 minutes', c:'about 35 minutes', f:'about 40 minutes', d:'about 50 minutes'};
+const LETTERS = D.events.map(e => e[0]);
+
+/* ---------- storage: optional; the page works without it ---------- */
+const KEY = 'decl-stations-v1';
+let S = {};
+try { S = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { S = {}; }
+S.s = S.s || {}; S.exit = S.exit || {};
+if (S.wordHelp === undefined) S.wordHelp = true;
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+function st(n){ S.s[n] = S.s[n] || {}; return S.s[n]; }
+
+/* ?level=quick|clear|full|deep in a link sets the reading (Mr. B can send it). */
+const qp = new URLSearchParams(location.search).get('level');
+if (qp && LV_SLUG[qp.toLowerCase()]) { S.level = LV_SLUG[qp.toLowerCase()]; save(); }
+
+/* ---------- theme ---------- */
+function applyTheme(){
+  const t = S.theme || 'auto';
+  if (t === 'auto') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', t);
+  document.querySelectorAll('#themeSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === t)));
+}
+applyTheme();
+const mast = document.querySelector('.mast');
+function setScrollPad(){ document.documentElement.style.scrollPaddingTop = (mast.offsetHeight + 12) + 'px'; }
+window.addEventListener('resize', setScrollPad); window.addEventListener('load', setScrollPad); setScrollPad();
+
+/* ---------- helpers ---------- */
+function el(tag, attrs, ...kids){
+  const e = document.createElement(tag);
+  if (attrs) for (const k in attrs) {
+    const v = attrs[k];
+    if (v == null || v === false) continue;
+    if (k === 'class') e.className = v;
+    else if (k === 'text') e.textContent = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v === true ? '' : v);
+  }
+  kids.flat(Infinity).forEach(k => { if (k != null && k !== false) e.append(k); });
+  return e;
+}
+function toast(t){ const d = el('div', {class:'toast', role:'status', text:t}); document.body.append(d); setTimeout(() => d.remove(), 2200); }
+async function copyText(text){ try { await navigator.clipboard.writeText(text); return true; } catch (e) { return false; } }
+function radioKeys(group, sel){
+  function items(){ return Array.from(group.querySelectorAll(sel)); }
+  function roving(){ const all = items(); const on = all.find(b => b.getAttribute('aria-checked') === 'true') || all[0]; all.forEach(b => b.tabIndex = (b === on ? 0 : -1)); }
+  group.addEventListener('keydown', e => {
+    const all = items(); const i = all.indexOf(document.activeElement); if (i < 0) return;
+    let j = null;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') j = (i + 1) % all.length;
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') j = (i - 1 + all.length) % all.length;
+    if (j === null) return; e.preventDefault(); all[j].click(); all[j].focus();
+  });
+  group.addEventListener('click', () => requestAnimationFrame(roving)); roving(); return roving;
+}
+function focusTitle(node){ if (!node) return; node.tabIndex = -1; node.focus({preventScroll:true}); }
+let navigated = false;
+
+/* ---------- vocabulary: the clue card's hard words, tappable inside the excerpt ---------- */
+function markVocab(text, words){
+  const marks = [];
+  const free = (s, e) => marks.every(m => e <= m.s || s >= m.e);
+  words.slice().sort((a, b) => b[0].length - a[0].length).forEach(([term, def]) => {
+    const re = new RegExp('(?<![A-Za-z])' + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?![A-Za-z])', 'i');
+    const m = re.exec(text);
+    if (m && free(m.index, m.index + m[0].length)) marks.push({s: m.index, e: m.index + m[0].length, def});
+  });
+  marks.sort((a, b) => a.s - b.s);
+  return marks;
+}
+function renderOrig(text, words, cls){
+  const p = el('p', {class: cls || 'orig'});
+  const marks = S.wordHelp ? markVocab(text, words || []) : [];
+  let at = 0;
+  for (const m of marks) {
+    if (m.s > at) p.append(text.slice(at, m.s));
+    p.append(el('button', {type:'button', class:'vw', 'aria-expanded':'false', 'aria-controls':'vpop', 'data-def': m.def, text: text.slice(m.s, m.e)}));
+    at = m.e;
+  }
+  if (at < text.length) p.append(text.slice(at));
+  return p;
+}
+const vpop = document.getElementById('vpop');
+let vOpen = null;
+function closeV(focusBack){ if (!vOpen) return; vOpen.setAttribute('aria-expanded', 'false'); vpop.hidden = true; if (focusBack) vOpen.focus(); vOpen = null; }
+document.addEventListener('click', e => {
+  const b = e.target.closest('.vw');
+  if (b && !document.getElementById('app').classList.contains('no-vocab')) {
+    if (vOpen === b) { closeV(false); return; }
+    closeV(false); vOpen = b; b.setAttribute('aria-expanded', 'true');
+    document.getElementById('vpopTerm').textContent = b.textContent;
+    document.getElementById('vpopDef').textContent = b.dataset.def;
+    vpop.hidden = false;
+    const say = document.getElementById('vsay'); say.textContent = '';
+    setTimeout(() => { say.textContent = b.textContent + ': ' + b.dataset.def; }, 50);
+    const r = b.getBoundingClientRect(), w = vpop.offsetWidth;
+    let left = r.left + window.scrollX;
+    left = Math.max(12 + window.scrollX, Math.min(left, window.scrollX + document.documentElement.clientWidth - w - 12));
+    vpop.style.left = left + 'px'; vpop.style.top = (r.bottom + window.scrollY + 8) + 'px';
+    return;
+  }
+  if (e.target.closest('.vpop-bubble .x')) { closeV(true); return; }
+  if (!e.target.closest('.vpop-bubble')) closeV(false);
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeV(true); });
+
+/* ---------- the student's translation for a station, as text ---------- */
+function frameText(frame, blanks){
+  let i = 0;
+  return frame.replace(/___/g, () => { const v = (blanks[i++] || '').trim(); return v || '___'; });
+}
+function translation(s){
+  const r = st(s.n);
+  if (S.level === 'q' && s.frame) {
+    const b = r.b || [];
+    return b.some(x => (x || '').trim()) ? frameText(s.frame, b) : '';
+  }
+  return (r.t || '').trim();
+}
+function stationDone(s){
+  if (s.match) { const r = st(6); return (r.m || []).some(x => x && x.length) || (r.native || '').trim(); }
+  return !!translation(s);
+}
+function exitText(){
+  const x = S.exit;
+  if (S.level === 'q') { const b = x.b || []; return b.some(v => (v || '').trim()) ? frameText(D.exit.frame, b) : ''; }
+  return (x.t || '').trim();
+}
+
+/* ---------- views ---------- */
+const app = document.getElementById('app');
+const lvlBtn = document.getElementById('lvlBtn');
+let cur = '';
+function setView(){
+  closeV(false);
+  const h = location.hash.replace(/^#/, '');
+  if (window.READER_TOOLS) READER_TOOLS.reset();
+  app.classList.toggle('no-vocab', !S.wordHelp);
+  LV.forEach(l => app.classList.toggle('lv-' + l, S.level === l));
+  app.innerHTML = '';
+  cur = h;
+  const m = /^s([1-7])$/.exec(h);
+  if (m && S.level) return station(parseInt(m[1], 10));
+  if (h === 'finish' && S.level) return finish();
+  return landing(h === 'start');
+}
+function go(h){ if (location.hash === '#' + h) setView(); else location.hash = h; window.scrollTo(0, 0); }
+
+function landing(focusLevels){
+  lvlBtn.hidden = true;
+  document.title = 'Translating the Declaration';
+  const started = ST.some(stationDone);
+  const hero = el('section', {class:'hero', 'data-listen':''},
+    el('div', {},
+      el('h1', {text:'Translating the Declaration'}),
+      el('p', {class:'lead', text:'In July 1776, Congress told the world why the colonies were breaking away. Read seven parts of the Declaration of Independence in Jefferson’s own words, and write each one the way you would say it.'}),
+      el('div', {class:'cta', 'data-no-listen':''},
+        el('a', {class:'btn', href:'#start', text: started ? 'Keep Going' : 'Choose My Reading'}),
+        started ? el('a', {class:'btn ghost', href:'#finish', text:'Turn It In'}) : null)),
+    el('figure', {}, el('img', {src:'images/declaration-stone-1823.jpg', width:'700', height:'831', alt:'The Declaration of Independence: the 1823 Stone engraving of the signed parchment.'}),
+      el('figcaption', {text:'The Declaration of Independence. The 1823 Stone engraving, an exact copy of the signed parchment. National Archives.'})));
+  const how = el('section', {class:'how', 'aria-label':'How it works', 'data-listen':''},
+    el('div', {}, el('b', {text:'1. Read'}), el('p', {text:'Jefferson’s words, with help on the hard ones. Tap any underlined word, or press Listen.'})),
+    el('div', {}, el('b', {text:'2. Write'}), el('p', {text:'Use the clue card and write what it means in your own words. Your work saves on this computer as you type.'})),
+    el('div', {}, el('b', {text:'3. Check'}), el('p', {text:'Press Check to see a simpler version. Fix a word if you need to, then go on to the next station.'})));
+
+  const chosen = S.level || 'f';
+  const lv = el('div', {class:'levels', role:'radiogroup', 'aria-label':'Reading'});
+  let roving;
+  LV.forEach((l, i) => {
+    const b = el('button', {type:'button', class:'lvl', role:'radio', 'aria-checked': String(l === chosen)},
+      el('span', {class:'nm', text: LV_NAME[l]}),
+      el('span', {class:'bars', 'aria-hidden':'true'}, LV.map((x, k) => el('i', {class: k <= i ? 'on' : ''}))),
+      el('span', {class:'bl', text: LV_BLURB[l]}),
+      el('span', {class:'ct', text: 'Seven stations, ' + LV_TIME[l] + '.'}));
+    b.addEventListener('click', () => { S.level = l; save(); lv.querySelectorAll('.lvl').forEach(x => x.setAttribute('aria-checked', String(x === b))); if (roving) roving(); });
+    lv.append(b);
+  });
+  if (!S.level) { S.level = 'f'; save(); }
+  roving = radioKeys(lv, '.lvl');
+  const segWords = el('div', {class:'seg'}, el('button', {type:'button', 'data-v':'on', text:'On'}), el('button', {type:'button', 'data-v':'off', text:'Off'}));
+  const segTheme = el('div', {class:'seg', id:'themeSeg'}, el('button', {type:'button', 'data-v':'light', text:'Light'}), el('button', {type:'button', 'data-v':'dark', text:'Dark'}), el('button', {type:'button', 'data-v':'auto', text:'Match My Computer'}));
+  function syncOpts(){ segWords.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.v === 'on') === !!S.wordHelp))); }
+  segWords.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; S.wordHelp = b.dataset.v === 'on'; save(); syncOpts(); });
+  segTheme.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; S.theme = b.dataset.v; save(); applyTheme(); });
+  syncOpts();
+  const first = ST.find(s => !stationDone(s)) || ST[0];
+  const pick = el('section', {class:'block', id:'start', 'aria-labelledby':'pickH'},
+    el('h2', {id:'pickH', text:'Pick Your Reading'}),
+    el('p', {class:'sub', text:'The Declaration’s words are the same at every reading. What changes is the help you get for writing.'}),
+    lv,
+    el('div', {class:'opts'},
+      el('div', {class:'opt-row'}, el('span', {class:'lab', text:'Word Help'}), segWords, el('p', {class:'hint', text:'Tap an underlined word to see what it means.'})),
+      el('div', {class:'opt-row'}, el('span', {class:'lab', text:'Light or Dark'}), segTheme)),
+    el('div', {class:'start-row'},
+      el('a', {class:'btn', href:'#s' + first.n, text: started ? 'Keep Going at Station ' + first.n : 'Start at Station 1'}),
+      el('span', {class:'starter-note', text:'Your answers save on this computer as you type.'})));
+  applyTheme();
+  const credits = el('footer', {class:'credits'}, el('p', {text:'The Declaration’s words are from the National Archives transcript. The picture is the 1823 Stone engraving (National Archives, public domain). The clue cards, simpler versions and questions were written for this class.'}));
+  app.append(hero, how, pick, credits);
+  if (focusLevels) { pick.scrollIntoView(); focusTitle(pick.querySelector('h2')); }
+  else if (navigated) focusTitle(hero.querySelector('h1'));
+}
+
+function dots(here){
+  const d = el('nav', {class:'dots', 'aria-label':'Stations', 'data-no-listen':''});
+  ST.forEach(s => d.append(el('a', {href:'#s' + s.n, class: (s.n === here ? 'here ' : '') + (stationDone(s) ? 'done' : ''), 'aria-label':'Station ' + s.n + (stationDone(s) ? ' (done)' : '') + (s.n === here ? ', this one' : ''), 'aria-current': s.n === here ? 'page' : null, text: String(s.n)})));
+  d.append(el('a', {href:'#finish', class:'end' + (here === 'finish' ? ' here' : ''), text:'Finish'}));
+  return d;
+}
+function stepHead(n, text){ return el('h2', {}, el('span', {class:'num', 'aria-hidden':'true', text:String(n)}), el('span', {class:'sr', text:'Step ' + n + '. '}), text); }
+
+function clueCard(s, l){
+  const card = el('div', {class:'clue'},
+    el('h3', {text:'Clue Card'}),
+    el('dl', {}, s.words.map(([w, d]) => [el('dt', {text: w}), el('dd', {text: d})])),
+    s.phrases ? el('div', {class:'ph'}, s.phrases.map(([p, m]) => el('span', {}, el('b', {text: p}), ' = ' + m))) : null);
+  if (l !== 'd') return card;
+  const det = el('details', {class:'clue-wrap'}, el('summary', {text:'Show the clue card'}), card);
+  return det;
+}
+
+function station(n){
+  const s = ST[n - 1], l = S.level, r = st(n);
+  lvlBtn.hidden = false; document.getElementById('lvlName').textContent = LV_NAME[l]; lvlBtn.setAttribute('aria-label', 'Reading: ' + LV_NAME[l] + '. Change it.');
+  document.title = 'Station ' + n + ': ' + s.title;
+  const top = el('div', {class:'path-top'},
+    el('div', {class:'path-meta'}, el('span', {class:'chip', text: LV_NAME[l] + ' reading'}), el('span', {text:'Station ' + n + ' of 7'})),
+    dots(n));
+  const art = el('article', {class:'st', 'data-listen':'', 'aria-labelledby':'st-h'});
+  art.append(el('div', {class:'st-head'},
+    el('p', {class:'sec', text: 'Station ' + n + (s.together ? ' · We do this one together' : '')}),
+    el('h1', {id:'st-h', text: s.title}),
+    el('p', {class:'where', text: 'Where it is on the page: ' + s.where})));
+  if (s.match) { art.append(...grievanceSteps(s, l, r)); }
+  else {
+    /* 1 read */
+    art.append(el('div', {class:'step'}, stepHead(1, 'Read it. Tap any underlined word.'),
+      el('p', {class:'say', text:'Read it out loud with your partner, or press Listen at the top.'}),
+      renderOrig(s.orig, s.words)));
+    /* 2 clue card */
+    art.append(el('div', {class:'step'}, stepHead(2, 'Use the clue card.'), clueCard(s, l)));
+    /* 3 write */
+    const write = el('div', {class:'step'}, stepHead(3, 'Write it in your own words.'));
+    const saved = el('p', {class:'saved', role:'status'});
+    let savedT = 0;
+    const note = () => { saved.textContent = 'Saved.'; clearTimeout(savedT); savedT = setTimeout(() => { saved.textContent = ''; }, 1500); };
+    if (l === 'q') {
+      r.b = r.b || [];
+      const inputs = [];
+      const frame = el('p', {class:'frame', 'data-no-listen':''});
+      s.frame.split('___').forEach((part, i) => {
+        if (i) { const inp = el('input', {type:'text', 'aria-label':'Blank ' + i, autocomplete:'off'}); inp.value = r.b[i - 1] || ''; inputs.push(inp); frame.append(inp); }
+        if (part) frame.append(part);
+      });
+      const bank = el('div', {class:'bank', 'data-no-listen':''}, el('span', {text:'Words:'}));
+      function syncBank(){ bank.querySelectorAll('button').forEach(b => b.classList.toggle('used', inputs.some(x => x.value.trim().toLowerCase() === b.textContent.toLowerCase()))); }
+      s.bank.forEach(w => bank.append(el('button', {type:'button', text: w, onclick: () => {
+        const target = inputs.find(x => x === document.activeElement && !x.value.trim()) || inputs.find(x => !x.value.trim()) || inputs.find(x => x === document.activeElement) || inputs[0];
+        target.value = w; r.b[inputs.indexOf(target)] = w; save(); syncBank(); note(); target.focus();
+      }})));
+      inputs.forEach((inp, i) => inp.addEventListener('input', () => { r.b[i] = inp.value; save(); syncBank(); note(); }));
+      syncBank();
+      write.append(el('p', {class:'say', text:'Fill in each blank. Tap a word in the bank, or type your own. Two of the words do not belong.'}), bank, frame, saved);
+    } else {
+      const ta = el('textarea', {'aria-label':'Your translation of Station ' + n, placeholder:'Type what it means in your own words.'});
+      ta.value = r.t || '';
+      ta.addEventListener('input', () => { r.t = ta.value; save(); note(); });
+      if (l === 'c') {
+        const useBtn = el('button', {type:'button', class:'btn ghost small', text:'Put the starter in the box', onclick: () => { if (!ta.value.trim()) { ta.value = s.start; r.t = ta.value; save(); } ta.focus(); }});
+        write.append(el('div', {class:'starter', 'data-no-listen':''}, el('p', {}, el('b', {text:'Start with: '}), s.start), useBtn));
+      } else write.append(el('p', {class:'say', text:'Short is fine. Your own words are the point.'}));
+      write.append(ta, saved);
+    }
+    art.append(write);
+    /* 4 check */
+    const chk = el('div', {class:'step check'}, stepHead(4, 'Check your translation.'));
+    const box = el('div', {class:'check-box', hidden: !r.checked}, el('b', {text:'A simpler version'}), el('p', {text: s.check}), el('p', {class:'say', text:'Did yours say the same thing? Fix one word if you need to.'}));
+    const cb = el('button', {type:'button', class:'btn ghost small', text: r.checked ? 'Hide the simpler version' : 'Check', 'aria-expanded': String(!!r.checked), onclick: () => {
+      r.checked = !r.checked; save(); box.hidden = !r.checked; cb.textContent = r.checked ? 'Hide the simpler version' : 'Check'; cb.setAttribute('aria-expanded', String(!!r.checked));
+    }});
+    chk.append(el('p', {class:'say', text:'Write first. Then press Check to see a simpler version and compare.'}), el('div', {'data-no-listen':''}, cb), box);
+    if (l === 'd' && s.deep) {
+      const dta = el('textarea', {'aria-label':'Going further', placeholder:'Type your answer.'}); dta.value = r.x || '';
+      dta.addEventListener('input', () => { r.x = dta.value; save(); });
+      chk.append(el('p', {class:'ask', text:'Going further: ' + s.deep}), dta);
+    }
+    art.append(chk);
+    /* 5 vocab card */
+    if (s.vocab) art.append(el('div', {class:'step'}, stepHead(5, 'Your vocabulary card.'), el('p', {class:'vocab-line', text:'Finish the Use It sentence for ' + s.vocab + ' on your Declaration vocabulary card.'})));
+  }
+  art.append(el('div', {class:'next-row', 'data-no-listen':''},
+    n > 1 ? el('a', {class:'btn ghost', href:'#s' + (n - 1), text:'← Station ' + (n - 1)}) : el('a', {class:'btn ghost', href:'#', text:'← Start'}),
+    n < 7 ? el('a', {class:'btn', href:'#s' + (n + 1), text:'Station ' + (n + 1) + ' →'}) : el('a', {class:'btn', href:'#finish', text:'Finish →'})));
+  app.append(top, art);
+  if (navigated) focusTitle(art.querySelector('h1'));
+}
+
+function grievanceSteps(s, l, r){
+  r.m = r.m || s.griev.map(() => []);
+  const steps = [];
+  const intro = el('div', {class:'step'}, stepHead(1, 'Read the four grievances.'),
+    el('p', {class:'say', text: s.intro}),
+    el('p', {class:'warn', text: s.note}));
+  steps.push(intro);
+  const match = el('div', {class:'step'}, stepHead(2, 'Match each one to an event. Use the key card below.'));
+  s.griev.forEach((g, i) => {
+    const row = el('div', {class:'gr'}, renderOrig('“' + g.orig + '”', s.words, 'go'), el('p', {class:'gp', text: g.plain}));
+    const lets = el('div', {class:'letters', role:'group', 'aria-label':'Events that match grievance ' + (i + 1), 'data-no-listen':''}, el('span', {text:'Matches:'}));
+    const opts = LETTERS.concat(['none']);
+    opts.forEach(L => {
+      const b = el('button', {type:'button', class: L === 'none' ? 'none' : '', 'aria-pressed': String(r.m[i].includes(L)), text: L, 'aria-label': L === 'none' ? 'None of the events' : 'Event ' + L});
+      b.addEventListener('click', () => {
+        let set = r.m[i].slice();
+        if (L === 'none') set = set.includes('none') ? [] : ['none'];
+        else { set = set.filter(x => x !== 'none'); set = set.includes(L) ? set.filter(x => x !== L) : set.concat([L]); }
+        r.m[i] = set; save();
+        lets.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(set.includes(x.textContent))));
+      });
+      lets.append(b);
+    });
+    row.append(lets);
+    match.append(row);
+  });
+  steps.push(match);
+  const key = el('div', {class:'step'}, stepHead(3, 'The key card: your unrest tracker’s nine events.'),
+    el('div', {class:'key'}, D.events.map(([L, name, yr, what]) => el('div', {}, el('b', {text: L}), el('span', {}, name, el('span', {class:'yr', text: String(yr)})), el('span', {class:'what', text: what})))));
+  steps.push(key);
+  const q = el('div', {class:'step'}, stepHead(4, 'The last grievance.'), el('p', {class:'ask', text: s.native}));
+  const saved = el('p', {class:'saved', role:'status'});
+  const ta = el('textarea', {'aria-label':'Your answer', placeholder:'Type your answer.'}); ta.value = r.native || '';
+  ta.addEventListener('input', () => { r.native = ta.value; save(); saved.textContent = 'Saved.'; setTimeout(() => { saved.textContent = ''; }, 1500); });
+  if (l !== 'd') {
+    const useBtn = el('button', {type:'button', class:'btn ghost small', text:'Put the starter in the box', onclick: () => { if (!ta.value.trim()) { ta.value = s.nativeStart; r.native = ta.value; save(); } ta.focus(); }});
+    q.append(el('div', {class:'starter', 'data-no-listen':''}, el('p', {}, el('b', {text:'Start with: '}), s.nativeStart), useBtn));
+  }
+  if (l === 'q') q.append(el('div', {class:'bank', 'data-no-listen':''}, el('span', {text:'Words:'}), s.nativeBank.map(w => el('button', {type:'button', text: w, onclick: () => { ta.value = (ta.value ? ta.value.replace(/\s*$/, ' ') : '') + w; r.native = ta.value; save(); ta.focus(); }}))));
+  q.append(ta, saved);
+  steps.push(q);
+  steps.push(el('div', {class:'step'}, stepHead(5, 'Your vocabulary card.'), el('p', {class:'vocab-line', text:'Finish the Use It sentence for Grievance on your Declaration vocabulary card.'})));
+  return steps;
+}
+
+/* ---------- finish: exit ticket, then copy or send ---------- */
+function finish(){
+  const l = S.level;
+  lvlBtn.hidden = false; document.getElementById('lvlName').textContent = LV_NAME[l];
+  document.title = 'Turn It In: Translating the Declaration';
+  const top = el('div', {class:'path-top'}, el('div', {class:'path-meta'}, el('span', {class:'chip', text: LV_NAME[l] + ' reading'}), el('span', {text:'Finish'})), dots('finish'));
+  const sec = el('section', {class:'finish', 'data-listen':''});
+  sec.append(el('h2', {text:'Exit Ticket'}));
+  const card = el('div', {class:'q-card'}, el('p', {class:'ask', text: D.exit.ask}), el('p', {class:'say', text:'Stations 2, 3 and 4 are the ideas. Pick one and say what in it takes power away from a king.'}));
+  const x = S.exit;
+  let refreshSummary = () => {};
+  if (l === 'q') {
+    x.b = x.b || [];
+    const inputs = [];
+    const frame = el('p', {class:'frame', 'data-no-listen':''});
+    D.exit.frame.split('___').forEach((part, i) => {
+      if (i) {
+        const inp = el('input', {type:'text', 'aria-label': i === 1 ? 'Station number, 2, 3 or 4' : 'Blank ' + i, autocomplete:'off',
+                                 inputmode: i === 1 ? 'numeric' : null, placeholder: i === 1 ? '2, 3 or 4' : null, style: i === 1 ? 'width:6em' : null});
+        inp.value = x.b[i - 1] || ''; inputs.push(inp); frame.append(inp);
+      }
+      if (part) frame.append(part);
+    });
+    const bank = el('div', {class:'bank', 'data-no-listen':''}, el('span', {text:'Words:'}));
+    const wordy = () => inputs.slice(1);
+    D.exit.bank.forEach(w => bank.append(el('button', {type:'button', text: w, onclick: () => {
+      const target = wordy().find(t => t === document.activeElement && !t.value.trim()) || wordy().find(t => !t.value.trim()) || wordy()[0];
+      target.value = w; x.b[inputs.indexOf(target)] = w; save(); target.focus(); refreshSummary();
+    }})));
+    inputs.forEach((inp, i) => inp.addEventListener('input', () => { x.b[i] = inp.value; save(); refreshSummary(); }));
+    card.append(el('p', {class:'say', text:'The first blank is a station number, 2, 3 or 4. Then fill the rest from the bank or in your own words.'}), bank, frame);
+  } else {
+    const ta = el('textarea', {'aria-label':'Your exit ticket', placeholder:'Type your answer.'}); ta.value = x.t || '';
+    ta.addEventListener('input', () => { x.t = ta.value; save(); refreshSummary(); });
+    if (l === 'c') {
+      const useBtn = el('button', {type:'button', class:'btn ghost small', text:'Put the starter in the box', onclick: () => { if (!ta.value.trim()) { ta.value = D.exit.start; x.t = ta.value; save(); } ta.focus(); }});
+      card.append(el('div', {class:'starter', 'data-no-listen':''}, el('p', {}, el('b', {text:'Start with: '}), D.exit.start), useBtn));
+    }
+    card.append(ta);
+  }
+  sec.append(card);
+
+  /* what is done */
+  const sum = el('div', {class:'q-card'}, el('h3', {text:'Your Stations'}));
+  const list = el('div', {class:'summary'});
+  refreshSummary = function(){
+    list.replaceChildren();
+    ST.forEach(s => list.append(el('div', {}, el('span', {text:'Station ' + s.n + ': ' + s.title}), stationDone(s) ? el('span', {class:'ok', text:'Done'}) : el('a', {href:'#s' + s.n, text:'Go back'}))));
+    list.append(el('div', {}, el('span', {text:'Exit ticket'}), exitText() ? el('span', {class:'ok', text:'Done'}) : el('span', {class:'no', text:'Not yet'})));
+  };
+  refreshSummary();
+  sum.append(list);
+  sec.append(sum);
+  sec.append(sendBlock(l));
+  app.append(top, sec);
+  if (navigated) focusTitle(sec.querySelector('h2'));
+}
+
+function sendBlock(l){
+  const fn = el('input', {type:'text', id:'fn', autocomplete:'off'}), li = el('input', {type:'text', id:'li', maxlength:'1', autocomplete:'off'});
+  const per = el('select', {id:'per'}, el('option', {value:'', text:'Pick'}), [1,2,3,4,5,6].map(n => el('option', {text:String(n)})));
+  fn.value = S.fn || ''; li.value = S.li || ''; per.value = S.per || '';
+  [fn, li, per].forEach(i => i.addEventListener('input', () => { S.fn = fn.value.trim(); S.li = li.value.trim().toUpperCase(); S.per = per.value; save(); }));
+  const msg = el('p', {class:'msg', role:'status'});
+  const out = el('pre', {class:'out', hidden:''});
+  const copyBtn = el('button', {type:'button', class:'btn', text:'Copy My Work'});
+  const showBtn = el('button', {type:'button', class:'btn ghost', text:'Show It First'});
+  const sendBtn = el('button', {type:'button', class:'btn ghost', text:'Send to Mr. B'});
+  copyBtn.addEventListener('click', async () => {
+    if (!S.fn) { msg.textContent = 'Type your first name first.'; fn.focus(); return; }
+    const text = workText(l);
+    const ok = await copyText(text);
+    if (ok) { msg.textContent = 'Copied. Open the Canvas assignment and paste it in the text box.'; }
+    else { out.textContent = text; out.hidden = false; msg.textContent = 'Select the text below and copy it.'; }
+  });
+  showBtn.addEventListener('click', () => { out.textContent = workText(l); out.hidden = !out.hidden; showBtn.textContent = out.hidden ? 'Show It First' : 'Hide It'; });
+  sendBtn.addEventListener('click', () => sendToMrB(buildPayload(l), sendBtn, msg, fn));
+  return el('div', {class:'q-card', 'data-no-listen':''},
+    el('h3', {text:'Turn It In'}),
+    el('p', {text:'Type your name, then Copy My Work and paste it into the Canvas assignment. It comes out station by station, ready to read.'}),
+    el('div', {class:'who'}, el('label', {for:'fn'}, 'First name', fn), el('label', {for:'li'}, 'Last initial', li), el('label', {for:'per'}, 'Period', per)),
+    el('div', {class:'send-row'}, copyBtn, showBtn, sendBtn), msg, out);
+}
+
+function buildPayload(l){
+  const items = [];
+  ST.forEach(s => {
+    const r = st(s.n);
+    if (s.match) {
+      const lines = s.griev.map((g, i) => (i + 1) + '. ' + g.plain + ' » ' + (((r.m || [])[i] || []).join(', ') || '(no letter)'));
+      const nat = (r.native || '').trim();
+      if ((r.m || []).some(m => m && m.length) || nat) items.push({q: 'Station 6: The Grievances (letters from the unrest tracker)', a: lines.join('\n') + (nat ? '\n\nWhose view is “merciless Indian Savages”? ' + nat : '')});
+      return;
+    }
+    const t = translation(s);
+    if (t) items.push({q: 'Station ' + s.n + ': ' + s.title, a: t, note: (r.x || '').trim() ? 'Going further: ' + r.x.trim() : ''});
+  });
+  const ex = exitText();
+  if (ex) items.push({q: 'Exit Ticket: ' + D.exit.ask, a: ex});
+  const done = ST.filter(stationDone).length;
+  return {activity: 'Declaration Stations', score: LV_NAME[l] + ' reading. ' + done + ' of 7 stations' + (ex ? ' and the exit ticket.' : '.'), items};
+}
+function workText(l){
+  const pl = buildPayload(l);
+  const name = (S.fn || '(no name)') + (S.li ? ' ' + S.li + '.' : '') + (S.per ? ', Period ' + S.per : '');
+  return 'Translating the Declaration\n' + name + '\n' + pl.score + '\n\n' + pl.items.map(it => it.q + '\n' + it.a + (it.note ? '\n' + it.note : '')).join('\n\n');
+}
+
+/* ---------- Send to Mr. B: the Fast Finisher mailer (tools/fast-finisher-mailer.gs).
+   Opens in a small window so the student's school sign-in comes along. On the
+   Chromebooks the district filter may block it (Oct 20, 2026); Copy My Work is the
+   main way in, and this button is for anyone it works for. ---------- */
+const MAILER_URL = 'https://script.google.com/a/macros/edmonds.wednet.edu/s/AKfycbyX8esg-vMnbzlvrJ-smwJCCWGzFWAGOz1zGIopivaUEMX2zjlm_NKH82tY232hVeVH/exec';
+let sendN = 0;
+function sendToMrB(payload, btn, msgEl, fnInput){
+  if (!S.fn || !S.per) { msgEl.textContent = 'Type your first name and pick your period first.'; fnInput.focus(); return; }
+  if (!payload.items.length) { msgEl.textContent = 'Finish at least one station first.'; return; }
+  const name = 'decl-send-' + (++sendN) + '-' + Date.now();
+  const tab = window.open('', name, 'width=520,height=420');
+  const form = el('form', {method:'POST', action: MAILER_URL, target: tab ? name : '_blank', hidden:''});
+  const inp = el('input', {type:'hidden', name:'payload'});
+  inp.value = JSON.stringify(Object.assign({student: S.fn + (S.li ? ' ' + S.li + '.' : ''), period: S.per}, payload));
+  form.append(inp); document.body.append(form);
+  btn.disabled = true; msgEl.textContent = 'Sending… a small window opened. It says "Sent to Mr. B" when it works.';
+  let done = false;
+  function finishSend(text){ if (done) return; done = true; window.removeEventListener('message', onMsg); btn.disabled = false; msgEl.textContent = text; form.remove(); }
+  function onMsg(e){ const d = e.data; if (!d || d.source !== 'ff-mailer') return;
+    finishSend(d.ok ? 'Sent to Mr. B at ' + new Date().toLocaleTimeString([], {hour:'numeric', minute:'2-digit'}) + '.' : 'That did not send. Use Copy My Work and paste it into Canvas.'); }
+  window.addEventListener('message', onMsg);
+  setTimeout(() => finishSend('If the small window said "Sent to Mr. B", you are done. If not, use Copy My Work and paste it into Canvas.'), 30000);
+  form.submit();
+}
+
+lvlBtn.addEventListener('click', () => { navigated = true; location.hash = 'start'; });
+window.addEventListener('hashchange', () => { navigated = true; setView(); });
+document.getElementById('home').addEventListener('click', e => { e.preventDefault(); navigated = true; if (location.hash) location.hash = ''; else setView(); window.scrollTo(0, 0); });
+setView();
+})();
+</script>
+<script src="reader-tools.js?v=20261019"></script>
+<script>
+window.addEventListener('load', function(){
+  document.querySelectorAll('#rtools .rt-row').forEach(function(row){
+    if (row.querySelector('.rt-opts')) return;
+    var opts = document.createElement('div'); opts.className = 'rt-opts';
+    Array.prototype.slice.call(row.querySelectorAll(':scope > .rt-opt')).forEach(function(b){ opts.appendChild(b); });
+    row.appendChild(opts);
+  });
+});
+</script>
+</body>
+</html>

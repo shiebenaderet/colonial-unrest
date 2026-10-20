@@ -44,9 +44,9 @@
  *   rows 2 and down on the Responses tab.
  */
 
-const VERSION = 'Oct 19 2026, with Common Sense and the quiz sheet';
+const VERSION = 'Oct 20 2026, with Declaration Stations';
 const TO = 'benaderets885@edmonds.wednet.edu';
-const ACTIVITIES = ["Liberty's Kids", 'Engraving Detective', 'Mission US', 'Boston 1770 Breakout', 'Common Sense'];
+const ACTIVITIES = ["Liberty's Kids", 'Engraving Detective', 'Mission US', 'Boston 1770 Breakout', 'Common Sense', 'Declaration Stations'];
 const ALLOWED_DOMAINS = ['edmonds15.org', 'edmonds.wednet.edu'];
 const MAX_CHARS = 8000;   // a long answer is fine; a pasted essay-bomb is not
 
