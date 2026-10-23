@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en" data-lv="f">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The War in Seven Stops</title>
+<meta name="description" content="The Revolutionary War from Bunker Hill to the Treaty of Paris in seven stops, at four reading levels, with the hidden voices behind each one.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&display=swap">
+<link rel="stylesheet" href="fonts/atkinson.css?v=20261005">
+<!-- Built by tools/build-war-timeline.py. Edit that file, not this one. -->
+<style>
+:root{
+  --bg:#f6f1e8; --panel:#fffdf9; --ink:#1f2124; --muted:#5a4f45; --rule:#d6cfc3;
+  --deep:#7a2a28; --accent:#b23a34; --tint:#f6e7e4; --gold:#9a7536; --band:#f1e6d8;
+  --on-accent:#ffffff; --mast:#3d1413; --mast-ink:#fff8ee; --mast-edge:#b88f86;
+  --display:'Playfair Display',Georgia,'Times New Roman',serif;
+  --body:'Atkinson Hyperlegible Next','Atkinson Hyperlegible',Verdana,system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1a1614; --panel:#241f1c; --ink:#f3ece3; --muted:#c9bcae; --rule:#40362f;
+  --deep:#f0a59c; --accent:#e9827a; --tint:#3a2421; --gold:#d9b46a; --band:#2e2622;
+  --on-accent:#1a0b09; --mast:#0f0b0a; --mast-ink:#fff8ee; --mast-edge:#7d6a62; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1a1614; --panel:#241f1c; --ink:#f3ece3; --muted:#c9bcae; --rule:#40362f;
+  --deep:#f0a59c; --accent:#e9827a; --tint:#3a2421; --gold:#d9b46a; --band:#2e2622;
+  --on-accent:#1a0b09; --mast:#0f0b0a; --mast-ink:#fff8ee; --mast-edge:#7d6a62; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55}
+h1,h2,h3{font-family:var(--display);color:var(--deep);margin:0;line-height:1.15;text-wrap:balance}
+p{margin:0}
+a{color:var(--accent);font-weight:700}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:-999px;top:0;background:var(--panel);padding:8px 12px;z-index:60}
+.skip:focus{left:8px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+
+.mast{position:sticky;top:0;z-index:20;background:var(--mast);color:var(--mast-ink);border-bottom:3px solid var(--gold)}
+.mast .in{max-width:1180px;margin:0 auto;padding:8px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.brand{font-family:var(--display);font-weight:800;font-size:21px;color:var(--mast-ink);text-decoration:none;white-space:nowrap}
+.mast .spacer{flex:1 1 auto}
+.mast #rtools{position:relative;margin:0;flex-wrap:nowrap}
+#rtools .rt-btn{min-height:40px;padding:6px 14px;border-radius:8px;font-size:15px;font-weight:700;background:transparent;color:var(--mast-ink);border:2px solid var(--mast-edge)}
+#rtools .rt-btn.rt-primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+#rtools .rt-panel{position:absolute;top:calc(100% + 8px);right:0;width:min(360px,90vw);z-index:30;box-shadow:0 10px 30px rgba(0,0,0,.3);color:var(--ink)}
+#rtools .rt-panel .rt-row{display:grid;grid-template-columns:76px 1fr;gap:10px;align-items:center;margin:0 0 14px}
+#rtools .rt-panel .rt-row:last-child{margin:0}
+#rtools .rt-panel .rt-opts{display:flex;flex-wrap:wrap;gap:8px}
+.chips{max-width:1180px;margin:0 auto;padding:0 16px 8px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin}
+.chips a{flex:0 0 auto;min-height:40px;display:inline-flex;align-items:center;padding:4px 12px;border-radius:999px;border:2px solid var(--mast-edge);color:var(--mast-ink);text-decoration:none;font-weight:700;font-size:15px}
+.chips a:hover,.chips a[aria-current="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+
+main.wrap{max-width:1180px;margin:0 auto;padding:22px 16px 64px;display:grid;gap:26px}
+main.wrap > *{min-width:0}
+.intro h1{font-size:clamp(34px,5.5vw,56px);line-height:1.05}
+.intro .lead{font-size:clamp(18px,2vw,20px);margin-top:12px;max-width:42em}
+.picker{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:16px 18px;display:grid;gap:10px;margin-top:18px}
+.picker .lab{font-weight:800}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg button{min-height:44px;padding:6px 14px;border-radius:9px;border:1.5px solid var(--rule);background:var(--bg);cursor:pointer;font-weight:700}
+.seg button[aria-pressed="true"]{border:2px solid var(--accent);background:var(--tint);color:var(--deep)}
+.picker .blurb{color:var(--muted)}
+
+.stop{background:var(--panel);border:1px solid var(--rule);border-radius:16px;overflow:hidden;scroll-margin-top:var(--pad,130px)}
+.stop-head{display:flex;align-items:center;gap:14px;padding:18px 22px 12px;border-bottom:1px solid var(--rule)}
+.num{flex:0 0 auto;width:46px;height:46px;border-radius:50%;background:var(--accent);color:var(--on-accent);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px}
+.when{color:var(--muted);font-weight:700;font-size:15px}
+.stop-head h2{font-size:clamp(26px,3.4vw,34px)}
+.stop-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:22px;padding:20px 22px}
+.pic{margin:0}
+.pic img{display:block;width:100%;height:auto;border-radius:6px;border:1px solid var(--rule)}
+.pic figcaption,.vpic figcaption{font-size:14px;color:var(--muted);margin-top:6px;line-height:1.4}
+.reading p{font-size:18px;line-height:1.65}
+.reading p + p{margin-top:10px}
+.lvtext{display:none}
+html[data-lv="q"] .lv-q,html[data-lv="c"] .lv-c,html[data-lv="f"] .lv-f,html[data-lv="d"] .lv-d{display:block}
+html[data-lv="q"] .reading p{font-size:20px}
+.voice{margin:0 22px 18px;display:flex;gap:18px;align-items:flex-start;background:var(--tint);border-left:6px solid var(--accent);border-radius:10px;padding:16px 18px}
+.vpic{margin:0;flex:0 0 140px}
+.vpic img{display:block;width:140px;height:auto;border-radius:6px}
+.vtext{display:grid;gap:8px;min-width:0}
+.vlab,.tlab{font-weight:800;color:var(--accent);font-size:15px}
+.voice h3{font-size:24px}
+.btn{display:inline-flex;align-items:center;min-height:44px;padding:8px 16px;border-radius:9px;background:var(--accent);color:var(--on-accent);text-decoration:none;font-weight:800}
+.btn:hover{filter:brightness(1.07)}
+.morelab{font-weight:700;margin-top:4px}
+.morelist{margin:0;padding-left:20px;display:grid;gap:4px}
+.think{padding:16px 22px 20px;border-top:1px solid var(--rule);display:grid;gap:4px}
+.think .ask{font-size:19px;font-weight:700}
+
+.closing{background:var(--panel);border:1px solid var(--rule);border-top:6px solid var(--accent);border-radius:16px;padding:22px;display:grid;gap:14px;scroll-margin-top:var(--pad,130px)}
+.closing h2{font-size:clamp(28px,4vw,38px)}
+.closing .lead{font-size:18px;max-width:46em}
+.groups{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.grp{background:var(--bg);border:1px solid var(--rule);border-radius:12px;padding:14px 16px}
+.grp h3{font-size:19px;margin-bottom:6px}
+.grp h3 a{color:var(--deep);text-decoration:none}
+.grp ul{margin:0;padding-left:20px;display:grid;gap:4px}
+.pick{font-family:var(--display);font-size:26px;font-weight:800;color:var(--deep)}
+footer.credits{color:var(--muted);font-size:14px;line-height:1.5;border-top:1px solid var(--rule);padding-top:16px}
+
+@media (max-width:900px){
+  .stop-body{grid-template-columns:1fr}
+  .groups{grid-template-columns:1fr 1fr}
+}
+@media (max-width:560px){
+  .stop-head,.stop-body{padding-left:16px;padding-right:16px}
+  .voice{margin:0 16px 16px;flex-direction:column}
+  .vpic{flex:none}
+  .think{padding:14px 16px 18px}
+  .groups{grid-template-columns:1fr}
+  .brand{font-size:18px}
+}
+@media (max-width:480px){
+  .mast .in{gap:6px 8px;padding:8px 12px}
+  #rtools .rt-btn{padding:6px 10px;font-size:14px;min-height:38px}
+  .chips{padding:0 12px 8px}
+}
+@media print{.mast,.picker,.btn{display:none!important}.stop{break-inside:avoid}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the timeline</a>
+<header class="mast">
+  <div class="in">
+    <a class="brand" href="#top">The War in Seven Stops</a>
+    <span class="spacer"></span>
+    <div id="rtools" role="group" aria-label="Listen and font"></div>
+  </div>
+  <nav class="chips" aria-label="Jump to a stop"><a href="#bunker-hill">1775</a><a href="#trenton">1776</a><a href="#saratoga">1777</a><a href="#valley-forge">1777–78</a><a href="#freedom-offers">1775–79</a><a href="#yorktown">1781</a><a href="#treaty">1783</a><a href="#whose-stories">Whose Stories?</a></nav>
+</header>
+<main class="wrap" id="main">
+  <section class="intro" id="top" aria-labelledby="h-top" data-listen>
+    <h1 id="h-top">The Revolutionary War in Seven Stops, 1775 to 1783</h1>
+    <p class="lead">Eight years of war, from the first big battle to the peace treaty. At each stop, read what happened, then meet a hidden voice: someone the usual story leaves out.</p>
+    <div class="picker" data-no-listen>
+      <p class="lab" id="lvLab">Pick your reading</p>
+      <div class="seg" id="lvSeg" role="group" aria-labelledby="lvLab"><button type="button" data-v="q" aria-pressed="false">Quick</button><button type="button" data-v="c" aria-pressed="false">Clear</button><button type="button" data-v="f" aria-pressed="false">Full</button><button type="button" data-v="d" aria-pressed="false">Deep</button></div>
+      <p class="blurb" id="lvBlurb" aria-live="polite"></p>
+    </div>
+  </section>
+
+<section class="stop" id="bunker-hill" aria-labelledby="h-bunker-hill">
+  <div class="stop-head">
+    <span class="num" aria-hidden="true">1</span>
+    <div><p class="when">June 17, 1775</p><h2 id="h-bunker-hill">Bunker Hill</h2></div>
+  </div>
+  <div class="stop-body">
+    <figure class="pic"><img src="images/war/bunker-hill.jpg" alt="A painting of the battle: smoke, British soldiers in red coats, and an American officer dying on the ground." width="800" height="530" loading="lazy">
+      <figcaption>John Trumbull, The Death of General Warren at the Battle of Bunker&#x27;s Hill, June 17, 1775, painted 1786. Public domain.</figcaption></figure>
+    <div class="reading" data-listen><div class="lvtext lv-q" data-lv="q"><p>In June 1775, the war had just begun.</p><p>American soldiers dug in on a hill near Boston.</p><p>The British attacked the hill three times.</p><p>They won the hill on the third try.</p><p>But more than 1,000 British soldiers were killed or hurt.</p><p>That was about twice as many as the Americans lost.</p><p>Now both sides knew this war would be long.</p></div><div class="lvtext lv-c" data-lv="c"><p>Two months after Lexington and Concord, American soldiers built walls of dirt on a hill near Boston.</p><p>On June 17, 1775, British soldiers charged up the hill, and the Americans pushed them back twice.</p><p>On the third charge, the Americans ran low on gunpowder and had to leave.</p><p>The British took the hill, but more than 1,000 of their soldiers were killed or wounded.</p><p>That was about twice the American losses.</p><p>The battle showed that ordinary colonists could stand up to the British army.</p></div><div class="lvtext lv-f" data-lv="f"><p>On June 17, 1775, two months after Lexington and Concord, British troops attacked American soldiers who had dug in on the hills above Boston.</p><p>Most of the fighting was actually on nearby Breed&#x27;s Hill, but the battle kept the name Bunker Hill.</p><p>The Americans drove back two charges before their gunpowder ran low, and the British took the hill on their third.</p><p>The price was staggering: more than 1,000 British soldiers were killed or wounded, about twice the American losses.</p><p>Ordinary colonists had stood up to the British army, and both sides now expected a long and bloody war.</p></div><div class="lvtext lv-d" data-lv="d"><p>On June 17, 1775, British regulars attacked the fortifications that New England militia had thrown up overnight on the heights above Charlestown, across the river from Boston.</p><p>Although the battle is remembered as Bunker Hill, most of the fighting took place on neighboring Breed&#x27;s Hill, where the defenders repelled two frontal assaults before their powder gave out and the third carried the position.</p><p>Britain held the field, yet more than 1,000 of its soldiers were killed or wounded, roughly twice the American losses, and its commanders drew the sobering conclusion that the rebellion would not collapse after one demonstration of force.</p><p>Historians also note who stood in the American lines: Black soldiers such as Peter Salem and Salem Poor fought there, a reminder that the army of 1775 was more varied than later paintings suggest.</p></div></div>
+  </div>
+  <aside class="voice" aria-labelledby="v-bunker-hill">
+    
+    <div class="vtext">
+      <p class="vlab">Hidden Voice</p>
+      <h3 id="v-bunker-hill">Peter Salem</h3>
+      <p>A Black soldier who had been enslaved and was freed to enlist. He fought at Bunker Hill.</p>
+      <p><a class="btn" href="https://voices.mrbsocialstudies.org/readings/peter-salem/">Read about them</a></p>
+      <p class="morelab">More voices near this stop:</p>
+      <ul class="morelist"><li><a href="https://voices.mrbsocialstudies.org/readings/african-americans/">African Americans in the Revolutionary War</a></li><li><a href="https://voices.mrbsocialstudies.org/readings/crispus-attucks/">Crispus Attucks</a></li></ul>
+    </div>
+  </aside>
+  <div class="think"><p class="tlab">Think About It</p><p class="ask">The British won the hill. Why did the battle still worry them?</p></div>
+</section>
+<section class="stop" id="trenton" aria-labelledby="h-trenton">
+  <div class="stop-head">
+    <span class="num" aria-hidden="true">2</span>
+    <div><p class="when">December 26, 1776</p><h2 id="h-trenton">Trenton</h2></div>
+  </div>
+  <div class="stop-body">
+    <figure class="pic"><img src="images/war/trenton.jpg" alt="A painting of George Washington standing in a crowded rowboat crossing an icy river at dawn." width="1200" height="769" loading="lazy">
+      <figcaption>Emanuel Leutze, Washington Crossing the Delaware, 1851 (painted 75 years later). Public domain.</figcaption></figure>
+    <div class="reading" data-listen><div class="lvtext lv-q" data-lv="q"><p>By December 1776, Washington&#x27;s army had lost a lot of fights.</p><p>Many soldiers were ready to go home.</p><p>On Christmas night, the army crossed an icy river.</p><p>The river is called the Delaware.</p><p>In the morning, they surprised the enemy at a town called Trenton.</p><p>They took about 900 soldiers as prisoners.</p><p>This win gave the army hope and kept the Revolution going.</p></div><div class="lvtext lv-c" data-lv="c"><p>In 1776, Washington&#x27;s army lost New York and retreated across New Jersey.</p><p>Many soldiers planned to go home when their time in the army ended at the end of the year.</p><p>On Christmas night, Washington led his men across the icy Delaware River.</p><p>At dawn on December 26, they surprised the enemy camp at Trenton and captured about 900 soldiers.</p><p>The win was small, but it gave soldiers a reason to stay.</p><p>It kept the Revolution alive.</p></div><div class="lvtext lv-f" data-lv="f"><p>By the end of 1776, Washington&#x27;s army had lost New York, retreated across New Jersey, and shrunk as discouraged soldiers went home.</p><p>Many of the men who remained could leave when their enlistments expired at the end of the year.</p><p>On Christmas night, Washington led his army across the ice-choked Delaware River, and at dawn on December 26 it surprised the camp of German soldiers hired by Britain at Trenton, New Jersey.</p><p>The Americans captured about 900 soldiers.</p><p>The victory was small, but it came when the army was close to falling apart, and it gave soldiers a reason to stay and kept the Revolution alive.</p></div><div class="lvtext lv-d" data-lv="d"><p>Days before the attack, Thomas Paine published The American Crisis, which opens, &quot;These are the times that try men&#x27;s souls.&quot;</p><p>By December 1776 the Continental Army had lost New York, retreated across New Jersey, and dwindled through desertion and expiring enlistments, so that by the end of the year it faced the real possibility of simply dissolving.</p><p>Washington&#x27;s night crossing of the Delaware and his dawn attack on the Hessian garrison at Trenton on December 26 produced about 900 prisoners, a modest haul whose political and psychological effect far outweighed its military size.</p><p>The famous painting is itself a source to question: Leutze painted it in 1851, the flag shown was not adopted until 1777, and no commander would have stood upright in a small boat on an icy river.</p></div></div>
+  </div>
+  <aside class="voice" aria-labelledby="v-trenton">
+    
+    <div class="vtext">
+      <p class="vlab">Hidden Voice</p>
+      <h3 id="v-trenton">Hessian Soldiers</h3>
+      <p>German soldiers Britain hired to fight. They were the soldiers surprised at Trenton.</p>
+      <p><a class="btn" href="https://voices.mrbsocialstudies.org/readings/hessians/">Read about them</a></p>
+      <p class="morelab">More voices near this stop:</p>
+      <ul class="morelist"><li><a href="https://voices.mrbsocialstudies.org/readings/indentured-servants/">Indentured Servants</a></li></ul>
+    </div>
+  </aside>
+  <div class="think"><p class="tlab">Think About It</p><p class="ask">Why did one small win matter so much in December 1776?</p></div>
+</section>
+<section class="stop" id="saratoga" aria-labelledby="h-saratoga">
+  <div class="stop-head">
+    <span class="num" aria-hidden="true">3</span>
+    <div><p class="when">October 17, 1777</p><h2 id="h-saratoga">Saratoga</h2></div>
+  </div>
+  <div class="stop-body">
+    <figure class="pic"><img src="images/war/saratoga.jpg" alt="A painting of the British general handing over his sword to the American general in front of both armies." width="1200" height="795" loading="lazy">
+      <figcaption>John Trumbull, Surrender of General Burgoyne, 1821. Public domain.</figcaption></figure>
+    <div class="reading" data-listen><div class="lvtext lv-q" data-lv="q"><p>In 1777, a British army marched south from Canada into New York.</p><p>American soldiers trapped it.</p><p>This was near a town called Saratoga.</p><p>On October 17, 1777, the British army gave up.</p><p>About 6,000 soldiers surrendered.</p><p>This was the turning point of the war.</p><p>France saw that the Americans could win.</p><p>In 1778, France joined the war to help the Americans.</p><p>France sent money, soldiers, and ships.</p></div><div class="lvtext lv-c" data-lv="c"><p>In 1777, the British planned to cut New England off from the other colonies.</p><p>A British army marched south from Canada into New York.</p><p>American soldiers fought it in two battles near Saratoga and then surrounded it.</p><p>On October 17, 1777, about 6,000 British soldiers surrendered.</p><p>Saratoga was the turning point of the war.</p><p>It showed France that the Americans could win, and in 1778 France joined the war with money, soldiers and ships.</p></div><div class="lvtext lv-f" data-lv="f"><p>In 1777, Britain tried to split the colonies by sending an army south from Canada to cut New England off from the rest.</p><p>In New York, American forces stopped that army in two battles near Saratoga and then surrounded it.</p><p>On October 17, 1777, the British general John Burgoyne surrendered about 6,000 soldiers.</p><p>Saratoga became the turning point of the war.</p><p>France, Britain&#x27;s old rival, now believed the Americans could win, and in 1778 it joined the war with money, soldiers and ships.</p></div><div class="lvtext lv-d" data-lv="d"><p>General John Burgoyne&#x27;s 1777 campaign aimed to sever New England from the other colonies by driving south from Canada along the Hudson River.</p><p>Instead, his army was checked in two engagements near Saratoga, encircled by a growing American force, and compelled to surrender about 6,000 soldiers on October 17, 1777.</p><p>The campaign also divided the Haudenosaunee, the Six Nations: at Oriskany that August, Mohawk and Seneca warriors fought alongside the British while Oneida warriors fought beside the Americans.</p><p>Historians call Saratoga the turning point less for the battle itself than for its consequences abroad, since it persuaded France, Britain&#x27;s old rival, to sign an alliance in 1778 and commit money, soldiers and a navy.</p></div></div>
+  </div>
+  <aside class="voice" aria-labelledby="v-saratoga">
+    <figure class="vpic"><img src="images/war/joseph-brant.jpg" alt="A portrait of Joseph Brant in a feathered headdress and a red blanket." width="160" height="200" loading="lazy"><figcaption>George Romney, Joseph Brant (Thayendanegea), 1776. Public domain.</figcaption></figure>
+    <div class="vtext">
+      <p class="vlab">Hidden Voice</p>
+      <h3 id="v-saratoga">Joseph Brant (Thayendanegea)</h3>
+      <p>A Mohawk leader who fought for Britain to protect Mohawk land. The Six Nations split: some fought for each side.</p>
+      <p><a class="btn" href="https://voices.mrbsocialstudies.org/readings/joseph-brant/">Read about them</a></p>
+      <p class="morelab">More voices near this stop:</p>
+      <ul class="morelist"><li><a href="https://voices.mrbsocialstudies.org/readings/native-americans/">Native Americans in the Revolutionary War</a></li><li><a href="https://voices.mrbsocialstudies.org/readings/benedict-arnold/">Benedict Arnold</a></li><li><a href="https://voices.mrbsocialstudies.org/readings/sybil-ludington/">Sybil Ludington</a></li></ul>
+    </div>
+  </aside>
+  <div class="think"><p class="tlab">Think About It</p><p class="ask">Why did a win in New York change what France did?</p></div>
+</section>
+<section class="stop" id="valley-forge" aria-labelledby="h-valley-forge">
+  <div class="stop-head">
+    <span class="num" aria-hidden="true">4</span>
+    <div><p class="when">Winter 1777–1778</p><h2 id="h-valley-forge">Valley Forge</h2></div>
+  </div>
+  <div class="stop-body">
+    <figure class="pic"><img src="images/war/valley-forge.jpg" alt="A painting of Washington on horseback watching tired, poorly dressed soldiers march through snow." width="1200" height="630" loading="lazy">
+      <figcaption>William B. T. Trego, The March to Valley Forge, December 19, 1777, painted 1883. Public domain.</figcaption></figure>
+    <div class="reading" data-listen><div class="lvtext lv-q" data-lv="q"><p>In the winter of 1777, the army camped at Valley Forge, Pennsylvania.</p><p>About 12,000 soldiers stayed there.</p><p>They did not have enough food.</p><p>Many had no warm clothes or shoes.</p><p>About 2,000 soldiers died of disease.</p><p>But the army did not quit.</p><p>In the spring, Baron von Steuben trained the soldiers.</p><p>They came out a stronger army.</p></div><div class="lvtext lv-c" data-lv="c"><p>In December 1777, about 12,000 soldiers marched into Valley Forge, Pennsylvania, to camp for the winter.</p><p>They were short of food, clothes and shoes, and they built small log huts to stay warm.</p><p>About 2,000 soldiers died of disease.</p><p>Still, the army did not fall apart.</p><p>In the spring, Baron von Steuben, an officer from Germany, trained the soldiers to march and fight together.</p><p>They left Valley Forge a stronger army.</p></div><div class="lvtext lv-f" data-lv="f"><p>In December 1777, about 12,000 soldiers of the Continental Army marched into winter camp at Valley Forge, Pennsylvania.</p><p>Congress and the states struggled to send supplies, so the soldiers went short of food, clothing and shoes while they built rows of log huts.</p><p>About 2,000 soldiers died of disease that winter.</p><p>Yet the army did not quit, and in the spring Baron von Steuben, a former Prussian officer, drilled the soldiers in how to march, load and fight as one force.</p><p>The army that left Valley Forge was smaller but tougher and better trained.</p></div><div class="lvtext lv-d" data-lv="d"><p>On December 23, 1777, Washington warned Congress that he had &quot;no less than 2,898 Men now in Camp unfit for duty because they are bare foot and otherwise naked.&quot;</p><p>About 12,000 soldiers wintered at Valley Forge, and about 2,000 died of disease, chiefly typhus, dysentery and pneumonia spread through crowded huts.</p><p>Historians stress that the suffering came less from extreme cold than from a supply system that broke down between Congress, the states and the army&#x27;s own commissaries.</p><p>The camp is remembered as a turning point in another sense as well: under Baron von Steuben&#x27;s drill that spring, the Continentals became a disciplined, professional army.</p></div></div>
+  </div>
+  <aside class="voice" aria-labelledby="v-valley-forge">
+    
+    <div class="vtext">
+      <p class="vlab">Hidden Voice</p>
+      <h3 id="v-valley-forge">Young Soldiers</h3>
+      <p>Many soldiers were teenagers. Joseph Plumb Martin joined at 15 and later wrote about the hunger at Valley Forge.</p>
+      <p><a class="btn" href="https://voices.mrbsocialstudies.org/readings/young-soldiers/">Read about them</a></p>
+      <p class="morelab">More voices near this stop:</p>
+      <ul class="morelist"><li><a href="https://voices.mrbsocialstudies.org/readings/camp-followers/">Camp Followers</a></li><li><a href="https://voices.mrbsocialstudies.org/readings/molly-pitcher/">Molly Pitcher</a></li></ul>
+    </div>
+  </aside>
+  <div class="think"><p class="tlab">Think About It</p><p class="ask">Why didn&#x27;t the army quit at Valley Forge?</p></div>
+</section>
+<section class="stop" id="freedom-offers" aria-labelledby="h-freedom-offers">
+  <div class="stop-head">
+    <span class="num" aria-hidden="true">5</span>
+    <div><p class="when">November 1775 and June 1779</p><h2 id="h-freedom-offers">Britain Offers Freedom</h2></div>
+  </div>
+  <div class="stop-body">
+    <figure class="pic"><img src="images/war/dunmore.jpg" alt="A printed poster from 1775 headed A Proclamation, signed by Lord Dunmore." width="550" height="909" loading="lazy">
+      <figcaption>Lord Dunmore&#x27;s Proclamation, printed broadside, November 7, 1775. Public domain.</figcaption></figure>
+    <div class="reading" data-listen><div class="lvtext lv-q" data-lv="q"><p>Britain needed more soldiers.</p><p>In 1775, Lord Dunmore ran Virginia for the king.</p><p>He made a promise to enslaved people.</p><p>He said they could be free.</p><p>First they had to run away from a Patriot.</p><p>Then they had to fight for Britain.</p><p>In 1779, a British general made the offer bigger.</p><p>Thousands of enslaved people escaped to the British side.</p><p>Both sides talked about liberty.</p><p>For many enslaved people, Britain was the side offering freedom.</p></div><div class="lvtext lv-c" data-lv="c"><p>In November 1775, Lord Dunmore, the royal governor of Virginia, made an offer.</p><p>Enslaved people owned by Patriots would be free if they escaped and fought for Britain.</p><p>Patriot slaveholders were angry and afraid.</p><p>In 1779, a British general, Henry Clinton, made the offer wider.</p><p>Thousands of enslaved people escaped to British lines, risking their lives.</p><p>Both sides talked about liberty.</p><p>But for many enslaved people, the British side was the one that offered freedom.</p></div><div class="lvtext lv-f" data-lv="f"><p>In November 1775, Lord Dunmore, the royal governor of Virginia, promised freedom to enslaved people owned by Patriots if they escaped and fought for Britain.</p><p>Hundreds joined a unit he called the Ethiopian Regiment.</p><p>In 1779, the British general Henry Clinton widened the offer, and thousands of enslaved people escaped to British lines.</p><p>Britain made these offers to weaken the Patriots, not to end slavery, and it kept slavery in its own colonies.</p><p>Still, both sides talked about liberty, and for many enslaved people the British side was the one offering freedom.</p></div><div class="lvtext lv-d" data-lv="d"><p>Dunmore&#x27;s proclamation of November 7, 1775, declared &quot;all indented Servants, Negroes, or others, (appertaining to Rebels,) free that are able and willing to bear Arms, they joining His Majesty&#x27;s Troops.&quot;</p><p>Hundreds of men enlisted in what Dunmore called the Ethiopian Regiment, and in 1779 General Henry Clinton&#x27;s Philipsburg Proclamation extended the promise to enslaved people who reached British lines, whether or not they bore arms.</p><p>Thousands escaped, though historians still debate how many, and many died of smallpox in crowded camps.</p><p>The offers were a weapon of war rather than a principle, since Britain kept slavery in its own colonies, yet they forced Patriots to confront what their own language of liberty meant to the people they enslaved.</p></div></div>
+  </div>
+  <aside class="voice" aria-labelledby="v-freedom-offers">
+    
+    <div class="vtext">
+      <p class="vlab">Hidden Voice</p>
+      <h3 id="v-freedom-offers">Enslaved People and British Freedom Offers</h3>
+      <p>Thousands of enslaved people risked everything to escape to the British side.</p>
+      <p><a class="btn" href="https://voices.mrbsocialstudies.org/readings/enslaved-british-freedom/">Read about them</a></p>
+      <p class="morelab">More voices near this stop:</p>
+      <ul class="morelist"><li><a href="https://voices.mrbsocialstudies.org/readings/nancy-hart/">Nancy Hart</a></li><li><a href="https://voices.mrbsocialstudies.org/readings/african-americans/">African Americans in the Revolutionary War</a></li></ul>
+    </div>
+  </aside>
+  <div class="think"><p class="tlab">Think About It</p><p class="ask">To an enslaved person in Virginia, which side looked like the side of liberty, and why?</p></div>
+</section>
+<section class="stop" id="yorktown" aria-labelledby="h-yorktown">
+  <div class="stop-head">
+    <span class="num" aria-hidden="true">6</span>
+    <div><p class="when">October 19, 1781</p><h2 id="h-yorktown">Yorktown</h2></div>
+  </div>
+  <div class="stop-body">
+    <figure class="pic"><img src="images/war/yorktown.jpg" alt="A painting of British officers surrendering between two lines of soldiers, French on one side and American on the other." width="1200" height="791" loading="lazy">
+      <figcaption>John Trumbull, Surrender of Lord Cornwallis, 1820. Public domain.</figcaption></figure>
+    <div class="reading" data-listen><div class="lvtext lv-q" data-lv="q"><p>In 1781, a British army camped at Yorktown, Virginia.</p><p>The town was next to the water.</p><p>American and French armies trapped it on land.</p><p>French ships blocked help from the sea.</p><p>The British general Cornwallis gave up.</p><p>He surrendered more than 7,000 soldiers.</p><p>It was the last big battle of the war.</p></div><div class="lvtext lv-c" data-lv="c"><p>In 1781, the British general Cornwallis moved his army to Yorktown, Virginia, on the coast.</p><p>He waited for British ships to bring help.</p><p>Instead, a French fleet blocked the way from the sea.</p><p>American and French armies dug trenches around the town and moved closer each day.</p><p>On October 19, 1781, Cornwallis surrendered more than 7,000 soldiers.</p><p>It was the last major battle, and Britain began to give up on winning the war.</p></div><div class="lvtext lv-f" data-lv="f"><p>In 1781, the British general Charles Cornwallis moved his army to Yorktown, Virginia, on the coast, expecting the British navy to bring help.</p><p>Instead, a French fleet took control of the bay and blocked help from the sea, while American and French armies surrounded the town on land.</p><p>Some of the Americans&#x27; best information came from James Armistead, an enslaved man who spied inside the British camp.</p><p>On October 19, 1781, Cornwallis surrendered more than 7,000 soldiers.</p><p>It was the last major battle of the war, and Britain began to give up on winning it.</p></div><div class="lvtext lv-d" data-lv="d"><p>Cornwallis fortified Yorktown in the summer of 1781 on the assumption that the Royal Navy controlled the Chesapeake, but a French fleet under the Comte de Grasse closed the bay while Washington and the French general Rochambeau marched their combined armies south.</p><p>Intelligence gathered by James Armistead, who posed as a runaway to work inside the British camp, helped the allies understand Cornwallis&#x27;s position.</p><p>After weeks of siege, Cornwallis surrendered more than 7,000 soldiers on October 19, 1781.</p><p>Historians emphasize that the victory was as much French as American, and that although fighting continued on the frontier and at sea, Yorktown broke Britain&#x27;s will: Lord North&#x27;s government fell the following March.</p></div></div>
+  </div>
+  <aside class="voice" aria-labelledby="v-yorktown">
+    
+    <div class="vtext">
+      <p class="vlab">Hidden Voice</p>
+      <h3 id="v-yorktown">James Armistead Lafayette</h3>
+      <p>An enslaved man who spied on the British for the Americans. His reports helped trap Cornwallis.</p>
+      <p><a class="btn" href="https://voices.mrbsocialstudies.org/readings/james-armistead/">Read about them</a></p>
+      <p class="morelab">More voices near this stop:</p>
+      <ul class="morelist"><li><a href="https://voices.mrbsocialstudies.org/readings/deborah-sampson/">Deborah Sampson</a></li><li><a href="https://voices.mrbsocialstudies.org/readings/women/">Women in the Revolutionary War</a></li></ul>
+    </div>
+  </aside>
+  <div class="think"><p class="tlab">Think About It</p><p class="ask">Who made the win at Yorktown possible, and how?</p></div>
+</section>
+<section class="stop" id="treaty" aria-labelledby="h-treaty">
+  <div class="stop-head">
+    <span class="num" aria-hidden="true">7</span>
+    <div><p class="when">September 3, 1783</p><h2 id="h-treaty">Treaty of Paris</h2></div>
+  </div>
+  <div class="stop-body">
+    <figure class="pic"><img src="images/war/treaty.jpg" alt="An unfinished painting of five American diplomats; the right side, where the British would be, is blank." width="1200" height="932" loading="lazy">
+      <figcaption>Benjamin West, American Commissioners of the Preliminary Peace Negotiations with Great Britain, 1783, left unfinished. Public domain.</figcaption></figure>
+    <div class="reading" data-listen><div class="lvtext lv-q" data-lv="q"><p>On September 3, 1783, Britain signed a peace treaty.</p><p>It is called the Treaty of Paris.</p><p>It said the United States was independent.</p><p>The new country reached west to the Mississippi River.</p><p>The war was over.</p><p>But Native nations were not part of the treaty.</p><p>Britain gave away land where they lived.</p><p>About 60,000 Loyalists left the United States after the war.</p></div><div class="lvtext lv-c" data-lv="c"><p>On September 3, 1783, Britain signed the Treaty of Paris.</p><p>The treaty said the United States was independent, and its land now reached west to the Mississippi River.</p><p>The war was over, but it had been expensive, and the new country owed a lot of money.</p><p>Native nations were not part of the treaty, even though Britain gave away land where they lived.</p><p>About 60,000 Loyalists, colonists who stayed loyal to the king, left the United States.</p></div><div class="lvtext lv-f" data-lv="f"><p>On September 3, 1783, after two years of talks, Britain signed the Treaty of Paris and recognized the United States as independent.</p><p>The new nation&#x27;s land reached west to the Mississippi River.</p><p>One thing is true about all wars: they are expensive, and the United States began its life deep in debt.</p><p>Native nations were not part of the treaty, even though Britain gave away land where they lived.</p><p>About 60,000 Loyalists, many of whom had lost their homes and property, left the United States for Canada, Britain and the Caribbean.</p></div><div class="lvtext lv-d" data-lv="d"><p>The Treaty of Paris, signed on September 3, 1783, recognized American independence and drew the new nation&#x27;s western boundary at the Mississippi River.</p><p>Benjamin West&#x27;s painting of the negotiators was never finished because the British commissioners declined to sit for it, an apt image of a peace that one side signed reluctantly.</p><p>Britain&#x27;s Native allies, who had not been consulted, learned that their lands had been handed to the United States, and many regarded the treaty as a betrayal.</p><p>About 60,000 Loyalists left the country, among them several thousand Black Loyalists who had been promised freedom, which is why historians increasingly describe the Revolution as a civil war with winners and losers on every side.</p></div></div>
+  </div>
+  <aside class="voice" aria-labelledby="v-treaty">
+    
+    <div class="vtext">
+      <p class="vlab">Hidden Voice</p>
+      <h3 id="v-treaty">Loyalists</h3>
+      <p>Colonists who stayed loyal to the king. About 60,000 left the United States after the war.</p>
+      <p><a class="btn" href="https://voices.mrbsocialstudies.org/readings/loyalists/">Read about them</a></p>
+      <p class="morelab">More voices near this stop:</p>
+      <ul class="morelist"><li><a href="https://voices.mrbsocialstudies.org/readings/phillis-wheatley/">Phillis Wheatley</a></li><li><a href="https://voices.mrbsocialstudies.org/readings/abigail-adams/">Abigail Adams</a></li><li><a href="https://voices.mrbsocialstudies.org/readings/mercy-otis-warren/">Mercy Otis Warren</a></li><li><a href="https://voices.mrbsocialstudies.org/readings/womens-economic-agency/">Women&#x27;s Work and Political Voice</a></li></ul>
+    </div>
+  </aside>
+  <div class="think"><p class="tlab">Think About It</p><p class="ask">Who won with the Treaty of Paris, and who lost?</p></div>
+</section>
+
+<section class="closing" id="whose-stories" aria-labelledby="h-close">
+  <h2 id="h-close">Whose Stories Aren&rsquo;t Told?</h2>
+  <p class="lead">Every one of these people and groups shaped the Revolution, and most of them are left out of the usual story. Each one is a podcast topic.</p>
+  <div class="groups"><div class="grp"><h3><a href="#bunker-hill">1775 · Bunker Hill</a></h3><ul><li><a href="https://voices.mrbsocialstudies.org/readings/peter-salem/">Peter Salem</a></li><li><a href="https://voices.mrbsocialstudies.org/readings/african-americans/">African Americans in the Revolutionary War</a></li><li><a href="https://voices.mrbsocialstudies.org/readings/crispus-attucks/">Crispus Attucks</a></li></ul></div><div class="grp"><h3><a href="#trenton">1776 · Trenton</a></h3><ul><li><a href="https://voices.mrbsocialstudies.org/readings/hessians/">Hessian Soldiers</a></li><li><a href="https://voices.mrbsocialstudies.org/readings/indentured-servants/">Indentured Servants</a></li></ul></div><div class="grp"><h3><a href="#saratoga">1777 · Saratoga</a></h3><ul><li><a href="https://voices.mrbsocialstudies.org/readings/joseph-brant/">Joseph Brant</a></li><li><a href="https://voices.mrbsocialstudies.org/readings/native-americans/">Native Americans in the Revolutionary War</a></li><li><a href="https://voices.mrbsocialstudies.org/readings/benedict-arnold/">Benedict Arnold</a></li><li><a href="https://voices.mrbsocialstudies.org/readings/sybil-ludington/">Sybil Ludington</a></li></ul></div><div class="grp"><h3><a href="#valley-forge">1777–78 · Valley Forge</a></h3><ul><li><a href="https://voices.mrbsocialstudies.org/readings/young-soldiers/">Young Soldiers &amp; Teenage Patriots</a></li><li><a href="https://voices.mrbsocialstudies.org/readings/camp-followers/">Camp Followers</a></li><li><a href="https://voices.mrbsocialstudies.org/readings/molly-pitcher/">Molly Pitcher</a></li></ul></div><div class="grp"><h3><a href="#freedom-offers">1775–79 · Britain Offers Freedom</a></h3><ul><li><a href="https://voices.mrbsocialstudies.org/readings/enslaved-british-freedom/">Enslaved People and British Freedom Offers</a></li><li><a href="https://voices.mrbsocialstudies.org/readings/nancy-hart/">Nancy Hart</a></li></ul></div><div class="grp"><h3><a href="#yorktown">1781 · Yorktown</a></h3><ul><li><a href="https://voices.mrbsocialstudies.org/readings/james-armistead/">James Armistead Lafayette</a></li><li><a href="https://voices.mrbsocialstudies.org/readings/deborah-sampson/">Deborah Sampson</a></li><li><a href="https://voices.mrbsocialstudies.org/readings/women/">Women in the Revolutionary War</a></li></ul></div><div class="grp"><h3><a href="#treaty">1783 · Treaty of Paris</a></h3><ul><li><a href="https://voices.mrbsocialstudies.org/readings/loyalists/">Loyalists / Tories</a></li><li><a href="https://voices.mrbsocialstudies.org/readings/phillis-wheatley/">Phillis Wheatley</a></li><li><a href="https://voices.mrbsocialstudies.org/readings/abigail-adams/">Abigail Adams</a></li><li><a href="https://voices.mrbsocialstudies.org/readings/mercy-otis-warren/">Mercy Otis Warren</a></li><li><a href="https://voices.mrbsocialstudies.org/readings/womens-economic-agency/">Women&#x27;s Work and Political Voice</a></li></ul></div></div>
+  <p class="pick">Talk with your crew. Pick your top three.</p>
+</section>
+  <footer class="credits">
+    <p>Pictures are public domain, from Wikimedia Commons; each credit is under its picture. Hidden Voice readings are on <a href="https://voices.mrbsocialstudies.org">Revolutionary Voices</a>. Mr. B&rsquo;s 8th Grade American Studies.</p>
+  </footer>
+</main>
+<script>
+(function(){
+  var LV = {q:'Quick', c:'Clear', f:'Full', d:'Deep'};
+  var BLURB = {q:'Short sentences. Key words explained.', c:'Plain words, a little more detail.', f:'The grade-level reading.', d:'Adds real quotes from the time and what historians argue.'};
+  var SLUG = {quick:'q', clear:'c', full:'f', deep:'d'};
+  var KEY = 'war-timeline-v1';
+  var S = {};
+  try { S = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { S = {}; }
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+  var qp = new URLSearchParams(location.search).get('level');
+  if (qp && SLUG[qp.toLowerCase()]) { S.level = SLUG[qp.toLowerCase()]; save(); }
+  function setLevel(l){
+    if (!LV[l]) l = 'f';
+    document.documentElement.setAttribute('data-lv', l);
+    document.querySelectorAll('#lvSeg button').forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.v === l)); });
+    document.getElementById('lvBlurb').textContent = LV[l] + ': ' + BLURB[l];
+    if (window.READER_TOOLS) window.READER_TOOLS.reset();
+  }
+  setLevel(S.level || 'f');
+  document.getElementById('lvSeg').addEventListener('click', function(e){
+    var b = e.target.closest('button'); if (!b) return;
+    S.level = b.dataset.v; save(); setLevel(S.level);
+  });
+  /* Jump links (and QR codes) land under the sticky header, which wraps on phones. */
+  var mast = document.querySelector('.mast');
+  function pad(){ document.documentElement.style.setProperty('--pad', (mast.offsetHeight + 12) + 'px'); }
+  window.addEventListener('resize', pad); pad();
+  function land(){
+    if (!location.hash) return;
+    var t = document.getElementById(location.hash.slice(1)); if (!t) return;
+    pad(); t.scrollIntoView({block:'start'});
+    document.querySelectorAll('.chips a').forEach(function(a){ a.setAttribute('aria-current', String(a.getAttribute('href') === location.hash)); });
+  }
+  window.addEventListener('load', function(){ pad(); setTimeout(land, 50); });
+  window.addEventListener('hashchange', land);
+})();
+</script>
+<script src="reader-tools.js?v=20261019"></script>
+<script>
+/* Group each Font-panel row's buttons so the row is label + options (as on index.html). */
+window.addEventListener('load', function(){
+  document.querySelectorAll('#rtools .rt-row').forEach(function(row){
+    if (row.querySelector('.rt-opts')) return;
+    var opts = document.createElement('div'); opts.className = 'rt-opts';
+    Array.prototype.slice.call(row.querySelectorAll(':scope > .rt-opt')).forEach(function(b){ opts.appendChild(b); });
+    row.appendChild(opts);
+  });
+});
+</script>
+</body>
+</html>

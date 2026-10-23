@@ -57,6 +57,12 @@ Progress is saved per device. A student who switches Chromebooks loads their bac
 - **Screen readers** get the point total, status messages, and a data table of the chart. The rating control and timeline work fully from the keyboard.
 - **Reduced motion** is respected.
 
+## The War in Seven Stops (Week 9)
+
+`war-timeline.html` (**unrest.mrbsocialstudies.org/war-timeline.html**) is the Revolutionary War from 1775 to 1783 in seven stops: Bunker Hill, Trenton, Saratoga, Valley Forge, Britain Offers Freedom (Dunmore 1775, Clinton 1779), Yorktown and the Treaty of Paris. Students reach it from the QR codes on the cut-and-glue timeline cards (ams-planning, `tools/build-week9-handouts.py`); each code opens one stop: `#bunker-hill`, `#trenton`, `#saratoga`, `#valley-forge`, `#freedom-offers`, `#yorktown`, `#treaty`. Each stop has its picture, a reading at four levels (Quick, Clear, Full, Deep; `?level=quick|clear|full|deep`, remembered in `war-timeline-v1`), a **Hidden Voice** who is a podcast topic with a link to that reading on voices.mrbsocialstudies.org, more voices near the stop, and a Think About It question. `#whose-stories` lists all 22 podcast topics, each once, grouped by stop, for crews choosing their top three. Listen and Font come from `reader-tools.js`. Not linked from the other pages.
+
+The page is generated: edit `tools/build-war-timeline.py` and run `python3 tools/build-war-timeline.py`, which measures every level with the shared FK formula and refuses to write the page if a level misses its limit. Facts, numbers and hidden voices match ams-planning `tools/war_timeline_data.py` (the cards and slides); change both together. Pictures in `images/war/` (public domain, Wikimedia Commons; credits under each picture).
+
 ## Recording the readings (Mr. B's voice)
 
 `record.html` (not linked anywhere, hidden from search engines) records the 36 English readings, 9 placards × 4 levels, for a **Mr. B** voice in Listen. Only `benaderets885@edmonds.wednet.edu` can sign in with Google. The page shows the real placard. Press **Record**, read the highlighted sentence, and press **Space** at the end of each one. Those taps time the highlight, so it follows your voice when students play it back. Listen back, keep the take or redo it. Takes stay in that browser until **Download all** saves them as one zip. `python3 tools/add-recordings.py <zip>` turns the zip into `audio/*.mp3` and `audio/recordings.js`. Readings without a recording, the translations, and any reading whose text changed after it was recorded keep the computer voice.
