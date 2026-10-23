@@ -95,7 +95,7 @@ STOPS = [
         'Washington\'s night crossing of the Delaware and his dawn attack on the Hessian garrison at Trenton on December 26 produced about 900 prisoners, a modest haul whose political and psychological effect far outweighed its military size.',
         'The famous painting is itself a source to question: Leutze painted it in 1851, the flag shown was not adopted until 1777, and no commander would have stood upright in a small boat on an icy river.'],
   'voice': ('hessians', 'Hessian Soldiers', 'German soldiers Britain hired to fight. They were the soldiers surprised at Trenton.'),
-  'more': ['indentured-servants'],
+  'more': [],
   'think': 'Why did one small win matter so much in December 1776?'},
 
  {'id': 'saratoga', 'year': '1777', 'date': 'October 17, 1777', 'title': 'Saratoga',
@@ -154,7 +154,7 @@ STOPS = [
         'About 2,000 soldiers died of disease that winter.',
         'Yet the army did not quit, and in the spring Baron von Steuben, a former Prussian officer, drilled the soldiers in how to march, load and fight as one force.',
         'The army that left Valley Forge was smaller but tougher and better trained.'],
-  'd': ['On December 23, 1777, Washington warned Congress that he had "no less than 2,898 Men now in Camp unfit for duty because they are bare foot and otherwise naked."',
+  'd': ['On December 23, 1777, Washington warned Congress that he had "no less than 2898 Men now in Camp unfit for duty, because they are barefoot and otherwise naked."',
         'About 12,000 soldiers wintered at Valley Forge, and about 2,000 died of disease, chiefly typhus, dysentery and pneumonia spread through crowded huts.',
         'Historians stress that the suffering came less from extreme cold than from a supply system that broke down between Congress, the states and the army\'s own commissaries.',
         'The camp is remembered as a turning point in another sense as well: under Baron von Steuben\'s drill that spring, the Continentals became a disciplined, professional army.'],
@@ -193,7 +193,7 @@ STOPS = [
         'Thousands escaped, though historians still debate how many, and many died of smallpox in crowded camps.',
         'The offers were a weapon of war rather than a principle, since Britain kept slavery in its own colonies, yet they forced Patriots to confront what their own language of liberty meant to the people they enslaved.'],
   'voice': ('enslaved-british-freedom', 'Enslaved People and British Freedom Offers', 'Thousands of enslaved people risked everything to escape to the British side.'),
-  'more': ['nancy-hart', 'african-americans'],
+  'more': ['nancy-hart', 'indentured-servants'],
   'think': 'To an enslaved person in Virginia, which side looked like the side of liberty, and why?'},
 
  {'id': 'yorktown', 'year': '1781', 'date': 'October 19, 1781', 'title': 'Yorktown',
@@ -293,7 +293,8 @@ def check():
         print(f"{sid:15s} " + '  '.join(f"{n} {g[k]:4.1f}" for k, n, _ in LV))
     return bad
 
-assert sorted({s['voice'][0] for s in STOPS} | {m for s in STOPS for m in s['more']}) == sorted(TOPICS), 'every podcast topic appears once'
+_all = [s['voice'][0] for s in STOPS] + [m for s in STOPS for m in s['more']]
+assert sorted(_all) == sorted(TOPICS), 'every podcast topic appears exactly once'
 
 E = html.escape
 def paras(lines):
@@ -326,8 +327,7 @@ def stop_html(i, s):
       <h3 id="v-{s['id']}">{E(vname)}</h3>
       <p>{E(vline)}</p>
       <p><a class="btn" href="{VOICES}{vid}/">Read about them</a></p>
-      <p class="morelab">More voices near this stop:</p>
-      <ul class="morelist">{more}</ul>
+      {('<p class="morelab">More voices near this stop:</p>' + chr(10) + '      <ul class="morelist">' + more + '</ul>') if more else ''}
     </div>
   </aside>
   <div class="think"><p class="tlab">Think About It</p><p class="ask">{E(s['think'])}</p></div>
