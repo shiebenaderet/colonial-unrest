@@ -57,11 +57,9 @@ Progress is saved per device. A student who switches Chromebooks loads their bac
 - **Screen readers** get the point total, status messages, and a data table of the chart. The rating control and timeline work fully from the keyboard.
 - **Reduced motion** is respected.
 
-## The War in Seven Stops (Week 9)
+## The War in Seven Stops (Week 9): moved
 
-`war-timeline.html` (**unrest.mrbsocialstudies.org/war-timeline.html**) is the Revolutionary War from 1775 to 1783 in seven stops: Bunker Hill, Trenton, Saratoga, Valley Forge, Britain Offers Freedom (Dunmore 1775, Clinton 1779), Yorktown and the Treaty of Paris. Students reach it from the QR codes on the cut-and-glue timeline cards (ams-planning, `tools/build-week9-handouts.py`); each code opens one stop: `#bunker-hill`, `#trenton`, `#saratoga`, `#valley-forge`, `#freedom-offers`, `#yorktown`, `#treaty`. Each stop has its picture, a reading at four levels (Quick, Clear, Full, Deep; `?level=quick|clear|full|deep`, remembered in `war-timeline-v1`), a **Hidden Voice** who is a podcast topic with a link to that reading on voices.mrbsocialstudies.org, more voices near the stop, and a Think About It question. `#whose-stories` lists all 22 podcast topics, each once, grouped by stop, for crews choosing their top three. Listen and Font come from `reader-tools.js`. Not linked from the other pages.
-
-The page is generated: edit `tools/build-war-timeline.py` and run `python3 tools/build-war-timeline.py`, which measures every level with the shared FK formula and refuses to write the page if a level misses its limit. Facts, numbers and hidden voices match ams-planning `tools/war_timeline_data.py` (the cards and slides); change both together. Pictures in `images/war/` (public domain, Wikimedia Commons; credits under each picture).
+Moved Oct 26 2026 to the podcast site: **voices.mrbsocialstudies.org/war-timeline.html**, with its builder (`tools/build-war-timeline.py`) and pictures (`images/war/`) in the `revolutionaryvoices` repo. `war-timeline.html` here is only a redirect, so old links, stop anchors (`#yorktown`) and `?level=` still land in the right place.
 
 ## Recording the readings (Mr. B's voice)
 
